@@ -85,7 +85,6 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     
     'library',
-    'service',
 )
 
 # Local Settings
