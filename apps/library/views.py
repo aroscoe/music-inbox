@@ -28,23 +28,25 @@ class Library(Resource):
             return HttpResponse(json.dumps(response), mimetype='application/json')
         else:
             return Http404
-
-def upload(request):
-    if request.method == 'POST':
-        form = UploadFileForm(request.POST, request.FILES)
-        if form.is_valid():
-            library_name = form.cleaned_data['name']
-            library_file = handle_uploaded_file(request.FILES['file'])
-            importer.itunes(library_file, library_name)
-            return render_to_response('success.html')
-    else:
-        form = UploadFileForm()
-    return render_to_response('upload.html', {'form': form})
-
-def handle_uploaded_file(file):
-    file_path = settings.UPLOADS_DIR + file.name
-    destination = open(file_path, 'wb+')
-    for chunk in file.chunks():
-        destination.write(chunk)
-    destination.close()
-    return file_path
+    
+    def create(self, request, *args):
+        if request.method == 'POST':
+            form = UploadFileForm(request.POST, request.FILES)
+            if form.is_valid():
+                library_name = form.cleaned_data['name']
+                library_file = self._handle_uploaded_file(request.FILES['file'])
+                # upload_done.send(sender=self, file=library_file, name=library_name)
+                importer.itunes(library_file, library_name)
+                return render_to_response('success.html')
+        else:
+            print "beep"
+            form = UploadFileForm()
+        return render_to_response('upload.html', {'form': form})
+    
+    def _handle_uploaded_file(self, file):
+        file_path = settings.UPLOADS_DIR + file.name
+        destination = open(file_path, 'wb+')
+        for chunk in file.chunks():
+            destination.write(chunk)
+        destination.close()
+        return file_path
