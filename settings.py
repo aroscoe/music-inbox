@@ -87,6 +87,8 @@ INSTALLED_APPS = (
     'library',
 )
 
+UPLOADS_DIR = 'uploads/'
+
 # Local Settings
 # Check for local_settings to override production enviroment
 try:
