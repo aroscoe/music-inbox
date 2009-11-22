@@ -4,7 +4,7 @@ import plistlib
 
 from library.models import *
 
-def itunes_import(file, name):
+def itunes(file, name):
     itunes = plistlib.readPlist(file)
     tracks = itunes["Tracks"]
     library = Library(name=name)
