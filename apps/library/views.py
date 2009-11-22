@@ -1,5 +1,4 @@
-from django.http import HttpResponse
-from django.http import Http404
+from django.http import HttpResponse, Http404
 from django.utils import simplejson as json
 from django.shortcuts import render_to_response
 from django.conf import settings
@@ -11,6 +10,7 @@ from rest.django_restapi.responder import JSONResponder
 from library.models import *
 from library.forms import *
 from library.utils import importer
+from library import signals
 
 libraries_resource = Collection(
     queryset = Library.objects.all(),
@@ -35,8 +35,7 @@ class Library(Resource):
             if form.is_valid():
                 library_name = form.cleaned_data['name']
                 library_file = self._handle_uploaded_file(request.FILES['file'])
-                # upload_done.send(sender=self, file=library_file, name=library_name)
-                importer.itunes(library_file, library_name)
+                signals.upload_done.send(sender=self, file=library_file, name=library_name)
                 return render_to_response('success.html')
         else:
             print "beep"
