@@ -29,6 +29,8 @@ class Library(Resource):
         else:
             return Http404
     
+    # Example cURL POST
+    # curl -H "Content-Type: multipart/form-data" -F "file=@test_library.xml" -F "name=Anthony" http://localhost:8000/library/
     def create(self, request, *args):
         if request.method == 'POST':
             form = UploadFileForm(request.POST, request.FILES)
@@ -38,7 +40,6 @@ class Library(Resource):
                 signals.upload_done.send(sender=self, file=library_file, name=library_name)
                 return render_to_response('success.html')
         else:
-            print "beep"
             form = UploadFileForm()
         return render_to_response('upload.html', {'form': form})
     
