@@ -4,10 +4,10 @@ import plistlib
 
 from library.models import *
 
-def itunes(file, name):
+def itunes(file, library_name):
     itunes = plistlib.readPlist(file)
     tracks = itunes["Tracks"]
-    library = Library(name=name)
+    library = Library(name=library_name)
     library.save()
     for track in tracks.values():
         if track.get("Artist") and track.get("Album"):

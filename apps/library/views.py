@@ -10,6 +10,7 @@ from rest.django_restapi.responder import JSONResponder
 
 from library.models import *
 from library.forms import *
+from library.utils import importer
 
 libraries_resource = Collection(
     queryset = Library.objects.all(),
@@ -32,14 +33,18 @@ def upload(request):
     if request.method == 'POST':
         form = UploadFileForm(request.POST, request.FILES)
         if form.is_valid():
-            handle_uploaded_file(request.FILES['file'])
+            library_name = form.cleaned_data['name']
+            library_file = handle_uploaded_file(request.FILES['file'])
+            importer.itunes(library_file, library_name)
             return render_to_response('success.html')
     else:
         form = UploadFileForm()
     return render_to_response('upload.html', {'form': form})
 
 def handle_uploaded_file(file):
-    destination = open(settings.UPLOADS_DIR + file.name, 'wb+')
+    file_path = settings.UPLOADS_DIR + file.name
+    destination = open(file_path, 'wb+')
     for chunk in file.chunks():
         destination.write(chunk)
     destination.close()
+    return file_path
