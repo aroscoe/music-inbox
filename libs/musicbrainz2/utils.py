@@ -4,7 +4,7 @@ This module contains helper functions to make common tasks easier.
 
 @author: Matthias Friedrich <matt@mafr.de>
 """
-__revision__ = '$Id: utils.py 9714 2008-03-01 09:05:48Z matt $'
+__revision__ = '$Id: utils.py 11853 2009-07-21 09:26:50Z luks $'
 
 import re
 import urlparse
@@ -18,7 +18,7 @@ __all__ = [
 
 
 # A pattern to split the path part of an absolute MB URI.
-PATH_PATTERN = '^/(artist|release|track|label)/([^/]*)$'
+PATH_PATTERN = '^/(artist|release|track|label|release-group)/([^/]*)$'
 
 
 def extractUuid(uriStr, resType=None):
