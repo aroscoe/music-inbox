@@ -1,4 +1,4 @@
-# Django settings for itunes-inbox project.
+# Django settings for music-inbox project.
 
 import os.path
 from django.conf.global_settings import TEMPLATE_CONTEXT_PROCESSORS
@@ -68,7 +68,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.auth.middleware.AuthenticationMiddleware',
 )
 
-ROOT_URLCONF = 'itunes-inbox.urls'
+ROOT_URLCONF = 'music-inbox.urls'
 
 TEMPLATE_DIRS = (
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
