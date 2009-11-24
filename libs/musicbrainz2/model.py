@@ -23,13 +23,13 @@ try:
 except NameError:
 	from sets import Set as set
 
-__revision__ = '$Id: model.py 11729 2009-06-14 09:12:51Z matt $'
+__revision__ = '$Id: model.py 12028 2009-09-01 13:15:50Z matt $'
 
 __all__ = [
 	'VARIOUS_ARTISTS_ID', 'NS_MMD_1', 'NS_REL_1', 'NS_EXT_1', 
-	'Entity', 'Artist', 'Release', 'Track', 'User', 
-	'Relation', 'Disc', 'ReleaseEvent', 'Label', 'Tag',
-	'AbstractAlias', 'ArtistAlias', 'LabelAlias', 
+	'Entity', 'Artist', 'Release', 'Track', 'User', 'ReleaseGroup',
+	'Relation', 'Disc', 'ReleaseEvent', 'Label', 'Tag', 'Rating',
+	'AbstractAlias', 'ArtistAlias', 'LabelAlias',
 ]
 
 
@@ -303,6 +303,9 @@ class Artist(Entity):
 		self._releases = [ ]
 		self._releasesCount = None
 		self._releasesOffset = None
+		self._releaseGroups = [ ]
+		self._releaseGroupsCount = None
+		self._releaseGroupsOffset = None
 
 	def getType(self):
 		"""Returns the artist's type.
@@ -546,13 +549,81 @@ class Artist(Entity):
 	releasesCount = property(getReleasesCount, setReleasesCount,
 		doc='The total number of releases')
 
+	def getReleaseGroups(self):
+		"""Returns a list of release groups from this artist.
+		
+		@return: a list of L{ReleaseGroup} objects
+		"""
+		return self._releaseGroups
+	
+	releaseGroups = property(getReleaseGroups, doc='The list of release groups')
+	
+	def addReleaseGroup(self, releaseGroup):
+		"""Adds a release group to this artist's list of release groups.
+		
+		@param releaseGroup: a L{ReleaseGroup} object
+		"""
+		self._releaseGroups.append(releaseGroup)
+
+	def getReleaseGroupsOffset(self):
+		"""Returns the offset of the release group list.
+
+		This is used if the release group list is incomplete (ie. the
+		web service only returned part of the result for this artist).
+		Note that the offset value is zero-based, which means release
+		group C{0} is the first release group.
+
+		@return: an integer containing the offset, or None
+
+		@see: L{getReleaseGroups}, L{getReleaseGroupsCount}
+		"""
+		return self._releaseGroupsOffset
+
+	def setReleaseGroupsOffset(self, offset):
+		"""Sets the offset of the release group list.
+
+		@param offset: an integer containing the offset, or None
+
+		@see: L{getReleaseGroupsOffset}
+		"""
+		self._releaseGroupsOffset = offset
+
+	releaseGroupsOffset = property(getReleaseGroupsOffset, setReleaseGroupsOffset,
+		doc='The offset of the release group list.')
+
+	def getReleaseGroupsCount(self):
+		"""Returns the number of existing release groups.
+
+		This may or may not match with the number of elements that
+		L{getReleaseGroups} returns. If the count is higher than
+		the list, it indicates that the list is incomplete.
+
+		@return: an integer containing the count, or None
+
+		@see: L{setReleaseGroupsCount}, L{getReleaseGroupsOffset}
+		"""
+		return self._releaseGroupsCount
+
+	def setReleaseGroupsCount(self, value):
+		"""Sets the number of existing release groups.
+
+		@param value: an integer containing the count, or None
+
+		@see: L{getReleaseGroupsCount}, L{setReleaseGroupsOffset}
+		"""
+		self._releaseGroupsCount = value
+
+	releasesCount = property(getReleaseGroupsCount, setReleaseGroupsCount,
+		doc='The total number of release groups')
+
+
 class Rating(object):
 	"""The representation of a MusicBrain rating.
 
 	The rating can have the following values:
 
-	  0 = Unrated
-	  [1..5] = Rating
+	0 = Unrated
+	[1..5] = Rating
 	"""
 	def __init__(self, value=None, count=None):
 		"""Constructor.
@@ -576,7 +647,7 @@ class Rating(object):
 		0 or None = Clear your rating
 		1 - 5 = Rating
 
-		@param rating:  the rating to apply
+		@param value: the rating to apply
 
 		@raise ValueError: if value is not a double or not in the
 		range 0 - 5 or None.
@@ -912,8 +983,8 @@ class Release(Entity):
 	@note: The current MusicBrainz server implementation supports only a
 	limited set of types.
 	"""
-	# TODO: we need a type for NATs
 	TYPE_NONE = NS_MMD_1 + 'None'
+	TYPE_NON_ALBUM_TRACKS = NS_MMD_1 + "NonAlbum Track"
 
 	TYPE_ALBUM = NS_MMD_1 + 'Album'
 	TYPE_SINGLE = NS_MMD_1 + 'Single'
@@ -947,6 +1018,7 @@ class Release(Entity):
 		self._artist = None
 		self._releaseEvents = [ ]
 		#self._releaseEventsCount = None
+		self._releaseGroup = None
 		self._discs = [ ]
 		#self._discIdsCount = None
 		self._tracks = [ ]
@@ -1085,6 +1157,23 @@ class Release(Entity):
 
 	artist = property(getArtist, setArtist,
 		doc='The main artist of this release.')
+
+	def getReleaseGroup(self):
+		"""Returns the release group to which this release belongs.
+		
+		@return: a L{ReleaseGroup} object, or None.
+		"""
+		return self._releaseGroup
+
+	def setReleaseGroup(self, releaseGroup):
+		"""Sets the release's release group.
+		
+		@param releaseGroup: a L{ReleaseGroup} object, or None.
+		"""
+		self._releaseGroup = releaseGroup
+
+	releaseGroup = property(getReleaseGroup, setReleaseGroup,
+		doc='The release group this release belongs to.')
 
 	def isSingleArtistRelease(self):
 		"""Checks if this is a single artist's release.
@@ -1303,6 +1392,158 @@ class Release(Entity):
 
 	#def setDiscIdsCount(self, value):
 	#	self._discIdsCount = value
+
+
+class ReleaseGroup(Entity):
+	"""Represents a ReleaseGroup.
+
+	A ReleaseGroup in MusicBrainz is an L{Entity} which groups several different
+	versions of L{Release} objects (e.g., different editions of the same album).
+
+	@see: L{Release}
+	@see: L{Entity}
+	"""
+
+	def __init__(self, id_=None, title=None):
+		"""Constructor.
+
+		@param id_: a string containing an absolute URI
+		@param title: a string containing the title
+		"""
+		Entity.__init__(self, id_)
+		self._title = title
+		self._id = id_
+		self._type = None
+		self._releases = [ ]
+		self._artist = None
+		self._releasesOffset = 0
+		self._releasesCount = 0
+
+	def getType(self):
+		"""Returns the type of this release group.
+
+		To test for release types, you can use the constants
+		L{Release.TYPE_ALBUM}, L{Release.TYPE_SINGLE}, etc.
+
+		@return: a string containing an absolute URI, or None.
+
+		@see: L{musicbrainz2.utils.getReleaseTypeName}
+		"""
+		return self._type
+
+	def setType(self, type_):
+		"""Sets the type of this release group.
+
+		Use a constant from the L{Release} class, such as
+		L{Release.TYPE_ALBUM} or L{Release.TYPE_SINGLE} to
+		set the value.
+
+		@param type_: a string containing an absolute URI, or None.
+		
+		@see: L{musicbrainz2.utils.getReleaseTypeName}
+		"""
+		self._type = type_
+
+	type = property(getType, setType,
+		doc = 'The type of this release group.')
+
+	def getReleases(self):
+		"""Gets the releases in this release group.
+
+		@return: a list of L{Release} objects
+		@see: L{Release}
+		"""
+		return self._releases
+
+	releases = property(getReleases,
+		doc = 'The list of releases in this release group.')
+
+	def addRelease(self, release):
+		"""Adds a L{Release} to this release group.
+
+		@param release: a L{Release} object
+		"""
+		self._releases.append(release)
+
+	def getReleasesOffset(self):
+		"""Returns the offset of the release list.
+
+		This is used if the release list is incomplete (i.e., the web
+		service only returned a portion of the releases in this release
+		group).
+
+		@return: an integer containing the offset, or None.
+		@see: L{getReleases}, L{getReleasesCount}
+		"""
+		return self._releasesOffset
+
+	def setReleasesOffset(self, offset):
+		"""Sets the offset of the release list.
+
+		@param offset: an integer containing the offset, or None.
+		@see: L{getReleases}, L{getReleasesOffset}
+		"""
+		self._releasesOffset = offset
+
+	releasesOffset = property(getReleasesOffset, setReleasesOffset,
+		doc='The offset of the release list.')
+
+	def getReleasesCount(self):
+		"""Returns the number of releases in this release group.
+
+		This may or may not match the number of elements returned by
+		L{getReleases}.  If the count is higher than the length of that
+		list, then the list is incomplete.
+
+		@return: an integer containing the count, or None
+		@see: L{getReleases}, L{setReleasesCount}, L{getReleasesOffset}
+		"""
+		return self._releasesCount
+
+	def setReleasesCount(self, value):
+		"""Sets the number of releases in this release group.
+
+		@param value: an integer containing the count, or None.
+		@see: L{getReleases}, L{getReleasesCount}, L{getReleasesOffset}
+		"""
+		self._releasesCount = value
+
+	releasesCount = property(getReleasesCount, setReleasesCount,
+		doc = 'The total number of releases')
+
+	def getTitle(self):
+		"""Returns this release group's title.
+
+		@return: a string containing the release group's title
+		"""
+		return self._title
+
+	def setTitle(self, title):
+		"""Sets the release group's title.
+
+		@param title: a string containing the release group's title.
+		"""
+		self._title = title
+
+	title = property(getTitle, setTitle,
+		doc = 'The title of this release group.')
+
+	def getArtist(self):
+		"""Returns the main artist of this release group.
+
+		@return: an L{Artist} object, or None
+		"""
+		return self._artist
+
+	def setArtist(self, artist):
+		"""Sets the release group's main artist.
+
+		@param artist: an L{Artist} object
+		"""
+		self._artist = artist
+
+	artist = property(getArtist, setArtist,
+		doc = 'The main artist of this release group')
 
 
 class Track(Entity):

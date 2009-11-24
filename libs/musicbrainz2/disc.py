@@ -10,12 +10,13 @@ L{readDisc()} function.
 
 @author: Matthias Friedrich <matt@mafr.de>
 """
-__revision__ = '$Id: disc.py 10149 2008-07-23 04:54:28Z luks $'
+__revision__ = '$Id: disc.py 11987 2009-08-22 11:57:51Z matt $'
 
 import sys
 import urllib
 import urlparse
 import ctypes
+import ctypes.util
 from musicbrainz2.model import Disc
 
 __all__ = [ 'DiscError', 'readDisc', 'getSubmissionUrl' ]
@@ -47,6 +48,17 @@ def _openLibrary():
 			return libDiscId
 	except OSError, e:
 		raise NotImplementedError('Error opening library: ' + str(e))
+
+	# Try to find the library using ctypes.util
+	libName = ctypes.util.find_library('discid')
+	if libName != None:
+		try:
+			libDiscId = ctypes.cdll.LoadLibrary(libName)
+			_setPrototypes(libDiscId)
+			return libDiscId
+		except OSError, e:
+			raise NotImplementedError('Error opening library: ' +
+				str(e))
 
 	# For compatibility with ctypes < 0.9.9.3 try to figure out the library
 	# name without the help of ctypes. We use cdll.LoadLibrary() below,

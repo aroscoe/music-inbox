@@ -7,7 +7,7 @@ MusicBrainz webservice.
 There are also DOM helper functions in this module used by the parser which
 probably aren't useful to users.
 """
-__revision__ = '$Id: wsxml.py 11729 2009-06-14 09:12:51Z matt $'
+__revision__ = '$Id: wsxml.py 12028 2009-09-01 13:15:50Z matt $'
 
 import re
 import logging
@@ -25,7 +25,8 @@ __all__ = [
 	'DefaultFactory', 'Metadata', 'ParseError',
 	'MbXmlParser', 'MbXmlWriter',
 	'AbstractResult',
-	'ArtistResult', 'ReleaseResult', 'TrackResult', 'LabelResult'
+	'ArtistResult', 'ReleaseResult', 'TrackResult', 'LabelResult',
+	'ReleaseGroupResult'
 ]
 
 
@@ -36,6 +37,7 @@ class DefaultFactory(object):
 	"""
 	def newArtist(self): return model.Artist()
 	def newRelease(self): return model.Release()
+	def newReleaseGroup(self): return model.ReleaseGroup()
 	def newTrack(self): return model.Track()
 	def newRelation(self): return model.Relation()
 	def newReleaseEvent(self): return model.ReleaseEvent()
@@ -80,12 +82,16 @@ class Metadata(object):
 		self._release = None
 		self._track = None
 		self._label = None
+		self._releaseGroup = None
 		self._artistResults = [ ]
 		self._artistResultsOffset = None
 		self._artistResultsCount = None
 		self._releaseResults = [ ]
 		self._releaseResultsOffset = None
 		self._releaseResultsCount = None
+		self._releaseGroupResults = [ ]
+		self._releaseGroupResultsOffset = None
+		self._releaseGroupResultsCount = None
 		self._trackResults = [ ]
 		self._trackResultsOffset = None
 		self._trackResultsCount = None
@@ -119,6 +125,14 @@ class Metadata(object):
 		self._release = release
 
 	release = property(getRelease, setRelease, doc='A Release object.')
+
+	def getReleaseGroup(self):
+		return self._releaseGroup
+
+	def setReleaseGroup(self, releaseGroup):
+		self._releaseGroup = releaseGroup
+
+	releaseGroup = property(getReleaseGroup, setReleaseGroup)
 
 	def getTrack(self):
 		return self._track
@@ -311,6 +325,67 @@ class Metadata(object):
 		getReleaseResultsCount, setReleaseResultsCount,
 		doc='The total number of release results.')
 
+	def getReleaseGroupResults(self):
+		"""Returns a release group result list.
+
+		@return: a list of L{ReleaseGroupResult} objects.
+		"""
+		return self._releaseGroupResults
+
+	releaseGroupResults = property(getReleaseGroupResults,
+		doc = 'A list of ReleaseGroupResult objects.')
+
+	def getReleaseGroupResultsOffset(self):
+		"""Returns the offset of the release group result list.
+
+		The offset is used for paging through the result list.  It
+		is zero-based.
+
+		@return: an integer containing the offset, or None.
+
+		@see: L{getReleaseGroupResults}, L{getReleaseGroupResultsCount}
+		"""
+		return self._releaseGroupResultsOffset
+
+	def setReleaseGroupResultsOffset(self, value):
+		"""Sets the offset of the release group result list.
+
+		@param value: an integer containing the offset, or None
+
+		@see: L{getReleaseGroupResultsOffset}
+		"""
+		self._releaseGroupResultsOffset = value
+
+	releaseGroupResultsOffset = property(
+		getReleaseGroupResultsOffset, setReleaseGroupResultsOffset,
+		doc='The offset of the release group results.')
+
+	def getReleaseGroupResultsCount(self):
+		"""Returns the total number of results available.
+
+		This may or may not match with the number of elements that
+		L{getReleaseGroupResults} returns. If the count is higher than
+		the list, it indicates that the list is incomplete.
+
+		@return: an integer containing the count, or None
+
+		@see: L{setReleaseGroupResultsCount}, L{getReleaseGroupResultsOffset}
+		"""
+		return self._releaseGroupResultsCount
+
+	def setReleaseGroupResultsCount(self, value):
+		"""Sets the total number of available results.
+
+		@param value: an integer containing the count, or None
+
+		@see: L{getReleaseGroupResults}, L{setReleaseGroupResultsOffset}
+		"""
+		self._releaseGroupResultsCount = value
+
+	releaseGroupResultsCount = property(
+		getReleaseGroupResultsCount, setReleaseGroupResultsCount,
+		doc='The total number of release group results.')
+
 	def getTrackResults(self):
 		"""Returns a track result list. 
 
@@ -393,7 +468,7 @@ class Metadata(object):
 	def setRating(self, value):
 		"""Sets the rating.
 
-		@param: rating object
+		@param value: a L{model.Rating} object
 		"""
 		self._rating = value
 
@@ -487,6 +562,28 @@ class ReleaseResult(AbstractResult):
 
 	release = property(getRelease, setRelease, doc='A Release object.')
 
+class ReleaseGroupResult(AbstractResult):
+	"""Represents a release group result.
+
+	A ReleaseGroupResult consists of a I{score} and a release group.  The
+	score is a number between 0 and 100, where a higher number indicates
+	a better match.
+	"""
+	def __init__(self, releaseGroup, score):
+		super(ReleaseGroupResult, self).__init__(score)
+		self._releaseGroup = releaseGroup
+
+	def getReleaseGroup(self):
+		"""Returns a ReleaseGroup object.
+
+		@return: a L{musicbrainz2.model.ReleaseGroup} object
+		"""
+		return self._releaseGroup
+
+	def setReleaseGroup(self, value):
+		self._releaseGroup = value
+
+	releaseGroup = property(getReleaseGroup, setReleaseGroup, doc='A ReleaseGroup object.')
 
 class TrackResult(AbstractResult):
 	"""Represents a track result.
@@ -619,6 +716,8 @@ class MbXmlParser(object):
 				md.artist = self._createArtist(node)
 			elif _matches(node, 'release'):
 				md.release = self._createRelease(node)
+			elif _matches(node, 'release-group'):
+				md.releaseGroup = self._createReleaseGroup(node)
 			elif _matches(node, 'track'):
 				md.track = self._createTrack(node)
 			elif _matches(node, 'label'):
@@ -633,6 +732,11 @@ class MbXmlParser(object):
 				md.releaseResultsOffset = offset
 				md.releaseResultsCount = count
 				self._addReleaseResults(node, md.getReleaseResults())
+			elif _matches(node, 'release-group-list'):
+				(offset, count) = self._getListAttrs(node)
+				md.releaseGroupResultsOffset = offset
+				md.releaseGroupResultsCount = count
+				self._addReleaseGroupResults(node, md.getReleaseGroupResults())
 			elif _matches(node, 'track-list'):
 				(offset, count) = self._getListAttrs(node)
 				md.trackResultsOffset = offset
@@ -665,6 +769,13 @@ class MbXmlParser(object):
 			if release is not None:
 				resultList.append(ReleaseResult(release, score))
 
+	def _addReleaseGroupResults(self, listNode, resultList):
+		for c in _getChildElements(listNode):
+			releaseGroup = self._createReleaseGroup(c)
+			score = _getIntAttr(c, 'score', 0, 100, ns=NS_EXT_1)
+			if releaseGroup is not None:
+				resultList.append(ReleaseGroupResult(releaseGroup, score))
+
 	def _addTrackResults(self, listNode, resultList):
 		for c in _getChildElements(listNode):
 			track = self._createTrack(c)
@@ -681,6 +792,9 @@ class MbXmlParser(object):
 
 	def _addReleasesToList(self, listNode, resultList):
 		self._addToList(listNode, resultList, self._createRelease)
+
+	def _addReleaseGroupsToList(self, listNode, resultList):
+		self._addToList(listNode, resultList, self._createReleaseGroup)
 
 	def _addTracksToList(self, listNode, resultList):
 		self._addToList(listNode, resultList, self._createTrack)
@@ -732,6 +846,11 @@ class MbXmlParser(object):
 				artist.setReleasesOffset(offset)
 				artist.setReleasesCount(count)
 				self._addReleasesToList(node, artist.getReleases())
+			elif _matches(node, 'release-group-list'):
+				(offset, count) = self._getListAttrs(node)
+				artist.setReleaseGroupsOffset(offset)
+				artist.setReleaseGroupsCount(count)
+				self._addReleaseGroupsToList(node, artist.getReleaseGroups())
 			elif _matches(node, 'relation-list'):
 				self._addRelationsToEntity(node, artist)
 			elif _matches(node, 'tag-list'):
@@ -790,6 +909,8 @@ class MbXmlParser(object):
 				release.setArtist(self._createArtist(node))
 			elif _matches(node, 'release-event-list'):
 				self._addReleaseEvents(node, release)
+			elif _matches(node, 'release-group'):
+				release.setReleaseGroup(self._createReleaseGroup(node))
 			elif _matches(node, 'disc-list'):
 				self._addDiscs(node, release)
 			elif _matches(node, 'track-list'):
@@ -806,6 +927,23 @@ class MbXmlParser(object):
 
 		return release
 
+	def _createReleaseGroup(self, node):
+		rg = self._factory.newReleaseGroup()
+		rg.setId(_getIdAttr(node, 'id', 'release-group'))
+		rg.setType(_getUriAttr(node, 'type'))
+
+		for child in _getChildElements(node):
+			if _matches(child, 'title'):
+				rg.setTitle(_getText(child))
+			elif _matches(child, 'artist'):
+				rg.setArtist(self._createArtist(child))
+			elif _matches(child, 'release-list'):
+				(offset, count) = self._getListAttrs(child)
+				rg.setReleasesOffset(offset)
+				rg.setReleasesCount(count)
+				self._addReleasesToList(child, rg.getReleases())
+
+		return rg
 
 	def _addReleaseEvents(self, releaseListNode, release):
 		for node in _getChildElements(releaseListNode):
@@ -982,19 +1120,20 @@ class MbXmlParser(object):
 #
 
 class _XmlWriter(object):
-	def __init__(self, outStream, indentAmount='  '):
+	def __init__(self, outStream, indentAmount='  ', newline="\n"):
 		self._out = outStream
 		self._indentAmount = indentAmount
 		self._stack = [ ]
+		self._newline = newline
 
 	def prolog(self, encoding='UTF-8', version='1.0'):
 		pi = '<?xml version="%s" encoding="%s"?>' % (version, encoding)
-		self._out.write(pi + '\n')
+		self._out.write(pi + self._newline)
 
 	def start(self, name, attrs={ }):
 		indent = self._getIndention()
 		self._stack.append(name)
-		self._out.write(indent + self._makeTag(name, attrs) + '\n')
+		self._out.write(indent + self._makeTag(name, attrs) + self._newline)
 
 	def end(self):
 		name = self._stack.pop()
@@ -1040,12 +1179,13 @@ class _XmlWriter(object):
 class MbXmlWriter(object):
 	"""Write XML in the Music Metadata XML format."""
 
-	def __init__(self, indentAmount='  '):
+	def __init__(self, indentAmount='  ', newline="\n"):
 		"""Constructor.
 
 		@param indentAmount: the amount of whitespace to use per level
 		"""
 		self._indentAmount = indentAmount
+		self._newline = newline
 
 
 	def write(self, outStream, metadata):
@@ -1054,7 +1194,7 @@ class MbXmlWriter(object):
 		@param outStream: an open file-like object
 		@param metadata: a L{Metadata} object
 		"""
-		xml = _XmlWriter(outStream, self._indentAmount)
+		xml = _XmlWriter(outStream, self._indentAmount, self._newline)
 
 		xml.prolog()
 		xml.start('metadata', {
@@ -1064,6 +1204,7 @@ class MbXmlWriter(object):
 
 		self._writeArtist(xml, metadata.getArtist())
 		self._writeRelease(xml, metadata.getRelease())
+		self._writeReleaseGroup(xml, metadata.getReleaseGroup())
 		self._writeTrack(xml, metadata.getTrack())
 		self._writeLabel(xml, metadata.getLabel())
 
@@ -1084,6 +1225,16 @@ class MbXmlWriter(object):
 			})
 			for result in metadata.getReleaseResults():
 				self._writeRelease(xml, result.getRelease(),
+					result.getScore())
+			xml.end()
+
+		if len(metadata.getReleaseGroupResults()) > 0:
+			xml.start('release-group-list', {
+				'offset': metadata.releaseGroupResultsOffset,
+				'count': metadata.releaseGroupResultsCount
+			})
+			for result in metadata.getReleaseGroupResults():
+				self._writeReleaseGroup(xml, result.getReleaseGroup(),
 					result.getScore())
 			xml.end()
 
@@ -1143,6 +1294,12 @@ class MbXmlWriter(object):
 				self._writeRelease(xml, release)
 			xml.end()
 
+		if len(artist.getReleaseGroups()) > 0:
+			xml.start('release-group-list')
+			for releaseGroup in artist.getReleaseGroups():
+				self._writeReleaseGroup(xml, releaseGroup)
+			xml.end()
+
 		self._writeRelationList(xml, artist)
 		# TODO: extensions
 
@@ -1172,6 +1329,7 @@ class MbXmlWriter(object):
 		xml.elem('asin', release.getAsin())
 
 		self._writeArtist(xml, release.getArtist())
+		self._writeReleaseGroup(xml, release.getReleaseGroup())
 
 		if len(release.getReleaseEvents()) > 0:
 			xml.start('release-event-list')
@@ -1199,6 +1357,26 @@ class MbXmlWriter(object):
 
 		xml.end()
 
+	def _writeReleaseGroup(self, xml, rg, score = None):
+		if rg is None:
+			return
+
+		xml.start('release-group', {
+			'id': mbutils.extractUuid(rg.getId()),
+			'type': mbutils.extractFragment(rg.getType()),
+			'ext:score': score,
+		})
+
+		xml.elem('title', rg.getTitle())
+		self._writeArtist(xml, rg.getArtist())
+
+		if len(rg.getReleases()) > 0:
+			xml.start('release-list')
+			for rel in rg.getReleases():
+				self._writeRelease(xml, rel)
+			xml.end()
+
+		xml.end()
 
 	def _writeReleaseEvent(self, xml, event):
 		xml.start('event', {
