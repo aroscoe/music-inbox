@@ -7,7 +7,8 @@ from library.models import *
 logging.basicConfig()
 logger = logging.getLogger("album_diff")
 
-def album_diff(library, log_level=logging.CRITICAL):
+def album_diff(sender, log_level=logging.CRITICAL, **kwargs):
+    library = kwargs['library']
     logger.setLevel(log_level)
     logger.debug("processing " + library.name + " ...") 
 
