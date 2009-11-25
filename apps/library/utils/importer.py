@@ -14,6 +14,7 @@ class LibraryImporter:
             if track.get("Artist") and track.get("Album"):
                 artist,created = library.artist_set.get_or_create(name=track["Artist"])
                 artist.album_set.get_or_create(name=track["Album"])
+        signals.import_done.send(sender=self, library=library)
 
 if __name__ == "__main__":
     itunes_import(sys.argv[1,2])

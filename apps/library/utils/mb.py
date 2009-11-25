@@ -3,7 +3,8 @@ import musicbrainz2.model as m
 
 from library.models import *
 
-def album_diff(library):
+def album_diff(sender, **kwargs):
+    library = kwargs['library']
     missing = Library.objects.get_or_create(name=library.name + "_missing")[0]
     for artist in library.artist_set.all():
         temp_artist = missing.artist_set.get_or_create(name=artist.name)[0]
