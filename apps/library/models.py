@@ -37,3 +37,12 @@ class Album(models.Model):
     
     class Admin:
         pass
+
+#################################################################
+# Library Signal Handling
+
+from library.utils.importer import LibraryImporter
+from library import signals
+
+library_importer = LibraryImporter()
+signals.upload_done.connect(library_importer.itunes)

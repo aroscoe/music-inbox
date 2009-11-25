@@ -9,8 +9,6 @@ from rest.django_restapi.responder import JSONResponder
 
 from library.models import *
 from library.forms import *
-from library.utils import importer
-from library import signals
 
 libraries_resource = Collection(
     queryset = Library.objects.all(),
