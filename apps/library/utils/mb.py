@@ -4,13 +4,14 @@ import logging
 import time
 
 from library.models import *
+
 logging.basicConfig()
 logger = logging.getLogger("album_diff")
 
 def album_diff(sender, log_level=logging.CRITICAL, **kwargs):
     library = kwargs['library']
     logger.setLevel(log_level)
-    logger.debug("processing " + library.name + " ...") 
+    logger.debug("processing " + library.name + " ...")
 
     missing = Library.objects.get_or_create(name=library.name + "_missing")[0]
     for artist in library.artist_set.all():
@@ -31,13 +32,13 @@ def album_diff(sender, log_level=logging.CRITICAL, **kwargs):
             time.sleep(1)
             missing_album_group_ids = mb_release_group_ids - local_release_group_ids
             for release in mb_artist.getReleaseGroups():
-                if(release.id in missing_album_group_ids):
+                if release.id in missing_album_group_ids:
                     logger.debug("   missing " + release.title)
-                    temp_artist.album_set.get_or_create(name=release.title) 
+                    temp_artist.album_set.get_or_create(name=release.title)
                 else:
-                    logger.debug("   found " + release.title)    
+                    logger.debug("   found " + release.title)
     return missing
-                
+
 def get_artist_id(artist_name):
     name_filter = ws.ArtistFilter(name=artist_name, limit=5)
     q = ws.Query()
