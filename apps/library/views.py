@@ -17,7 +17,7 @@ libraries_resource = Collection(
 
 class Library(Resource):
     def read(self, request, library_id):
-        artists = Artist.objects.filter(library=library_id).select_related('album')
+        artists = Artist.objects.filter(libraries=library_id).select_related('album')
         if artists:
             response = {}
             for artist in artists:
