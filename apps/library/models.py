@@ -14,7 +14,7 @@ class Library(models.Model):
 
 class Artist(models.Model):
     name    = models.CharField(max_length=150)
-    library = models.ManyToManyField(Library)
+    libraries = models.ManyToManyField(Library)
     
     def __str__(self):
         return self.name
