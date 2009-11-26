@@ -14,11 +14,11 @@ class Library(models.Model):
 
 class Artist(models.Model):
     name    = models.CharField(max_length=150)
-    library = models.ForeignKey(Library)
+    library = models.ManyToManyField(Library)
     
     def __str__(self):
         return self.name
-
+    
     def __unicode__(self):
         return u'%s' % (self.name)
     
