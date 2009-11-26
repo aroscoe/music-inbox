@@ -12,9 +12,22 @@ class Library(models.Model):
     class Admin:
         pass
 
+class MissingLibrary(models.Model):
+    library = models.ForeignKey(Library)
+    
+    def __str__(self):
+        return self.library.name
+    
+    class Meta:
+        verbose_name_plural = 'missing libraries'
+    
+    class Admin:
+        pass
+
 class Artist(models.Model):
     name    = models.CharField(max_length=150)
     libraries = models.ManyToManyField(Library)
+    missing_libraries = models.ManyToManyField(MissingLibrary)
     
     def __str__(self):
         return self.name
