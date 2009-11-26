@@ -25,7 +25,7 @@ class MissingLibrary(models.Model):
         pass
 
 class Artist(models.Model):
-    name    = models.CharField(max_length=150)
+    name = models.CharField(max_length=150)
     libraries = models.ManyToManyField(Library)
     missing_libraries = models.ManyToManyField(MissingLibrary)
     
@@ -44,7 +44,7 @@ class Album(models.Model):
     
     def __str__(self):
         return '%s - %s' % (self.artist.name, self.name)
-
+    
     #def __unicode__(self):
     #    return u'%s - %s' % (self.artist.name, self.name)
     

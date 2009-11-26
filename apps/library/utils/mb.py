@@ -12,7 +12,7 @@ def album_diff(sender, log_level=logging.CRITICAL, **kwargs):
     library = kwargs['library']
     logger.setLevel(log_level)
     logger.debug("processing " + library.name + " ...")
-
+    
     missing = MissingLibrary.objects.get_or_create(library=library)[0]
     for artist in library.artist_set.all():
         temp_artist = missing.artist_set.get_or_create(name=artist.name)[0]
