@@ -20,3 +20,8 @@ REST API
 ========
 
 *Coming soon...*
+
+Authors
+=======
+Tim Julien
+Anthony Roscoe
