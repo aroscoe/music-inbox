@@ -6,6 +6,6 @@ library = Library(permitted_methods=('GET','POST'))
 
 urlpatterns = patterns('',
     url(r'^test/(.*?)/?$', libraries_resource),
-    url(r'^upload/', library.create),
+    url(r'^upload/?$', library.create),
     url(r'^(.*?)/?$', library),
 )
