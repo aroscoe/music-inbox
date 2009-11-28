@@ -23,5 +23,8 @@ REST API
 
 Authors
 =======
-Tim Julien
-Anthony Roscoe
+* [Tim Julien][1]
+* [Anthony Roscoe][2]
+
+[1]: http://github.com/tjulien
+[2]: http://github.com/aroscoe
