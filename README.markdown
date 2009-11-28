@@ -6,7 +6,7 @@ Music Inbox is a service that gives you access to information about your music l
 Installation
 ============
 
-*You will need Django to run this application.*
+*You will need [Django][1] to run this application.*
 
     $ git clone git://github.com/aroscoe/music-inbox.git
     $ cd music-inbox/
@@ -23,8 +23,9 @@ REST API
 
 Authors
 =======
-* [Tim Julien][1]
-* [Anthony Roscoe][2]
+* [Tim Julien][2]
+* [Anthony Roscoe][3]
 
-[1]: http://github.com/tjulien
-[2]: http://github.com/aroscoe
+[1]: http://www.djangoproject.com
+[2]: http://github.com/tjulien
+[3]: http://github.com/aroscoe
