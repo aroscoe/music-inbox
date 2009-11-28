@@ -48,3 +48,14 @@ class Library(Resource):
             destination.write(chunk)
         destination.close()
         return file_path
+
+def missing(request, library_id):
+    artists = Artist.objects.filter(missing_libraries__library=library_id).select_related('album')
+    if artists:
+        response = {}
+        for artist in artists:
+            albums = artist.album_set.all()
+            response[artist.name] = list(albums.values_list('name', flat=True))
+        return HttpResponse(json.dumps(response), mimetype='application/json')
+    else:
+        return Http404
