@@ -14,7 +14,7 @@ def album_diff(sender, log_level=logging.CRITICAL, **kwargs):
     logger.debug("processing " + library.name + " ...")
     
     missing = MissingLibrary.objects.get_or_create(library=library)[0]
-    for artist in library.artist_set.all():
+    for artist in library.artist_set.order_by("-play_count"):
         temp_artist = missing.artist_set.get_or_create(name=artist.name)[0]
         logger.debug(temp_artist.name + " ...")
         name_filter = ws.ArtistFilter(name=artist.name, limit=5)

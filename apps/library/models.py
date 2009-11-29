@@ -26,6 +26,7 @@ class MissingLibrary(models.Model):
 
 class Artist(models.Model):
     name = models.CharField(max_length=150)
+    play_count = models.IntegerField(default=0)
     libraries = models.ManyToManyField(Library)
     missing_libraries = models.ManyToManyField(MissingLibrary)
     
