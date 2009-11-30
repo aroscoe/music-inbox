@@ -26,7 +26,6 @@ class MissingLibrary(models.Model):
 
 class Artist(models.Model):
     name = models.CharField(max_length=150)
-    play_count = models.IntegerField(default=0)
     libraries = models.ManyToManyField(Library)
     missing_libraries = models.ManyToManyField(MissingLibrary)
     
@@ -39,6 +38,20 @@ class Artist(models.Model):
     class Admin:
         pass
 
+class LibraryArtist(models.Model):
+    library = models.ForeignKey(Library)
+    artist = models.ForeignKey(Artist)
+    play_count = models.IntegerField(default=0)
+
+    def __str__(self):
+        return '%s - %s' % (self.library.name, self.artist.name)
+
+    def __unicode__(self):
+        return u'%s - %s' % (self.library.name, self.artist.name)
+
+    class Admin:
+        pass
+    
 class Album(models.Model):
     name   = models.CharField(max_length=150)
     artist = models.ForeignKey(Artist)
