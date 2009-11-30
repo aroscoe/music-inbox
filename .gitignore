@@ -1,3 +1,4 @@
+uploads/*
 .DS_Store
 *.pyc
 dev.db
