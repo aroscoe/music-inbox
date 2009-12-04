@@ -2,6 +2,7 @@ from django.db import models
 
 class Library(models.Model):
     name = models.CharField(max_length=60, blank=True)
+    processing = models.BooleanField(default=1)
     
     def __str__(self):
         return self.name
@@ -14,6 +15,7 @@ class Library(models.Model):
 
 class MissingLibrary(models.Model):
     library = models.ForeignKey(Library)
+    processing = models.BooleanField(default=1)
     
     def __str__(self):
         return self.library.name
