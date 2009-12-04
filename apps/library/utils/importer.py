@@ -18,4 +18,6 @@ class LibraryImporter:
                 library_artist.save()
                 if track.get("Play Count"):
                     library_artist.play_count += track["Play Count"]
+        library.processing = False
+        library.save()
         signals.import_done.send(sender=self, library=library)
