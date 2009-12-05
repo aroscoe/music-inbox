@@ -8,16 +8,13 @@ from library.models import *
 logging.basicConfig()
 logger = logging.getLogger("album_diff")
 
-def album_diff(sender, log_level=logging.CRITICAL, **kwargs):
+def album_diff(sender, log_level=logging.DEBUG, **kwargs):
     library = kwargs['library']
     logger.setLevel(log_level)
     logger.debug("processing " + library.name + " ...")
     
-    missing = MissingLibrary.objects.get_or_create(library=library)[0]
-    for library_artist in library.libraryartist_set.order_by("-play_count"):
-        artist = library_artist.artist
-        temp_artist = missing.artist_set.get_or_create(name=artist.name)[0]
-        logger.debug(temp_artist.name + " ...")
+    for artist in library.artist_set.order_by("-play_count"):
+        logger.debug(artist.name + " ...")
         name_filter = ws.ArtistFilter(name=artist.name, limit=5)
         q = ws.Query()
         artist_results = q.getArtists(name_filter) # TODO aliases if no albums match
@@ -26,32 +23,52 @@ def album_diff(sender, log_level=logging.CRITICAL, **kwargs):
             include = ws.ArtistIncludes(
                 releases=(m.Release.TYPE_OFFICIAL, m.Release.TYPE_ALBUM), tags=True, releaseGroups=True)
             mb_artist_id = artist_results[0].artist.id
+            artist.mb_artist_id = mb_artist_id
+            artist.save()
             mb_artist = q.getArtistById(mb_artist_id, include)
             time.sleep(1)
-            mb_release_group_ids = set([release_group.id for release_group in mb_artist.getReleaseGroups()])
-            local_release_group_ids = set([get_release_group_id(release_group.name, mb_artist_id) for release_group in artist.album_set.all()])
-            time.sleep(1)
-            missing_album_group_ids = mb_release_group_ids - local_release_group_ids
+            #mb_release_group_ids = set([release_group.id for release_group in mb_artist.getReleaseGroups()])
+            local_release_group_ids = set([get_release_group_id(release_group, mb_artist_id) for release_group in artist.album_set.all()])
+            #missing_album_group_ids = mb_release_group_ids - local_release_group_ids
+            mb_artist_entry, created_artist = MBArtist.objects.get_or_create(mb_id=mb_artist_id)
+            if created_artist:
+                mb_artist_entry.name = artist.name
+                mb_artist_entry.save()
+            #lib_mb_artist = LibraryMBArtist.objects.get_or_create(library=library, artist=mb_artist_entry)[0]
+            #lib_mb_artist.play_count = artist.play_count
+            #lib_mb_artist.save()
+
             for release in mb_artist.getReleaseGroups():
-                if release.id in missing_album_group_ids:
-                    logger.debug("   missing " + release.title)
-                    temp_artist.album_set.get_or_create(name=release.title)
-                else:
-                    logger.debug("   found " + release.title)
-    return missing
+                mb_album, created_album = MBAlbum.objects.get_or_create(mb_id=release.id, artist=mb_artist_entry)
+                mb_album.name = release.title
+                mb_album.save()
+                
+                #lib_mb_album = LibraryMBAlbum.objects.get_or_create(library_artist=lib_mb_artist, album=mb_album)[0]
+
+                #if release.id in missing_album_group_ids:
+                #    logger.debug("   missing " + release.title)
+                #    lib_mb_album.has = False
+                #else:
+                #    logger.debug("   found " + release.title)
+                #    lib_mb_album.has = True
+                #lib_mb_album.save()
 
 def get_artist_id(artist_name):
     name_filter = ws.ArtistFilter(name=artist_name, limit=5)
     q = ws.Query()
     return q.getArtists(name_filter)[0].artist.id
 
-def get_release_group_id(album_name, mb_artist_id):
-    releases = get_releases(album_name, mb_artist_id)
+def get_release_group_id(album, mb_artist_id):
+    releases = get_releases(album.name, mb_artist_id)
     time.sleep(1)
     if releases:
             includes = ws.ReleaseIncludes(releaseGroup=True)
             q = ws.Query()
-            return q.getReleaseById(releases[0].release.id, includes).releaseGroup.id
+            id = q.getReleaseById(releases[0].release.id, includes).releaseGroup.id
+            sleep(1)
+            album.mb_id = id;
+            album.save()
+            return id
     return None
 
 def get_releases(name, mb_artist_id):

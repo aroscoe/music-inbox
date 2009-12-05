@@ -17,7 +17,7 @@ libraries_resource = Collection(
 
 class Library(Resource):
     def read(self, request, library_id):
-        artists = Artist.objects.filter(libraries=library_id).select_related('album')
+        artists = Artist.objects.filter(library=library_id).select_related('album')
         if artists:
             response = {}
             for artist in artists:
@@ -50,12 +50,24 @@ class Library(Resource):
         return file_path
 
 def missing(request, library_id):
-    artists = Artist.objects.filter(missing_libraries__library=library_id).select_related('album')
+    artists = Artist.objects.filter(library=library_id)
     if artists:
         response = {}
         for artist in artists:
-            albums = artist.album_set.all()
-            response[artist.name] = list(albums.values_list('name', flat=True))
+            print artist.name
+            if artist.mb_artist_id:
+                print artist.mb_artist_id
+                mb_artist = MBArtist.objects.get(mb_id=artist.mb_artist_id)
+                mb_album_ids = set([album.mb_id for album in mb_artist.mbalbum_set.all()])
+                has_album_ids = set([album.mb_id for album in artist.album_set.all()])
+                missing_album_ids = mb_album_ids - has_album_ids
+                response[artist.name] = []
+                for mb_album in mb_artist.mbalbum_set.all():
+                    print mb_album.name
+                    if mb_album.mb_id in missing_album_ids:
+                        response[artist.name].append(mb_album.name)
         return HttpResponse(json.dumps(response), mimetype='application/json')
     else:
         return Http404
+
+    

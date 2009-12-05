@@ -12,22 +12,24 @@ class Library(models.Model):
     class Admin:
         pass
 
-class MissingLibrary(models.Model):
+class Artist(models.Model):
+    name = models.CharField(max_length=150)
     library = models.ForeignKey(Library)
-    
+    mb_artist_id = models.CharField(max_length=150)
+    play_count = models.IntegerField(default=0)
+
     def __str__(self):
-        return self.library.name
-    
-    class Meta:
-        verbose_name_plural = 'missing libraries'
-    
+        return self.name
+
+    def __unicode__(self):
+        return u'%s' % (self.name)
+
     class Admin:
         pass
 
-class Artist(models.Model):
+class MBArtist(models.Model):
+    mb_id = models.CharField(max_length=150, unique=True)
     name = models.CharField(max_length=150)
-    libraries = models.ManyToManyField(Library)
-    missing_libraries = models.ManyToManyField(MissingLibrary)
     
     def __str__(self):
         return self.name
@@ -38,23 +40,10 @@ class Artist(models.Model):
     class Admin:
         pass
 
-class LibraryArtist(models.Model):
-    library = models.ForeignKey(Library)
-    artist = models.ForeignKey(Artist)
-    play_count = models.IntegerField(default=0)
-
-    def __str__(self):
-        return '%s - %s' % (self.library.name, self.artist.name)
-
-    def __unicode__(self):
-        return u'%s - %s' % (self.library.name, self.artist.name)
-
-    class Admin:
-        pass
-    
 class Album(models.Model):
     name   = models.CharField(max_length=150)
     artist = models.ForeignKey(Artist)
+    mb_id = models.CharField(max_length=150)
     
     def __str__(self):
         return '%s - %s' % (self.artist.name, self.name)
@@ -64,6 +53,21 @@ class Album(models.Model):
     
     class Admin:
         pass
+
+class MBAlbum(models.Model):
+    mb_id  = models.CharField(max_length=150, unique=True)
+    name   = models.CharField(max_length=150)
+    artist = models.ForeignKey(MBArtist)
+
+    def __str__(self):
+        return '%s - %s' % (self.artist.name, self.name)
+
+    #def __unicode__(self):                                                                                                     
+    #    return u'%s - %s' % (self.artist.name, self.name)                                                                      
+
+    class Admin:
+        pass
+
 
 #################################################################
 # Library Signal Handling
