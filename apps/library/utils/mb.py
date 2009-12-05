@@ -52,7 +52,7 @@ def get_release_group_id(album, mb_artist_id):
             includes = ws.ReleaseIncludes(releaseGroup=True)
             q = ws.Query()
             id = q.getReleaseById(releases[0].release.id, includes).releaseGroup.id
-            sleep(1)
+            time.sleep(1)
             album.mb_id = id;
             album.save()
             return id
