@@ -27,31 +27,18 @@ def album_diff(sender, log_level=logging.DEBUG, **kwargs):
             artist.save()
             mb_artist = q.getArtistById(mb_artist_id, include)
             time.sleep(1)
-            #mb_release_group_ids = set([release_group.id for release_group in mb_artist.getReleaseGroups()])
+
             local_release_group_ids = set([get_release_group_id(release_group, mb_artist_id) for release_group in artist.album_set.all()])
-            #missing_album_group_ids = mb_release_group_ids - local_release_group_ids
             mb_artist_entry, created_artist = MBArtist.objects.get_or_create(mb_id=mb_artist_id)
             if created_artist:
                 mb_artist_entry.name = artist.name
                 mb_artist_entry.save()
-            #lib_mb_artist = LibraryMBArtist.objects.get_or_create(library=library, artist=mb_artist_entry)[0]
-            #lib_mb_artist.play_count = artist.play_count
-            #lib_mb_artist.save()
 
             for release in mb_artist.getReleaseGroups():
                 mb_album, created_album = MBAlbum.objects.get_or_create(mb_id=release.id, artist=mb_artist_entry)
                 mb_album.name = release.title
                 mb_album.save()
                 
-                #lib_mb_album = LibraryMBAlbum.objects.get_or_create(library_artist=lib_mb_artist, album=mb_album)[0]
-
-                #if release.id in missing_album_group_ids:
-                #    logger.debug("   missing " + release.title)
-                #    lib_mb_album.has = False
-                #else:
-                #    logger.debug("   found " + release.title)
-                #    lib_mb_album.has = True
-                #lib_mb_album.save()
 
 def get_artist_id(artist_name):
     name_filter = ws.ArtistFilter(name=artist_name, limit=5)
