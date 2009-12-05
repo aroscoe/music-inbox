@@ -89,6 +89,8 @@ INSTALLED_APPS = (
 
 UPLOADS_DIR = 'uploads/'
 
+LOG_FILE = '/tmp/music-inbox-log'
+
 # Local Settings
 # Check for local_settings to override production enviroment
 try:
