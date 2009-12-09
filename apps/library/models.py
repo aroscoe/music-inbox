@@ -58,6 +58,7 @@ class Album(models.Model):
 class MBAlbum(models.Model):
     mb_id  = models.CharField(max_length=150, unique=True)
     name   = models.CharField(max_length=150)
+    release_date = models.DateField(null=True)
     artist = models.ForeignKey(MBArtist)
 
     def __str__(self):

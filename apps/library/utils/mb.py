@@ -2,6 +2,7 @@ import musicbrainz2.webservice as ws
 import musicbrainz2.model as m
 import logging
 import time
+from datetime import date
 
 from library.models import *
 
@@ -35,9 +36,11 @@ def album_diff(sender, log_level=logging.DEBUG, **kwargs):
                 mb_artist_entry.save()
 
             for release in mb_artist.getReleaseGroups():
-                mb_album, created_album = MBAlbum.objects.get_or_create(mb_id=release.id, artist=mb_artist_entry)
-                mb_album.name = release.title
-                mb_album.save()
+                mb_album, created_album = MBAlbum.objects.get_or_create(mb_id=release.id, artist = mb_artist_entry)
+                if created_album:
+                    mb_album.release_date = get_release_date(release.id)
+                    mb_album.name = release.title
+                    mb_album.save()
                 
 
 def get_artist_id(artist_name):
@@ -66,4 +69,27 @@ def get_releases(name, mb_artist_id):
                                     m.Release.TYPE_ALBUM))
     q = ws.Query()
     return q.getReleases(release_filter)
-    
+
+def get_release_date(release_group_id):
+    includes = ws.ReleaseGroupIncludes(releases=True)
+    q = ws.Query()
+    release_group = q.getReleaseGroupById(release_group_id, includes)
+    time.sleep(1)
+    if release_group:
+        release = release_group.releases[0] # TODO iterate over all
+        includes = ws.ReleaseIncludes(releaseEvents = True)
+        release = q.getReleaseById(release.id, includes)
+        time.sleep(1)
+        release_date = release.getEarliestReleaseDate()
+        if release_date:
+            month = 1
+            day = 1
+            parsed_release_date = release_date.split('-')
+            year = int(parsed_release_date[0])
+            if len(parsed_release_date) > 1:
+                month = int(parsed_release_date[1])
+            if len(parsed_release_date) > 2:
+                day = int(parsed_release_date[2])
+            return date(year, month, day)
+    return None
+
