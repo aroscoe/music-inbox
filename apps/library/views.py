@@ -6,7 +6,7 @@ from django.conf import settings
 from rest.django_restapi.resource import Resource
 from rest.django_restapi.model_resource import Collection
 from rest.django_restapi.responder import JSONResponder
-from message import JSONMessage
+from data_responder import JSONDataResponder
 
 from library.models import *
 from library.forms import *
@@ -25,10 +25,9 @@ class Library(Resource):
                 albums = artist.album_set.all()
                 data[artist.name] = list(albums.values_list('name', flat=True))
             
-            # Build JSON response
-            message = JSONMessage(data)
-            if artist.library.processing: message['status'] = 2
-            return message.get_response()
+            responder = JSONDataResponder(data)
+            if artist.library.processing: responder.processing = 2
+            return responder.response
         else:
             return Http404
     
