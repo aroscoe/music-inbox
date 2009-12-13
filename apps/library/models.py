@@ -23,19 +23,17 @@ class Library(models.Model):
                         for album_id in missing_album_ids:
                             missing_albums.append(MBAlbum.objects.get(mb_id=album_id))
                         response[MBArtist.objects.get(mb_id=artist.mb_artist_id)] = missing_albums
-#for mb_album in mb_artist.mbalbum_set.all():
-                            #if mb_album.mb_id in missing_album_ids:
-                                #response[artist.name].append(mb_album.name)
+
         return response
 
     def _newest_(album1, album2):
-        return cmp(album1.release_date, album2.release_date)
+        return -1 * cmp(album1.release_date, album2.release_date)
 
     def missing_albums(self, sort_function=_newest_):
         """return a list of missing MBAlbums in order of release date or sort_function if that is specified"""
-        missing_albums = self.missing_albums()
+        missing_albums_d = self.missing_albums_dict()
         missing_albums_list = []
-        for albums in missing_albums.values():
+        for albums in missing_albums_d.values():
             missing_albums_list.extend(albums)
         return sorted(missing_albums_list, sort_function)
             
@@ -97,8 +95,8 @@ class MBAlbum(models.Model):
     def __str__(self):
         return '%s - %s' % (self.artist.name, self.name)
 
-    #def __unicode__(self):                                                                                                     
-    #    return u'%s - %s' % (self.artist.name, self.name)                                                                      
+    def __unicode__(self):
+        return u'%s - %s' % (self.artist.name, self.name)
 
     class Admin:
         pass
