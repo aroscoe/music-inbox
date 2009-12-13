@@ -1,5 +1,10 @@
 from django.db import models
 
+import musicbrainz2.webservice as ws
+import musicbrainz2.model as m
+import time
+from datetime import date
+
 class Library(models.Model):
     name = models.CharField(max_length=60, blank=True)
     processing = models.BooleanField(default=1)
@@ -69,6 +74,44 @@ class MBArtist(models.Model):
     def __unicode__(self):
         return u'%s' % (self.name)
     
+    def fetch_albums(self):
+        include = ws.ArtistIncludes(
+                releases=(m.Release.TYPE_OFFICIAL, m.Release.TYPE_ALBUM), tags=True, releaseGroups=True)
+        q = ws.Query()
+        mb_artist = q.getArtistById(self.mb_id, include)
+        time.sleep(1)
+        for release in mb_artist.getReleaseGroups():
+            mb_album, created_album = MBAlbum.objects.get_or_create(mb_id=release.id, artist = self)
+            if created_album:
+                print release.title + " ..."
+                mb_album.release_date = self.get_release_date(release.id)
+                mb_album.name = release.title
+                mb_album.save()
+
+    def get_release_date(self, release_group_id):
+        includes = ws.ReleaseGroupIncludes(releases=True)
+        q = ws.Query()
+        release_group = q.getReleaseGroupById(release_group_id, includes)
+        time.sleep(1)
+        if release_group:
+            release = release_group.releases[0] # TODO iterate over all
+            includes = ws.ReleaseIncludes(releaseEvents = True)
+            release = q.getReleaseById(release.id, includes)
+            time.sleep(1)
+            release_date = release.getEarliestReleaseDate()
+            if release_date:
+                print "   " + release_date
+                month = 1
+                day = 1
+                parsed_release_date = release_date.split('-')
+                year = int(parsed_release_date[0])
+                if len(parsed_release_date) > 1:
+                    month = int(parsed_release_date[1])
+                if len(parsed_release_date) > 2:
+                    day = int(parsed_release_date[2])
+                return date(year, month, day)
+        return None
+
     class Admin:
         pass
 
