@@ -6,7 +6,7 @@ class Library(models.Model):
     
     def __str__(self):
         return self.name
-
+    
     def missing_albums_dict(self):
         """return a dictionary of MBArtist to a list of MBAlbum, only containing missing albums"""
         response = {}
@@ -23,12 +23,12 @@ class Library(models.Model):
                         for album_id in missing_album_ids:
                             missing_albums.append(MBAlbum.objects.get(mb_id=album_id))
                         response[MBArtist.objects.get(mb_id=artist.mb_artist_id)] = missing_albums
-
+        
         return response
-
+    
     def _newest_(album1, album2):
         return -1 * cmp(album1.release_date, album2.release_date)
-
+    
     def missing_albums(self, sort_function=_newest_):
         """return a list of missing MBAlbums in order of release date or sort_function if that is specified"""
         missing_albums_d = self.missing_albums_dict()
@@ -36,8 +36,7 @@ class Library(models.Model):
         for albums in missing_albums_d.values():
             missing_albums_list.extend(albums)
         return sorted(missing_albums_list, sort_function)
-            
-        
+    
     class Meta:
         verbose_name_plural = 'libraries'
     
@@ -49,16 +48,16 @@ class Artist(models.Model):
     library = models.ForeignKey(Library)
     mb_artist_id = models.CharField(max_length=150)
     play_count = models.IntegerField(default=0)
-
+    
     def __str__(self):
         return self.name
-
+    
     def __unicode__(self):
         return u'%s' % (self.name)
-
+    
     class Admin:
         pass
-
+    
 class MBArtist(models.Model):
     mb_id = models.CharField(max_length=150, unique=True)
     name = models.CharField(max_length=150)
@@ -91,16 +90,15 @@ class MBAlbum(models.Model):
     name   = models.CharField(max_length=150)
     release_date = models.DateField(null=True)
     artist = models.ForeignKey(MBArtist)
-
+    
     def __str__(self):
         return '%s - %s' % (self.artist.name, self.name)
-
+    
     def __unicode__(self):
         return u'%s - %s' % (self.artist.name, self.name)
-
+    
     class Admin:
         pass
-
 
 #################################################################
 # Library Signal Handling

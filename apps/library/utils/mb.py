@@ -28,20 +28,19 @@ def album_diff(sender, log_level=logging.DEBUG, **kwargs):
             artist.save()
             mb_artist = q.getArtistById(mb_artist_id, include)
             time.sleep(1)
-
+            
             local_release_group_ids = set([get_release_group_id(release_group, mb_artist_id) for release_group in artist.album_set.all()])
             mb_artist_entry, created_artist = MBArtist.objects.get_or_create(mb_id=mb_artist_id)
             if created_artist:
                 mb_artist_entry.name = artist.name
                 mb_artist_entry.save()
-
+            
             for release in mb_artist.getReleaseGroups():
                 mb_album, created_album = MBAlbum.objects.get_or_create(mb_id=release.id, artist = mb_artist_entry)
                 if created_album:
                     mb_album.release_date = get_release_date(release.id)
                     mb_album.name = release.title
                     mb_album.save()
-                
 
 def get_artist_id(artist_name):
     name_filter = ws.ArtistFilter(name=artist_name, limit=5)
