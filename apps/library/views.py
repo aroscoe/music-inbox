@@ -9,7 +9,6 @@ from rest.django_restapi.responder import JSONResponder
 from data_responder import JSONDataResponder
 
 from library.models import *
-from library import models
 from library.forms import *
 
 libraries_resource = Collection(
@@ -55,14 +54,16 @@ class Library(Resource):
         return file_path
 
 def missing(request, library_id):
+    try:
+        library = Library.objects.get(pk=library_id)
+    except:
+        return Http404
+    
     response = {}
-    library = models.Library.objects.get_or_create(id=library_id)[0]
     missing_albums = library.missing_albums_dict()
     for mb_artist, missing_mb_albums in missing_albums.iteritems():
-        response[mb_artist.name] = [album.name for album in missing_mb_albums] 
-    return HttpResponse(json.dumps(response), mimetype='application/json')
+        response[mb_artist.name] = [album.name for album in missing_mb_albums]
     
-    #else:
-    #    return Http404
-
-    
+    responder = JSONDataResponder(response)
+    if library.processing: responder.processing = 2
+    return responder.response
