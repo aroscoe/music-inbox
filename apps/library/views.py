@@ -30,7 +30,7 @@ class Library(Resource):
             if artist.library.processing: responder.processing = 2
             return responder.response
         else:
-            return Http404
+            return Http404 #TODO: why is the 500 template returned?
     
     # Example cURL POST
     # curl -H "Content-Type: multipart/form-data" -F "file=@test_library.xml" -F "name=Anthony" http://localhost:8000/library/
