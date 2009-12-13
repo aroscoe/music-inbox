@@ -6,6 +6,7 @@ from django.conf import settings
 from rest.django_restapi.resource import Resource
 from rest.django_restapi.model_resource import Collection
 from rest.django_restapi.responder import JSONResponder
+from data_responder import JSONDataResponder
 
 from library.models import *
 from library import models
@@ -18,13 +19,16 @@ libraries_resource = Collection(
 
 class Library(Resource):
     def read(self, request, library_id):
-        artists = Artist.objects.filter(library=library_id).select_related('album')
+        artists = Artist.objects.filter(library=library_id).select_related()
         if artists:
-            response = {}
+            data = {}
             for artist in artists:
                 albums = artist.album_set.all()
-                response[artist.name] = list(albums.values_list('name', flat=True))
-            return HttpResponse(json.dumps(response), mimetype='application/json')
+                data[artist.name] = list(albums.values_list('name', flat=True))
+            
+            responder = JSONDataResponder(data)
+            if artist.library.processing: responder.processing = 2
+            return responder.response
         else:
             return Http404
     
