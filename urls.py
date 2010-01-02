@@ -9,6 +9,7 @@ admin.autodiscover()
 urlpatterns = patterns('',
     (r'^library/', include('library.urls')),
     (r'^admin/', include(admin.site.urls)),
+    (r'^demo/', include('demo.urls')),
 )
 
 if settings.DEBUG:
