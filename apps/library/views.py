@@ -11,6 +11,8 @@ from data_responder import JSONDataResponder
 from library.models import *
 from library.forms import *
 
+import threading
+
 libraries_resource = Collection(
     queryset = Library.objects.all(),
     responder = JSONResponder()
@@ -39,7 +41,11 @@ class Library(Resource):
             if form.is_valid():
                 library_name = form.cleaned_data['name']
                 library_file = self._handle_uploaded_file(request.FILES['file'])
-                signals.upload_done.send(sender=self, file=library_file, name=library_name)
+
+                t = threading.Thread(target=signals.upload_done.send, kwargs={'sender': self, 'file': library_file, 'name': library_name})
+                t.setDaemon(True)
+                t.start()
+
                 return render_to_response('success.html')
         else:
             form = UploadFileForm()
