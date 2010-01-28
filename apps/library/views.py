@@ -18,7 +18,7 @@ libraries_resource = Collection(
     responder = JSONResponder()
 )
 
-class Library(Resource):
+class LibraryResource(Resource):
     def read(self, request, library_id):
         artists = Artist.objects.filter(library=library_id).select_related()
         if artists:
@@ -41,12 +41,16 @@ class Library(Resource):
             if form.is_valid():
                 library_name = form.cleaned_data['name']
                 library_file = self._handle_uploaded_file(request.FILES['file'])
-
-                t = threading.Thread(target=signals.upload_done.send, kwargs={'sender': self, 'file': library_file, 'name': library_name})
+                
+                # Create Library to send along with the signal and send pk back in the response
+                library = Library(name=library_name)
+                library.save()
+                
+                t = threading.Thread(target=signals.upload_done.send, kwargs={'sender': self, 'file': library_file, 'library': library})
                 t.setDaemon(True)
                 t.start()
-
-                return render_to_response('success.html')
+                
+                return render_to_response('success.html', {'library': library})
         else:
             form = UploadFileForm()
         return render_to_response('upload.html', {'form': form})
