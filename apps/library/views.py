@@ -50,7 +50,8 @@ class LibraryResource(Resource):
                 t.setDaemon(True)
                 t.start()
                 
-                return render_to_response('success.html', {'library': library})
+                responder = JSONDataResponder({'library_id': library.pk})
+                return responder.response
         else:
             form = UploadFileForm()
         return render_to_response('upload.html', {'form': form})
