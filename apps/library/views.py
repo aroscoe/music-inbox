@@ -32,7 +32,7 @@ class Library(Resource):
             if artist.library.processing: responder.processing = 2
             return responder.response
         else:
-            return Http404 #TODO: why is the 500 template returned?
+            raise Http404
     
     # Example cURL POST
     # curl -H "Content-Type: multipart/form-data" -F "file=@test_library.xml" -F "name=Anthony" http://localhost:8000/library/
@@ -63,8 +63,9 @@ class Library(Resource):
 def missing(request, library_id):
     try:
         library = ModelLibrary.objects.get(pk=library_id)
-    except ModelLlibrary.DoesNotExist:
-        return Http404
+    except ModelLibrary.DoesNotExist:
+        #return HttpResponseNotFound
+        raise Http404
     
     response = {}
     missing_albums = library.missing_albums_dict()
