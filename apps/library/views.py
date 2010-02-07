@@ -8,13 +8,14 @@ from rest.django_restapi.model_resource import Collection
 from rest.django_restapi.responder import JSONResponder
 from data_responder import JSONDataResponder
 
-from library.models import *
+from library.models import Artist
+from library.models import Library as ModelLibrary
 from library.forms import *
 
 import threading
 
 libraries_resource = Collection(
-    queryset = Library.objects.all(),
+    queryset = ModelLibrary.objects.all(),
     responder = JSONResponder()
 )
 
@@ -61,8 +62,8 @@ class Library(Resource):
 
 def missing(request, library_id):
     try:
-        library = Library.objects.get(pk=library_id)
-    except:
+        library = ModelLibrary.objects.get(pk=library_id)
+    except ModelLlibrary.DoesNotExist:
         return Http404
     
     response = {}

@@ -4,7 +4,11 @@ from django.contrib import admin
 
 import os.path
 
+import django_cron
+
 admin.autodiscover()
+
+django_cron.autodiscover()
 
 urlpatterns = patterns('',
     (r'^library/', include('library.urls')),
