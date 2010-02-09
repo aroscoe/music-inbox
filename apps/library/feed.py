@@ -49,7 +49,7 @@ class NewAlbums(Feed):
                 attributes = item.Item.ItemAttributes
                 if attributes.Creator == artist and attributes.Title == album
                 and attributes.ProductGroup == 'Digital Music Album':
-                return item.Item.DeatailPageURL
+                return item.Item.DetailPageURL
         except:
             return None
         
