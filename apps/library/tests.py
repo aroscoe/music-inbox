@@ -14,6 +14,6 @@ class Tests(TestCase):
         from library.models import *
         Library.objects.create(pk=1, name='foo')
     
-        self.failUnlessEqual('{"processing": 2}', missing(None, 1).content)
+        self.failUnlessEqual('{"processing": 2, "data": {}}', missing(None, 1).content)
 
                                
