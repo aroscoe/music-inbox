@@ -9,7 +9,7 @@ from amazonproduct import API
 
 class NewAlbums(Feed):
 
-    api = API(AMAZON_KEY, AMAZON_SECRET)
+    api = API(AMAZON_KEY, AMAZON_SECRET, 'us')
 
     def get_object(self, bits):
         if len(bits) != 1:
