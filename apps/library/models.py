@@ -83,10 +83,10 @@ class MBArtist(models.Model):
             mb_album, created_album = MBAlbum.objects.get_or_create(mb_id=release.id, artist = self)
             if created_album:
                 print release.title + " ..."
-                mb_album.release_date = self.get_release_date(release.id)
+                date, asin = self.get_release_date(release.id)
+                mb_album.release_date = date
                 mb_album.name = release.title
-                mb_album.amazon_url = search_on_amazon(release.title, self.name)
-                print type (mb_album.amazon_url)
+                mb_album.amazon_url = search_on_amazon(asin, release.title, self.name)
                 mb_album.save()
 
     def get_release_date(self, release_group_id):
@@ -110,8 +110,8 @@ class MBArtist(models.Model):
                     month = int(parsed_release_date[1])
                 if len(parsed_release_date) > 2:
                     day = int(parsed_release_date[2])
-                return date(year, month, day)
-        return None
+                return date(year, month, day), release.asin
+        return None, release.asin
 
     class Admin:
         pass
@@ -147,7 +147,7 @@ class MBAlbum(models.Model):
     class Admin:
         pass
 
-def search_on_amazon(album, artist):
+def search_on_amazon(asin, album, artist):
     '''
     Tries to locate the url of album by artis on amazon
     
@@ -158,6 +158,14 @@ def search_on_amazon(album, artist):
     
     api = API(AMAZON_KEY, AMAZON_SECRET, 'us')
     try:
+        if asin:
+            node = api.item_lookup(asin)
+            for item in node.Items:
+                attributes = item.Item.ItemAttributes
+                if attributes.ProductGroup == 'Music':
+                    url = item.Item.DetailPageURL
+                    if url:
+                        return url.text
         node = api.item_search('MP3Downloads', Keywords=album + ' ' + artist)
         for item in node.Items:
             attributes = item.Item.ItemAttributes
