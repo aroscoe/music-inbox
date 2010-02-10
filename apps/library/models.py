@@ -85,6 +85,8 @@ class MBArtist(models.Model):
                 print release.title + " ..."
                 mb_album.release_date = self.get_release_date(release.id)
                 mb_album.name = release.title
+                mb_album.amazon_url = search_on_amazon(release.title, self.name)
+                print type (mb_album.amazon_url)
                 mb_album.save()
 
     def get_release_date(self, release_group_id):
@@ -133,6 +135,8 @@ class MBAlbum(models.Model):
     name   = models.CharField(max_length=150)
     release_date = models.DateField(null=True)
     artist = models.ForeignKey(MBArtist)
+    amazon_url = models.URLField(verify_exists=False, max_length=500, blank=True)
+    
     
     def __str__(self):
         return '%s - %s' % (self.artist.name, self.name)
@@ -142,6 +146,29 @@ class MBAlbum(models.Model):
     
     class Admin:
         pass
+
+def search_on_amazon(album, artist):
+    '''
+    Tries to locate the url of album by artis on amazon
+    
+    Returns '' if it can't be found
+    '''
+    from settings import AMAZON_KEY, AMAZON_SECRET
+    from amazonproduct import API
+    
+    api = API(AMAZON_KEY, AMAZON_SECRET, 'us')
+    try:
+        node = api.item_search('MP3Downloads', Keywords=album + ' ' + artist)
+        for item in node.Items:
+            attributes = item.Item.ItemAttributes
+            if attributes.Creator == artist and attributes.Title == album and attributes.ProductGroup == 'Digital Music Album':
+                url = item.Item.DetailPageURL
+                if url:
+                    return url.text
+    except :
+        pass
+    return ''
+
 
 #################################################################
 # Library Signal Handling
