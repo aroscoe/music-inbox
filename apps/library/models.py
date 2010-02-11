@@ -155,6 +155,9 @@ def search_on_amazon(asin, album, artist):
     '''
     from settings import AMAZON_KEY, AMAZON_SECRET
     from amazonproduct import API
+
+    if not AMAZON_KEY or not AMAZON_SECRET:
+        return ''
     
     api = API(AMAZON_KEY, AMAZON_SECRET, 'us')
     try:
