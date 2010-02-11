@@ -54,7 +54,7 @@ class LibraryResource(Resource):
                 return responder.response
         else:
             form = UploadFileForm()
-        return render_to_response('upload.html', {'form': form})
+        return render_to_response('upload.html', {'form': form}) #TODO: remove when the demo is up, output error
     
     def _handle_uploaded_file(self, file):
         file_path = settings.UPLOADS_DIR + file.name
