@@ -85,7 +85,7 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     
     'django_cron',
-    # 'library',
+    'library',
     'api',
 )
 
