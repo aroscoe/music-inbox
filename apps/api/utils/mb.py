@@ -4,7 +4,7 @@ import logging
 import time
 from datetime import date
 
-from library.models import *
+from api.models import *
 
 logging.basicConfig()
 logger = logging.getLogger("album_diff")

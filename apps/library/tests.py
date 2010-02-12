@@ -1,19 +1,23 @@
+"""
+This file demonstrates two different styles of tests (one doctest and one
+unittest). These will both pass when you run "manage.py test".
+
+Replace these with more appropriate tests for your application.
+"""
+
 from django.test import TestCase
 
-class Tests(TestCase):
-    def test_views_missing(self):
+class SimpleTest(TestCase):
+    def test_basic_addition(self):
+        """
+        Tests that 1 + 1 always equals 2.
+        """
+        self.failUnlessEqual(1 + 1, 2)
 
-        from library.views import *
-        from django.http import Http404
-        try:
-            missing(None, 1).status_code
-            raise Exception('should have thrown Http404')
-        except Http404:
-            print 'expected result'
-        
-        from library.models import *
-        Library.objects.create(pk=1, name='foo')
-    
-        self.failUnlessEqual('{"processing": 2, "data": {}}', missing(None, 1).content)
+__test__ = {"doctest": """
+Another way to test that 1 + 1 is equal to 2.
+1 + 1 == 2
+True
+"""}
+>>>>>>> demo
 
-                               

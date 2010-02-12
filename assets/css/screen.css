@@ -1,0 +1,91 @@
+/* SCREEN **************************************************/ 
+
+html, body {
+    font-family: Helvetica, "Helvetica Neue", Arial, sans-serif;
+}
+
+/* Splash
+-----------------------------------------------------------*/
+#splash {
+    margin-top: 60px;
+    width: 100%;
+    height: 220px;
+    background: url("../img/splash_bg.gif") repeat-x top center;
+}
+#splash .container {
+    margin: 0 auto;
+    padding-top: 36px;
+    width: 650px;
+}
+#splash .col {
+    float: left;
+}
+#splash h1 {
+    width: 326px;
+    height: 29px;
+    text-indent: -10000px;
+    background: url("../img/logo.png") no-repeat;
+}
+#splash p#tagline {
+    margin-top: 20px;
+    color: #fff;
+    line-height: 20px;
+    text-shadow: #3772a5 1px 1px;
+}
+
+/* Form */
+#splash #frm_upload {
+    float: right;
+    width: 252px;
+}
+#splash #frm_upload .input_wrapper {
+    margin-bottom: 14px;
+}
+#splash #frm_upload label {
+    display: block;
+    margin-bottom: 1px;
+    color: #fff;
+    font-size: 14px;
+    text-shadow: #3772a5 1px 1px;
+}
+#splash #frm_upload .txtbox {
+    padding: 4px 2px 5px 2px;
+    width: 246px;
+    font-size: 14px;
+    border: 1px solid #275074;
+}
+#splash #frm_upload #file_path {
+    float: left;
+    margin-right: 3px;
+    width: 172px !important;
+}
+#splash #frm_upload div.file_wrapper {
+    display: block;
+    overflow: hidden;
+    width: 71px;
+    height: 28px;
+    background: url("../img/splash_btn_browse.png") 0 0 no-repeat;
+    cursor: pointer !important;
+}
+#splash #frm_upload div.file_wrapper:hover {
+    background-position: 0 -28px;
+}
+#splash #frm_upload div.file_wrapper input.btn_browse {
+    position: relative;
+    height: 100%;
+    width: auto;
+    opacity: 0;
+    -moz-opacity: 0;
+    filter:progid:DXImageTransform.Microsoft.Alpha(opacity=0);
+}
+#splash #frm_upload .btn_submit {
+    width: 123px;
+    height: 28px;
+    font-size: 0;
+    text-indent: -100000px;
+    background: url("../img/splash_btn.png") no-repeat;
+    border: 0;
+}
+#splash #frm_upload .btn_submit:hover {
+    background-position: 0 -28px;
+}
