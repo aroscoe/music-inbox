@@ -27,7 +27,14 @@ class NewAlbums(Feed):
         return obj.missing_albums()[:10]
 
     def item_link(self, obj):
-        return "%s.html" % obj.mb_id
+        print obj.amazon_url
+        if obj.amazon_url: 
+            return obj.amazon_url
+        else:
+            return "%s.html" % obj.mb_id
 
     def item_pubdate(self, obj):
         return datetime(obj.release_date.year, obj.release_date.month, obj.release_date.day)
+
+
+    

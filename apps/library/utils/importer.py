@@ -12,6 +12,7 @@ class LibraryImporter:
         itunes = plistlib.readPlist(kwargs['file'])
         tracks = itunes["Tracks"]
         library = kwargs['library']
+        library.save()
         for track in tracks.values():
             if track.get("Artist") and track.get("Album"):
                 artist, created = library.artist_set.get_or_create(name=track["Artist"])

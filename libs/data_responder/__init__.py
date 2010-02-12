@@ -22,14 +22,15 @@ class JSONDataResponder(object):
             2: Information is currently processing.
         """
         self.data_dict = {
-            'processing': ''
+            'processing': '',
+            'data': {}
         }
         if data_dict: self.add_data(data_dict)
         
         self._set_processing(processing)
     
     def add_data(self, data_dict):
-        self.data_dict['data'] = data_dict
+        self.data_dict['data'].update(data_dict)
     
     def _get_response(self):
         response = HttpResponse(mimetype=self.mimetype)

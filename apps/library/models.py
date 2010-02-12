@@ -15,10 +15,14 @@ class Library(models.Model):
     def missing_albums_dict(self):
         """return a dictionary of MBArtist to a list of MBAlbum, only containing missing albums"""
         response = {}
+        print "1"
         artists = self.artist_set.all()
         if artists:
+            print "2"
             for artist in artists:
+                print "3"
                 if artist.mb_artist_id:
+                    print "4"
                     mb_artist = MBArtist.objects.get(mb_id=artist.mb_artist_id)
                     mb_album_ids = set([album.mb_id for album in mb_artist.mbalbum_set.all()])
                     has_album_ids = set([album.mb_id for album in artist.album_set.all()])
@@ -83,8 +87,12 @@ class MBArtist(models.Model):
             mb_album, created_album = MBAlbum.objects.get_or_create(mb_id=release.id, artist = self)
             if created_album:
                 print release.title + " ..."
-                mb_album.release_date = self.get_release_date(release.id)
+                date, asin = self.get_release_date(release.id)
+                mb_album.release_date = date
                 mb_album.name = release.title
+                if asin:
+                    mb_album.asin = asin
+                mb_album.amazon_url = search_on_amazon(asin, release.title, self.name)
                 mb_album.save()
 
     def get_release_date(self, release_group_id):
@@ -108,8 +116,8 @@ class MBArtist(models.Model):
                     month = int(parsed_release_date[1])
                 if len(parsed_release_date) > 2:
                     day = int(parsed_release_date[2])
-                return date(year, month, day)
-        return None
+                return date(year, month, day), release.asin
+        return None, release.asin
 
     class Admin:
         pass
@@ -133,6 +141,8 @@ class MBAlbum(models.Model):
     name   = models.CharField(max_length=150)
     release_date = models.DateField(null=True)
     artist = models.ForeignKey(MBArtist)
+    asin = models.CharField(max_length=40, blank=True)
+    amazon_url = models.URLField(verify_exists=False, max_length=500, blank=True)
     
     def __str__(self):
         return '%s - %s' % (self.artist.name, self.name)
@@ -142,6 +152,39 @@ class MBAlbum(models.Model):
     
     class Admin:
         pass
+
+def search_on_amazon(asin, album, artist):
+    '''
+    Tries to locate the url of album by artis on amazon
+    
+    Returns '' if it can't be found
+    '''
+    from settings import AMAZON_KEY, AMAZON_SECRET
+    from amazonproduct import API
+
+    if not AMAZON_KEY or not AMAZON_SECRET:
+        return ''
+    
+    api = API(AMAZON_KEY, AMAZON_SECRET, 'us')
+    try:
+        if asin:
+            node = api.item_lookup(asin)
+            for item in node.Items:
+                attributes = item.Item.ItemAttributes
+                if attributes.ProductGroup == 'Music':
+                    url = item.Item.DetailPageURL
+                    if url:
+                        return url.text
+        node = api.item_search('MP3Downloads', Keywords=album + ' ' + artist)
+        for item in node.Items:
+            attributes = item.Item.ItemAttributes
+            if attributes.Creator == artist and attributes.Title == album and attributes.ProductGroup == 'Digital Music Album':
+                url = item.Item.DetailPageURL
+                if url:
+                    return url.text
+    except :
+        pass
+    return ''
 
 #################################################################
 # Library Signal Handling

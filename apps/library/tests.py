@@ -2,7 +2,6 @@ from django.test import TestCase
 
 class Tests(TestCase):
     def test_views_missing(self):
-
         from library.views import *
         from django.http import Http404
         try:
@@ -13,7 +12,6 @@ class Tests(TestCase):
         
         from library.models import *
         Library.objects.create(pk=1, name='foo')
-    
-        self.failUnlessEqual('{"processing": 2}', missing(None, 1).content)
+        
+        self.failUnlessEqual('{"processing": 2, "data": {}}', missing(None, 1).content)
 
-                               
