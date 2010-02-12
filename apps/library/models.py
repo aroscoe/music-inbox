@@ -86,6 +86,8 @@ class MBArtist(models.Model):
                 date, asin = self.get_release_date(release.id)
                 mb_album.release_date = date
                 mb_album.name = release.title
+                if asin:
+                    mb_album.asin = asin
                 mb_album.amazon_url = search_on_amazon(asin, release.title, self.name)
                 mb_album.save()
 
@@ -135,6 +137,7 @@ class MBAlbum(models.Model):
     name   = models.CharField(max_length=150)
     release_date = models.DateField(null=True)
     artist = models.ForeignKey(MBArtist)
+    asin = models.CharField(max_length=40, blank=True)
     amazon_url = models.URLField(verify_exists=False, max_length=500, blank=True)
     
     
