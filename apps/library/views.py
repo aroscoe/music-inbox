@@ -8,13 +8,14 @@ from rest.django_restapi.model_resource import Collection
 from rest.django_restapi.responder import JSONResponder
 from data_responder import JSONDataResponder
 
-from library.models import *
+from library.models import Artist
+from library.models import Library as ModelLibrary
 from library.forms import *
 
 import threading
 
 libraries_resource = Collection(
-    queryset = Library.objects.all(),
+    queryset = ModelLibrary.objects.all(),
     responder = JSONResponder()
 )
 
@@ -31,7 +32,7 @@ class LibraryResource(Resource):
             if artist.library.processing: responder.processing = 2
             return responder.response
         else:
-            return Http404 #TODO: why is the 500 template returned?
+            raise Http404
     
     # Example cURL POST
     # curl -H "Content-Type: multipart/form-data" -F "file=@test_library.xml" -F "name=Anthony" http://localhost:8000/library/
@@ -66,9 +67,10 @@ class LibraryResource(Resource):
 
 def missing(request, library_id):
     try:
-        library = Library.objects.get(pk=library_id)
-    except:
-        return Http404
+        library = ModelLibrary.objects.get(pk=library_id)
+    except ModelLibrary.DoesNotExist:
+        #return HttpResponseNotFound
+        raise Http404
     
     response = {}
     missing_albums = library.missing_albums_dict()

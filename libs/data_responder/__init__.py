@@ -22,18 +22,16 @@ class JSONDataResponder(object):
             2: Information is currently processing.
         """
         self.data_dict = {
-            'processing': '',
-            'data': {}
+            'processing': ''
         }
         if data_dict: self.add_data(data_dict)
         
         self._set_processing(processing)
     
     def add_data(self, data_dict):
-        self.data_dict['data'].update(data_dict)
+        self.data_dict['data'] = data_dict
     
     def _get_response(self):
-        if not self.data_dict['data']: raise ValueError("No data has been added.")
         response = HttpResponse(mimetype=self.mimetype)
         simplejson.dump(self.data_dict, response)
         return response
