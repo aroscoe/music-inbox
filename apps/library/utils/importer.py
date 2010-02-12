@@ -4,14 +4,15 @@ import logging
 
 from django.conf import settings
 
-from api.models import *
-from api import signals
+from library.models import *
+from library import signals
 
 class LibraryImporter:
     def itunes(self, sender, **kwargs):
         itunes = plistlib.readPlist(kwargs['file'])
         tracks = itunes["Tracks"]
-        library = kwargs['library']
+        library = Library(name=kwargs['name'])
+        library.save()
         for track in tracks.values():
             if track.get("Artist") and track.get("Album"):
                 artist, created = library.artist_set.get_or_create(name=track["Artist"])

@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from api.models import *
+from library.models import *
 
 class AlbumAdmin(admin.ModelAdmin):
     list_display = ('artist', 'name')
