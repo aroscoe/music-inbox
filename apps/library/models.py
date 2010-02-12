@@ -156,23 +156,23 @@ def search_on_amazon(asin, album, artist):
     
     Returns '' if it can't be found
     '''
-    from settings import AMAZON_KEY, AMAZON_SECRET
+    from settings import AMAZON_KEY, AMAZON_SECRET, AMAZON_ASSOCIATE_TAG
     from amazonproduct import API
 
-    if not AMAZON_KEY or not AMAZON_SECRET:
+    if not AMAZON_KEY or not AMAZON_SECRET or not AMAZON_ASSOCIATE_TAG:
         return ''
     
     api = API(AMAZON_KEY, AMAZON_SECRET, 'us')
     try:
         if asin:
-            node = api.item_lookup(asin)
+            node = api.item_lookup(asin, AssociateTag=AMAZON_ASSOCIATE_TAG)
             for item in node.Items:
                 attributes = item.Item.ItemAttributes
                 if attributes.ProductGroup == 'Music':
                     url = item.Item.DetailPageURL
                     if url:
                         return url.text
-        node = api.item_search('MP3Downloads', Keywords=album + ' ' + artist)
+        node = api.item_search('MP3Downloads', Keywords=album + ' ' + artist, AssociateTag=AMAZON_ASSOCIATE_TAG)
         for item in node.Items:
             attributes = item.Item.ItemAttributes
             if attributes.Creator == artist and attributes.Title == album and attributes.ProductGroup == 'Digital Music Album':
