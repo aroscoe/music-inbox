@@ -4,8 +4,8 @@ import logging
 
 from django.conf import settings
 
-from library.models import *
-from library import signals
+from api.models import *
+from api import signals
 
 class LibraryImporter:
     def itunes(self, sender, **kwargs):

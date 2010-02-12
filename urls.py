@@ -11,7 +11,7 @@ admin.autodiscover()
 django_cron.autodiscover()
 
 urlpatterns = patterns('',
-    (r'^library/', include('library.urls')),
+    (r'^api/', include('api.urls')),
     (r'^admin/', include(admin.site.urls)),
     (r'^demo/', include('demo.urls')),
 )

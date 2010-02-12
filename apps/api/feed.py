@@ -1,7 +1,7 @@
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.syndication.feeds import FeedDoesNotExist
 from django.contrib.syndication.feeds import Feed
-from library.models import *
+from api.models import *
 from datetime import datetime
 
 class NewAlbums(Feed):
