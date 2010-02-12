@@ -1,5 +1,5 @@
 from django_cron import cronScheduler, Job
-from api.models import MBArtist
+from library.models import MBArtist
 
 class CheckArtists(Job):
     """cron job that looks for new albums once a day, for ever artist in every library"""

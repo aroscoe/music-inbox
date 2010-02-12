@@ -85,8 +85,7 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     
     'django_cron',
-    # 'library',
-    'api',
+    'library',
 )
 
 UPLOADS_DIR = 'uploads/'

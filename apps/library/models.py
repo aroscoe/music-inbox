@@ -1,4 +1,5 @@
 from django.db import models
+
 import musicbrainz2.webservice as ws
 import musicbrainz2.model as m
 import time
@@ -145,9 +146,9 @@ class MBAlbum(models.Model):
 #################################################################
 # Library Signal Handling
 
-from api import signals
-from api.utils.importer import LibraryImporter
-from api.utils.mb import album_diff
+from library import signals
+from library.utils.importer import LibraryImporter
+from library.utils.mb import album_diff
 
 library_importer = LibraryImporter()
 signals.upload_done.connect(library_importer.itunes)

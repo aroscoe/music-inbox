@@ -8,15 +8,14 @@ from rest.django_restapi.model_resource import Collection
 from rest.django_restapi.responder import JSONResponder
 from data_responder import JSONDataResponder
 
-from api.models import Artist
-from api.models import Library as LibraryModel
-from api.forms import *
-from api import signals
+from library.models import Artist
+from library.models import Library as ModelLibrary
+from library.forms import *
 
 import threading
 
 libraries_resource = Collection(
-    queryset = LibraryModel.objects.all(),
+    queryset = ModelLibrary.objects.all(),
     responder = JSONResponder()
 )
 
@@ -45,7 +44,7 @@ class LibraryResource(Resource):
                 library_file = self._handle_uploaded_file(request.FILES['file'])
                 
                 # Create Library to send along with the signal and send pk back in the response
-                library = LibraryModel(name=library_name)
+                library = Library(name=library_name)
                 library.save()
                 
                 t = threading.Thread(target=signals.upload_done.send, kwargs={'sender': self, 'file': library_file, 'library': library})
@@ -68,8 +67,8 @@ class LibraryResource(Resource):
 
 def missing(request, library_id):
     try:
-        library = LibraryModel.objects.get(pk=library_id)
-    except LibraryModel.DoesNotExist:
+        library = ModelLibrary.objects.get(pk=library_id)
+    except ModelLibrary.DoesNotExist:
         #return HttpResponseNotFound
         raise Http404
     

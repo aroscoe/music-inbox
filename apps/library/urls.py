@@ -1,7 +1,7 @@
 from django.conf.urls.defaults import *
 
-from api.views import LibraryResource, libraries_resource, missing
-from api.feed import NewAlbums
+from library.views import LibraryResource, libraries_resource, missing
+from library.feed import NewAlbums
 
 library = LibraryResource(permitted_methods=('GET','POST'))
 
