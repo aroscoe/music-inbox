@@ -1,0 +1,9 @@
+v1:
+
+* Add long random id to feed urls to make them private
+* Add link to google reader in upload result page:
+  http://fusion.google.com/add?feedurl=http%3A//musicinbox/rss
+
+v2:
+
+* Add email support as alternative to rss
