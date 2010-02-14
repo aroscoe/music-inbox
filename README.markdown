@@ -9,8 +9,7 @@ Installation
 Dependencies
 ------------
  * [Django][1]
- * [Django-registration][2]
- * [lxml][3]
+ * [lxml][2]
 
 Setup
 -----
@@ -30,13 +29,12 @@ REST API
 
 Authors
 =======
-* [Tim Julien][4]
-* [Anthony Roscoe][5]
-* [Felix Berger][6]
+* [Tim Julien][3]
+* [Anthony Roscoe][4]
+* [Felix Berger][5]
 
 [1]: http://www.djangoproject.com
-[2]: http://code.google.com/p/django-registration
-[3]: http://codespeak.net/lxml
-[4]: http://github.com/tjulien
-[5]: http://github.com/aroscoe
-[6]: http://github.com/fberger
+[2]: http://codespeak.net/lxml
+[3]: http://github.com/tjulien
+[4]: http://github.com/aroscoe
+[5]: http://github.com/fberger
