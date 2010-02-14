@@ -1,6 +1,6 @@
 /* SYSTEM **************************************************/
 $(document).ready(function(){
-    var file = $("#file");
+    var file = $("#id_file");
     var file_path = $("#file_path");
     file.change(function(){
         file_path.val($(this).val());
