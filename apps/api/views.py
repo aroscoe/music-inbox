@@ -11,7 +11,7 @@ from data_responder import JSONDataResponder
 from library.models import Artist
 from library.models import Library as ModelLibrary
 from library import signals
-from api.forms import *
+from library.forms import *
 
 import threading
 
