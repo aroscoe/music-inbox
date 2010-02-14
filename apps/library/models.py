@@ -15,14 +15,10 @@ class Library(models.Model):
     def missing_albums_dict(self):
         """return a dictionary of MBArtist to a list of MBAlbum, only containing missing albums"""
         response = {}
-        print "1"
         artists = self.artist_set.all()
         if artists:
-            print "2"
             for artist in artists:
-                print "3"
                 if artist.mb_artist_id:
-                    print "4"
                     mb_artist = MBArtist.objects.get(mb_id=artist.mb_artist_id)
                     mb_album_ids = set([album.mb_id for album in mb_artist.mbalbum_set.all()])
                     has_album_ids = set([album.mb_id for album in artist.album_set.all()])
