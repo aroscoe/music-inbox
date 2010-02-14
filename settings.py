@@ -89,6 +89,7 @@ INSTALLED_APPS = (
     
     'django_cron',
     'library',
+    'api',
 )
 
 UPLOADS_DIR = 'uploads/'
