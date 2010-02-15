@@ -2,6 +2,7 @@
 
 import os.path
 from django.conf.global_settings import TEMPLATE_CONTEXT_PROCESSORS
+import logging
 
 PROJECT_ROOT = os.path.realpath(os.path.dirname(__file__))
 
@@ -95,6 +96,8 @@ INSTALLED_APPS = (
 UPLOADS_DIR = 'uploads/'
 
 LOG_FILE = '/tmp/music-inbox-log'
+# override in local_settings.py
+LOG_LEVEL = logging.CRITICAL
 
 # Local Settings
 # Check for local_settings to override production enviroment

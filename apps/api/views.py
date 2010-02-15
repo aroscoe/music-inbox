@@ -73,7 +73,6 @@ def missing(request, library_id):
     response = {}
     missing_albums = library.missing_albums_dict()
     for mb_artist, missing_mb_albums in missing_albums.iteritems():
-        print "boo"
         response[mb_artist.name] = [album.name for album in missing_mb_albums]
     
     responder = JSONDataResponder(response)

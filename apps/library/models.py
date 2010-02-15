@@ -3,6 +3,19 @@ import musicbrainz2.webservice as ws
 import musicbrainz2.model as m
 import time
 from datetime import date
+import logging
+
+logging.basicConfig()
+logger = logging.getLogger("models")
+from settings import LOG_LEVEL
+logger.setLevel(LOG_LEVEL)
+
+try:
+    from settings import AMAZON_KEY, AMAZON_SECRET, AMAZON_ASSOCIATE_TAG
+    amazon_enabled = True
+except ImportError:
+    logger.debug("amazon search disabled")
+    amazon_enabled = False
 
 # Create your models here.
 
@@ -89,7 +102,8 @@ class MBArtist(models.Model):
                 mb_album.name = release.title
                 if asin:
                     mb_album.asin = asin
-                mb_album.amazon_url = search_on_amazon(asin, release.title, self.name)
+                if amazon_enabled:
+                    mb_album.amazon_url = search_on_amazon(asin, release.title, self.name)
                 mb_album.save()
 
     def get_release_date(self, release_group_id):
@@ -156,7 +170,6 @@ def search_on_amazon(asin, album, artist):
     
     Returns '' if it can't be found
     '''
-    from settings import AMAZON_KEY, AMAZON_SECRET, AMAZON_ASSOCIATE_TAG
     from amazonproduct import API
 
     if not AMAZON_KEY or not AMAZON_SECRET or not AMAZON_ASSOCIATE_TAG:
