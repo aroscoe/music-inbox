@@ -1,9 +1,6 @@
 from django.conf.urls.defaults import *
-from library.views import LibraryView
 
-lv = LibraryView()
-
-urlpatterns = patterns('',
-    url(r'^$', lv.upload, name="library_home"),
+urlpatterns = patterns('library.views',
+    url(r'^$', 'upload', name="library_home"),
 )
 

@@ -6,15 +6,6 @@ from library import signals
 import threading
 
 class LibraryView:
-    def upload(self, request): #TODO: abstract the upload code into its own lib so that the api and internal library app can use it (the remove unnecessary Class)
-        if request.method == 'POST':
-            library = self.post_library(request)
-            if library:
-                return direct_to_template(request, 'library/success.html', locals())
-        else:
-            form = UploadFileForm()
-        return direct_to_template(request, 'library/upload.html', locals())
-    
     def post_library(self, request):
         print "posted"
         form = UploadFileForm(request.POST, request.FILES)
@@ -32,7 +23,6 @@ class LibraryView:
             t.start()
             return library
         return None
-
     
     def _handle_uploaded_file(self, file):
         file_path = settings.UPLOADS_DIR + file.name
@@ -41,3 +31,12 @@ class LibraryView:
             destination.write(chunk)
         destination.close()
         return file_path
+
+def upload(request):
+    if request.method == 'POST':
+        library = LibraryView().post_library(request)
+        if library:
+            return direct_to_template(request, 'library/success.html', locals())
+    else:
+        form = UploadFileForm()
+    return direct_to_template(request, 'library/upload.html', locals())
