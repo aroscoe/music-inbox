@@ -1,6 +1,8 @@
+from django.http import Http404
 from django.conf import settings
 from django.views.generic.simple import direct_to_template
 from library.models import Library as LibraryModel
+from library.models import Artist
 from library.forms import *
 from library import signals
 import threading
@@ -40,3 +42,13 @@ def upload(request):
     else:
         form = UploadFileForm()
     return direct_to_template(request, 'library/upload.html', locals())
+
+def library(request, library_id): #TODO: remove duplication with read in apis
+    artists = Artist.objects.filter(library=library_id).select_related()
+    if artists:
+        library = {}
+        for artist in artists:
+            library[artist.name] = artist.album_set.values_list('name', flat=True)
+        return direct_to_template(request, 'library/library.html', locals())
+    else:
+        raise Http404
