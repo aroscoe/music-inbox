@@ -3,7 +3,10 @@ v1:
 * Add long random id to feed urls to make them private
 * Add link to google reader in upload result page:
   http://fusion.google.com/add?feedurl=http%3A//musicinbox/rss
+* Add a first entry to the rss feed while others are computed explaining how
+  the feed works, so there is immediate feedback after adding it.
 
 v2:
 
 * Add email support as alternative to rss
+* Have own 302 amazon link forwards to track clicked on albums
