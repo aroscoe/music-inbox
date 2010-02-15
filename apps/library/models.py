@@ -96,7 +96,7 @@ class MBArtist(models.Model):
         for release in mb_artist.getReleaseGroups():
             mb_album, created_album = MBAlbum.objects.get_or_create(mb_id=release.id, artist = self)
             if created_album:
-                print release.title + " ..."
+                logger.debug(release.title + " ...")
                 date, asin = self.get_release_date(release.id)
                 mb_album.release_date = date
                 mb_album.name = release.title
@@ -111,14 +111,14 @@ class MBArtist(models.Model):
         q = ws.Query()
         release_group = q.getReleaseGroupById(release_group_id, includes)
         time.sleep(1)
-        if release_group:
+        if release_group and release_group.releases:
             release = release_group.releases[0] # TODO iterate over all
             includes = ws.ReleaseIncludes(releaseEvents = True)
             release = q.getReleaseById(release.id, includes)
             time.sleep(1)
             release_date = release.getEarliestReleaseDate()
             if release_date:
-                print "   " + release_date
+                logger.debug("   " + release_date)
                 month = 1
                 day = 1
                 parsed_release_date = release_date.split('-')
@@ -128,7 +128,7 @@ class MBArtist(models.Model):
                 if len(parsed_release_date) > 2:
                     day = int(parsed_release_date[2])
                 return date(year, month, day), release.asin
-        return None, release.asin
+        return None, None
 
     class Admin:
         pass
