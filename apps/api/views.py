@@ -12,6 +12,7 @@ from library.models import Artist
 from library.models import Library as ModelLibrary
 from library import signals
 from library.forms import *
+from library.views import LibraryView
 
 import threading
 
@@ -39,30 +40,11 @@ class LibraryResource(Resource):
     # curl -H "Content-Type: multipart/form-data" -F "file=@test_library.xml" -F "name=Anthony" http://localhost:8000/library/
     def create(self, request, *args):
         if request.method == 'POST':
-            form = UploadFileForm(request.POST, request.FILES)
-            if form.is_valid():
-                library_name = form.cleaned_data['name']
-                library_file = self._handle_uploaded_file(request.FILES['file'])
-                
-                # Create Library to send along with the signal and send pk back in the response
-                library = ModelLibrary(name=library_name)
-                library.save()
-                
-                t = threading.Thread(target=signals.upload_done.send, kwargs={'sender': self, 'file': library_file, 'library': library})
-                t.setDaemon(True)
-                t.start()
-                
+            library = LibraryView().post_library(request)
+            if library:
                 responder = JSONDataResponder({'library_id': library.pk})
                 return responder.response
     
-    def _handle_uploaded_file(self, file):
-        file_path = settings.UPLOADS_DIR + file.name
-        destination = open(file_path, 'wb+')
-        for chunk in file.chunks():
-            destination.write(chunk)
-        destination.close()
-        return file_path
-
 def missing(request, library_id):
     try:
         library = ModelLibrary.objects.get(pk=library_id)
