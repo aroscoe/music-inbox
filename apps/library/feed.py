@@ -4,7 +4,20 @@ from django.contrib.syndication.feeds import Feed
 from library.models import *
 from datetime import datetime
 
+class FirstItem(object):
+    amazon_url = "http://musicinbox.org/"
+    release_date = datetime.now()
+    title = 'Music Inbox: No new albums available yet'
+    description = '''You successfully installed your personal music inbox feed.
+
+In the future, you will be notified about new albums from your favorite artists
+here.
+'''
+
 class NewAlbums(Feed):
+
+    title_template = "library/feed_item_title.html"
+    description_template = "library/feed_item_description.html"
 
     def get_object(self, bits):
         if len(bits) != 1:
@@ -24,20 +37,22 @@ class NewAlbums(Feed):
         return "New albums for artists in %s's library" % obj.name
 
     def items(self, obj):
-        return obj.missing_albums()[:10]
-
-    def item_link(self, obj):
-        print obj.amazon_url
-        if obj.amazon_url: 
-            return obj.amazon_url
+        albums = obj.missing_albums()[:10]
+        if not albums:
+            return [FirstItem()]
         else:
-            return "%s.html" % obj.mb_id
+            return albums
 
-    def item_pubdate(self, obj):
-        if obj.release_date:
-            return datetime(obj.release_date.year, obj.release_date.month, obj.release_date.day)
+    def item_link(self, item):
+        if item.amazon_url: 
+            return item.amazon_url
+        else:
+            return "%s.html" % item.mb_id
+
+    def item_pubdate(self, item):
+        if item.release_date:
+            return datetime(item.release_date.year, item.release_date.month, item.release_date.day)
         else:
             # return datetime.now()
             # return datetime(1970, 1, 1)
             return None
-    

@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block document_content %}
+
+    {% for artist, albums in albums.items %}
+        <h1>{{artist}}</h1>
+        <ul>
+            {% for album in albums %}
+            <li>{{album}}</li>
+            {% endfor %}
+        </ul>
+        <br /><br />
+    {% endfor %}
+
+{% endblock %}
