@@ -5,11 +5,15 @@ from library.forms import *
 from library import signals
 import threading
 
+from library.utils.tea import encrypt
+from settings import KEY
+
 class LibraryView:
     def upload(self, request): #TODO: abstract the upload code into its own lib so that the api and internal library app can use it (the remove unnecessary Class)
         if request.method == 'POST':
             library = self.post_library(request)
             if library:
+                library_id = encrypt(library.pk, KEY)
                 return direct_to_template(request, 'library/success.html', locals())
         else:
             form = UploadFileForm()
