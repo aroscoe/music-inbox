@@ -47,12 +47,11 @@ def upload(request):
         form = UploadFileForm()
     return direct_to_template(request, 'library/upload.html', locals())
 
-def library(request, library_id): #TODO: remove duplication with read in apis
-    artists = Artist.objects.filter(library=decrypt_id(library_id, Http404)).select_related()
-    if artists:
-        library = {}
-        for artist in artists:
-            library[artist.name] = artist.album_set.values_list('name', flat=True)
-        return direct_to_template(request, 'library/library.html', locals())
-    else:
+def library(request, library_id):
+    try:
+        library = LibraryModel.objects.get(pk=decrypt_id(library_id, Http404))
+    except LibraryModel.DoesNotExist:
         raise Http404
+    albums = library.albums_dict()
+    return direct_to_template(request, 'library/library.html', locals())
+

@@ -1,3 +1,4 @@
+import sys
 from django.db import models
 import musicbrainz2.webservice as ws
 import musicbrainz2.model as m
@@ -45,16 +46,31 @@ class Library(models.Model):
         
         return response
     
-    def _newest_(album1, album2):
+    def _newest_(self, album1, album2):
+        if not album1.release_date and not album2.release_date:
+            return -sys.maxint # arbitrary
+        if not album1.release_date:
+            return sys.maxint
+        if not album2.release_date:
+            return -sys.maxint
         return -1 * cmp(album1.release_date, album2.release_date)
+
+    def albums_dict(self):
+        """return a dictionary of Albums with the key being Artist"""
+        response = {}
+        artists = self.artist_set.all().select_related()
+        if artists:
+            for artist in artists:
+                response[artist.name] = list(artist.album_set.values_list('name', flat=True))
+        return response
     
-    def missing_albums(self, sort_function=_newest_):
+    def missing_albums(self):
         """return a list of missing MBAlbums in order of release date or sort_function if that is specified"""
         missing_albums_d = self.missing_albums_dict()
         missing_albums_list = []
         for albums in missing_albums_d.values():
             missing_albums_list.extend(albums)
-        return sorted(missing_albums_list, sort_function)
+        return sorted(missing_albums_list, self._newest_)
     
     class Meta:
         verbose_name_plural = 'libraries'
@@ -105,7 +121,7 @@ class MBArtist(models.Model):
                 if amazon_enabled:
                     mb_album.amazon_url = search_on_amazon(asin, release.title, self.name)
                 mb_album.save()
-
+    
     def get_release_date(self, release_group_id):
         includes = ws.ReleaseGroupIncludes(releases=True)
         q = ws.Query()
@@ -129,7 +145,7 @@ class MBArtist(models.Model):
                     day = int(parsed_release_date[2])
                 return date(year, month, day), release.asin
         return None, None
-
+    
     class Admin:
         pass
 
@@ -171,7 +187,7 @@ def search_on_amazon(asin, album, artist):
     Returns '' if it can't be found
     '''
     from amazonproduct import API
-
+    
     if not AMAZON_KEY or not AMAZON_SECRET or not AMAZON_ASSOCIATE_TAG:
         return ''
     

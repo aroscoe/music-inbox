@@ -9,7 +9,7 @@ from rest.django_restapi.responder import JSONResponder
 from data_responder import JSONDataResponder
 
 from library.models import Artist
-from library.models import Library as ModelLibrary
+from library.models import Library as LibraryModel
 from library import signals
 from library.forms import *
 from library.views import LibraryView
@@ -17,24 +17,20 @@ from library.views import LibraryView
 import threading
 
 libraries_resource = Collection(
-    queryset = ModelLibrary.objects.all(),
+    queryset = LibraryModel.objects.all(),
     responder = JSONResponder()
 )
 
 class LibraryResource(Resource):
     def read(self, request, library_id):
-        artists = Artist.objects.filter(library=library_id).select_related()
-        if artists:
-            data = {}
-            for artist in artists:
-                albums = artist.album_set.all()
-                data[artist.name] = list(albums.values_list('name', flat=True))
-            
-            responder = JSONDataResponder(data)
-            if artist.library.processing: responder.processing = 2
-            return responder.response
-        else:
+        try:
+            library = LibraryModel.objects.get(pk=library_id)
+        except LibraryModel.DoesNotExist:
             raise Http404
+        albums = library.albums_dict()
+        responder = JSONDataResponder(albums)
+        if library.processing: responder.processing = 2
+        return responder.response
     
     # Example cURL POST
     # curl -H "Content-Type: multipart/form-data" -F "file=@test_library.xml" -F "name=Anthony" http://localhost:8000/library/
@@ -47,8 +43,8 @@ class LibraryResource(Resource):
     
 def missing(request, library_id):
     try:
-        library = ModelLibrary.objects.get(pk=library_id)
-    except ModelLibrary.DoesNotExist:
+        library = LibraryModel.objects.get(pk=library_id)
+    except LibraryModel.DoesNotExist:
         #return HttpResponseNotFound
         raise Http404
     
