@@ -25,3 +25,25 @@ class Tests(TestCase):
         date, asin = artist.get_release_date('http://musicbrainz.org/release-group/32195cf1-5d5c-412e-b308-1d586c08e6c4.html')
         self.assertEqual(None, date)
         self.assertEqual(None, asin)
+        
+    def test_null_release_dates(self):
+        '''
+        makes sure the Library._newest_ function can accept null MBAlbum.release_date's
+        '''
+        from library.models import *
+        from datetime import datetime
+        import sys
+        
+        artist = MBArtist.objects.create(name = 'foo', mb_id = 'http://bar.baz')
+        # null release dates
+        album1 = MBAlbum.objects.create(name = 'bar', mb_id = 'http://bar.com/album1', artist = artist)
+        album2 = MBAlbum.objects.create(name = 'bar', mb_id = 'http://bar.com/album2', artist = artist)
+        
+        # non-null release date
+        album3 = MBAlbum.objects.create(name = 'bar', mb_id = 'http://bar.com/album3', artist = artist, release_date = datetime.now())
+        
+        library = Library.objects.create(pk = 1, name = 'foo')
+
+        self.assertEquals(-sys.maxint, library._newest_(album1, album2))
+        self.assertEquals(sys.maxint, library._newest_(album1, album3))
+        self.assertEquals(-sys.maxint, library._newest_(album3, album2))

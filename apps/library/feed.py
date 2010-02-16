@@ -34,7 +34,10 @@ class NewAlbums(Feed):
             return "%s.html" % obj.mb_id
 
     def item_pubdate(self, obj):
-        return datetime(obj.release_date.year, obj.release_date.month, obj.release_date.day)
-
-
+        if obj.release_date:
+            return datetime(obj.release_date.year, obj.release_date.month, obj.release_date.day)
+        else:
+            # return datetime.now()
+            # return datetime(1970, 1, 1)
+            return None
     
