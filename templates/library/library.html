@@ -2,7 +2,7 @@
 
 {% block document_content %}
 
-    {% for artist, albums in library.items %}
+    {% for artist, albums in albums.items %}
         <h1>{{artist}}</h1>
         <ul>
             {% for album in albums %}

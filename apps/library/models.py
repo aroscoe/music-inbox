@@ -45,6 +45,15 @@ class Library(models.Model):
         
         return response
     
+    def albums_dict(self):
+        """return a dictionary of Albums with the key being Artist"""
+        response = {}
+        artists = self.artist_set.all().select_related()
+        if artists:
+            for artist in artists:
+                response[artist.name] = list(artist.album_set.values_list('name', flat=True))
+        return response
+    
     def _newest_(album1, album2):
         return -1 * cmp(album1.release_date, album2.release_date)
     
@@ -105,7 +114,7 @@ class MBArtist(models.Model):
                 if amazon_enabled:
                     mb_album.amazon_url = search_on_amazon(asin, release.title, self.name)
                 mb_album.save()
-
+    
     def get_release_date(self, release_group_id):
         includes = ws.ReleaseGroupIncludes(releases=True)
         q = ws.Query()
@@ -129,7 +138,7 @@ class MBArtist(models.Model):
                     day = int(parsed_release_date[2])
                 return date(year, month, day), release.asin
         return None, None
-
+    
     class Admin:
         pass
 
@@ -171,7 +180,7 @@ def search_on_amazon(asin, album, artist):
     Returns '' if it can't be found
     '''
     from amazonproduct import API
-
+    
     if not AMAZON_KEY or not AMAZON_SECRET or not AMAZON_ASSOCIATE_TAG:
         return ''
     
