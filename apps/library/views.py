@@ -1,11 +1,15 @@
 from django.http import Http404
 from django.conf import settings
 from django.views.generic.simple import direct_to_template
+from django.http import HttpResponseRedirect
+
 from library.models import Library as LibraryModel
 from library.models import Artist
+from library.model import search_on_amazon
 from library.forms import *
 from library import signals
 import threading
+
 
 class LibraryView:
     def post_library(self, request):
@@ -51,3 +55,9 @@ def library(request, library_id):
     albums = library.albums_dict()
     return direct_to_template(request, 'library/library.html', locals())
 
+def amazon(request, asin):
+    '''
+    Resolves amazon ASIN to the DetailPageUrl and redirects browser to it
+    '''
+    url = search_on_amazon(asin, None, None)
+    return HttpResponseRedirect(url)

@@ -44,8 +44,8 @@ class NewAlbums(Feed):
             return albums
 
     def item_link(self, item):
-        if item.amazon_url: 
-            return item.amazon_url
+        if item.asin: 
+            return "http://musicinbox.org/library/amazon/%s/" % item.asin
         else:
             return "%s.html" % item.mb_id
 
