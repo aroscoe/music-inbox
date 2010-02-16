@@ -3,8 +3,8 @@ from django.contrib.syndication.feeds import FeedDoesNotExist
 from django.contrib.syndication.feeds import Feed
 from library.models import *
 from datetime import datetime
-from library.utils.tea import encrypt, decrypt
-from settings import KEY
+
+from library.utils import decrypt_id, encrypt_id
 
 class FirstItem(object):
     amazon_url = "http://musicinbox.org/"
@@ -24,14 +24,7 @@ class NewAlbums(Feed):
     def get_object(self, bits):
         if len(bits) != 1:
             raise ObjectDoesNotExist
-        id = bits[0]
-        try:
-            if not isinstance(id, long):
-                id = long(id)
-                id = decrypt(id , KEY)
-        except ValueError:
-            raise ObjectDoesNotExist
-        return Library.objects.get(id=id)
+        return Library.objects.get(id=decrypt_id(bits[0], ObjectDoesNotExist))
     
     def title(self, obj):
         return "New albums for %s" % obj.name
@@ -40,7 +33,7 @@ class NewAlbums(Feed):
         if not obj:
             raise FeedDoesNotExist
         #return obj.get_absolute_url()
-        return "%s" % encrypt(obj.id, KEY)
+        return "%s" % encrypt_id(obj.id, KEY)
 
     def description(self, obj):
         return "New albums for artists in %s's library" % obj.name
