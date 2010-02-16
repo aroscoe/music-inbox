@@ -24,7 +24,14 @@ class NewAlbums(Feed):
     def get_object(self, bits):
         if len(bits) != 1:
             raise ObjectDoesNotExist
-        return Library.objects.get(id=decrypt(bits[0], KEY))
+        id = bits[0]
+        try:
+            if not isinstance(id, long):
+                id = long(id)
+                id = decrypt(id , KEY)
+        except ValueError:
+            raise ObjectDoesNotExist
+        return Library.objects.get(id=id)
     
     def title(self, obj):
         return "New albums for %s" % obj.name
