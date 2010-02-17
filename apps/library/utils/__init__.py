@@ -5,7 +5,7 @@ def decrypt_id(id, exception_to_raise):
     try:
         if not isinstance(id, long):
             id = long(id)
-            id = tea.decrypt(id , settings.KEY)
+            return tea.decrypt(id , settings.KEY)
     except ValueError:
         raise exception_to_raise
 

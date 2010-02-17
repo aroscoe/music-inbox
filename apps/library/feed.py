@@ -33,7 +33,7 @@ class NewAlbums(Feed):
         if not obj:
             raise FeedDoesNotExist
         #return obj.get_absolute_url()
-        return "%s" % encrypt_id(obj.id, KEY)
+        return "%s" % encrypt_id(obj.id)
 
     def description(self, obj):
         return "New albums for artists in %s's library" % obj.name
