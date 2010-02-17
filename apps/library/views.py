@@ -7,7 +7,10 @@ from library.forms import *
 from library import signals
 import threading
 
+from library.utils import decrypt_id, encrypt_id
+
 class LibraryView:
+
     def post_library(self, request):
         print "posted"
         form = UploadFileForm(request.POST, request.FILES)
@@ -38,6 +41,7 @@ def upload(request):
     if request.method == 'POST':
         library = LibraryView().post_library(request)
         if library:
+            library_id = encrypt_id(library.pk)
             return direct_to_template(request, 'library/success.html', locals())
     else:
         form = UploadFileForm()
@@ -45,7 +49,7 @@ def upload(request):
 
 def library(request, library_id):
     try:
-        library = LibraryModel.objects.get(pk=library_id)
+        library = LibraryModel.objects.get(pk=decrypt_id(library_id, Http404))
     except LibraryModel.DoesNotExist:
         raise Http404
     albums = library.albums_dict()
