@@ -8,8 +8,8 @@ import logging
 
 logging.basicConfig()
 logger = logging.getLogger("models")
-from settings import LOG_LEVEL
-logger.setLevel(LOG_LEVEL)
+from django.conf import settings
+logger.setLevel(settings.LOG_LEVEL)
 
 try:
     from settings import AMAZON_KEY, AMAZON_SECRET, AMAZON_ASSOCIATE_TAG

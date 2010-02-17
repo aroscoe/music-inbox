@@ -8,11 +8,11 @@ from library.models import *
 
 logging.basicConfig()
 logger = logging.getLogger("album_diff")
-from settings import LOG_LEVEL
+from django.conf import settings
 
 def album_diff(sender, **kwargs):
     library = kwargs['library']
-    logger.setLevel(LOG_LEVEL)
+    logger.setLevel(settings.LOG_LEVEL)
     logger.debug("processing " + library.name + " ...")
     
     for artist in library.artist_set.order_by("-play_count"):
