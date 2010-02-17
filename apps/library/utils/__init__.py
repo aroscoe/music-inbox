@@ -1,5 +1,5 @@
 import tea
-from djgon.conf.settings import KEY
+from django.conf.settings import KEY
 
 def decrypt_id(id, exception_to_raise):
     try:
