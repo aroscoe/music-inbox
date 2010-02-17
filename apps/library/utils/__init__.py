@@ -1,5 +1,5 @@
-from library.utils import tea
-from settings import KEY
+import tea
+from djgon.conf.settings import KEY
 
 def decrypt_id(id, exception_to_raise):
     try:
