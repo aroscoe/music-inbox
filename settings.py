@@ -93,7 +93,7 @@ INSTALLED_APPS = (
     'api',
 )
 
-UPLOADS_DIR = 'uploads/'
+UPLOADS_DIR = os.path.join(PROJECT_ROOT, 'uploads/')
 
 LOG_FILE = '/tmp/music-inbox-log'
 # override in local_settings.py
