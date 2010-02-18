@@ -1,11 +1,19 @@
 v1:
 
 * privacy policy
-* 3 step explanatio with pics
+* 3 step explanation with pics
 * nice success page
+* favicon
+* logo
+* google analytics
+* Issue #2
+* Issue #3
+* unique file name for uploaded files
+* confirm debugging is logging to logs
 
 v2:
 
 * Add email support as alternative to rss
 * Have own 302 amazon link forwards to track clicked on albums
 * What does feedburner offer?
+* grab log files via other users
