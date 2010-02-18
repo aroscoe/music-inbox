@@ -7,12 +7,17 @@ from datetime import datetime
 from library.utils import decrypt_id, encrypt_id
 
 class FirstItem(object):
+    '''
+    Feed item that is displayed to users if there are no items in their
+    NewAlbums feed yet. For this purpose, the FirstItem has to have the fields
+    an actual feed item has.
+    '''
     amazon_url = "http://musicinbox.org/"
     release_date = datetime.now()
     title = 'Music Inbox: No new albums available yet'
     description = '''You successfully installed your personal music inbox feed.
 
-In the future, you will be notified about new albums from your favorite artists
+In the future, you will be notified about new releases from your favorite artists
 here.
 '''
     def __init__(self, library_id):
@@ -22,7 +27,7 @@ class NewAlbums(Feed):
 
     title_template = "library/feed_item_title.html"
     description_template = "library/feed_item_description.html"
-
+    
     def get_object(self, bits):
         if len(bits) != 1:
             raise ObjectDoesNotExist
