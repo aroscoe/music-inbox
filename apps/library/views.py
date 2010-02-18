@@ -17,11 +17,14 @@ class LibraryView:
         if form.is_valid():
             print "valid"
             library_name = form.cleaned_data['name']
-            library_file = self._handle_uploaded_file(request.FILES['file'])
             
-            # Create Library to send along with the signal and send pk back in the response
+            # Create Library to send along with the signal and send pk back in
+            # the response
             library = LibraryModel(name=library_name)
             library.save()
+
+            library_file = self._handle_uploaded_file(request.FILES['file'], 
+                                                      library.id)
             
             t = threading.Thread(target=signals.upload_done.send, kwargs={'sender': self, 'file': library_file, 'library': library})
             t.setDaemon(True)
@@ -29,8 +32,8 @@ class LibraryView:
             return library
         return None
     
-    def _handle_uploaded_file(self, file):
-        file_path = settings.UPLOADS_DIR + file.name
+    def _handle_uploaded_file(self, file, library_id):
+        file_path = settings.UPLOADS_DIR + str(library_id) + ".xml"
         destination = open(file_path, 'wb+')
         for chunk in file.chunks():
             destination.write(chunk)
