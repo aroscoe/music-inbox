@@ -15,6 +15,8 @@ class FirstItem(object):
 In the future, you will be notified about new albums from your favorite artists
 here.
 '''
+    def __init__(self, library_id):
+        self.amazon_url = 'http://musicinbox.org/library/feeds/newalbums/%s/' % encrypt_id(library_id)
 
 class NewAlbums(Feed):
 
@@ -32,8 +34,7 @@ class NewAlbums(Feed):
     def link(self, obj):
         if not obj:
             raise FeedDoesNotExist
-        #return obj.get_absolute_url()
-        return "%s" % encrypt_id(obj.id)
+        return 'http://musicinbox.org/library/feeds/newalbums/%s/' % encrypt_id(obj.id)
 
     def description(self, obj):
         return "New albums for artists in %s's library" % obj.name
@@ -41,7 +42,7 @@ class NewAlbums(Feed):
     def items(self, obj):
         albums = obj.missing_albums()[:10]
         if not albums:
-            return [FirstItem()]
+            return [FirstItem(obj.id)]
         else:
             return albums
 
