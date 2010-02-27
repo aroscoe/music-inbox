@@ -114,6 +114,7 @@ class MBArtist(models.Model):
             mb_album, created_album = MBAlbum.objects.get_or_create(mb_id=release.id, artist = self)
             if created_album:
                 logger.debug(release.title + " ...")
+                # query
                 date, asin = self.get_release_date(release.id)
                 mb_album.release_date = date
                 mb_album.name = release.title

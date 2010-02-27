@@ -28,8 +28,10 @@ def album_diff(library):
             artist.mb_artist_id = mb_artist_id
             artist.save()
             
-            # query for each single album that the user has, but not used
-            local_release_group_ids = set([get_release_group_id(release_group, mb_artist_id) for release_group in artist.album_set.all()])
+            # query for each single album that the user has
+            for release_group in artist.album_set.all():
+                get_release_group_id(release_group, mb_artist_id)
+
             mb_artist_entry, created_artist = MBArtist.objects.get_or_create(mb_id=mb_artist_id)
             if created_artist:
                 mb_artist_entry.name = artist.name
