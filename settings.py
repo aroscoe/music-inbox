@@ -99,6 +99,9 @@ LOG_FILE = '/tmp/music-inbox-log'
 # override in local_settings.py
 LOG_LEVEL = logging.CRITICAL
 
+# musicbrainz rate limiting
+SLEEP_TIME = 2
+
 # Local Settings
 # Check for local_settings to override production enviroment
 try:

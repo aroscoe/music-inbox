@@ -10,6 +10,7 @@ logging.basicConfig()
 logger = logging.getLogger("models")
 from settings import LOG_LEVEL
 logger.setLevel(LOG_LEVEL)
+from settings import SLEEP_TIME
 
 try:
     from settings import AMAZON_KEY, AMAZON_SECRET, AMAZON_ASSOCIATE_TAG
@@ -108,7 +109,7 @@ class MBArtist(models.Model):
                 releases=(m.Release.TYPE_OFFICIAL, m.Release.TYPE_ALBUM), tags=True, releaseGroups=True)
         q = ws.Query()
         mb_artist = q.getArtistById(self.mb_id, include)
-        time.sleep(1)
+        time.sleep(SLEEP_TIME)
         for release in mb_artist.getReleaseGroups():
             mb_album, created_album = MBAlbum.objects.get_or_create(mb_id=release.id, artist = self)
             if created_album:
@@ -126,12 +127,12 @@ class MBArtist(models.Model):
         includes = ws.ReleaseGroupIncludes(releases=True)
         q = ws.Query()
         release_group = q.getReleaseGroupById(release_group_id, includes)
-        time.sleep(1)
+        time.sleep(SLEEP_TIME)
         if release_group and release_group.releases:
             release = release_group.releases[0] # TODO iterate over all
             includes = ws.ReleaseIncludes(releaseEvents = True)
             release = q.getReleaseById(release.id, includes)
-            time.sleep(1)
+            time.sleep(SLEEP_TIME)
             release_date = release.getEarliestReleaseDate()
             if release_date:
                 logger.debug("   " + release_date)

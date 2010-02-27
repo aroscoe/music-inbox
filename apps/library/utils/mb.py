@@ -9,6 +9,7 @@ from library.models import *
 logging.basicConfig()
 logger = logging.getLogger("album_diff")
 from settings import LOG_LEVEL
+from settings import SLEEP_TIME
 
 def album_diff(sender, **kwargs):
     library = kwargs['library']
@@ -20,7 +21,7 @@ def album_diff(sender, **kwargs):
         name_filter = ws.ArtistFilter(name=artist.name, limit=5)
         q = ws.Query()
         artist_results = q.getArtists(name_filter) # TODO aliases if no albums match
-        time.sleep(1)
+        time.sleep(SLEEP_TIME)
         if artist_results:
             mb_artist_id = artist_results[0].artist.id
             artist.mb_artist_id = mb_artist_id
@@ -41,12 +42,12 @@ def get_artist_id(artist_name):
 
 def get_release_group_id(album, mb_artist_id):
     releases = get_releases(album.name, mb_artist_id)
-    time.sleep(1)
+    time.sleep(SLEEP_TIME)
     if releases:
             includes = ws.ReleaseIncludes(releaseGroup=True)
             q = ws.Query()
             id = q.getReleaseById(releases[0].release.id, includes).releaseGroup.id
-            time.sleep(1)
+            time.sleep(SLEEP_TIME)
             album.mb_id = id;
             album.save()
             return id
