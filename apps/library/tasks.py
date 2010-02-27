@@ -5,7 +5,7 @@ from django.conf import settings
 import plistlib
 
 from library.models import *
-from library import signals
+from library.utils.mb import album_diff
 
 
 @task
@@ -35,6 +35,14 @@ def import_itunes_file(library_id, library_filename, **kwargs):
     library.processing = False
     library.save()
     
-    # TODO not sure if this still makes sense, should probably just trigger
-    # another task
-    #signals.import_done.send(sender=None, library=library)
+    diff_albums.delay(library_id)
+
+@task
+def diff_albums(library_id, **kwargs):
+    ''' '''
+    logger = import_itunes_file.get_logger(**kwargs)
+    logger.debug("diffing albums of library %s" % library_id)
+
+    library = Library.objects.get(pk=library_id)
+    
+    album_diff(library)    

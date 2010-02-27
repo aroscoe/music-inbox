@@ -6,11 +6,10 @@ from django.views.generic.simple import direct_to_template
 
 from library.models import Library, Artist
 from library.forms import *
-from library import signals
 from library.utils import decrypt_id, encrypt_id
 from library.tasks import import_itunes_file
 
-logging.basicConfig()
+logging.basicConfig(filename=settings.LOG_FILE)
 logger = logging.getLogger("library_views")
 logger.setLevel(settings.LOG_LEVEL)
 
@@ -31,7 +30,7 @@ class LibraryView:
             library_filename = self._save_library_file(request.FILES['file'], 
                                                        library.id)
             
-            import_itunes_file(library.id, library_filename)
+            import_itunes_file.delay(library.id, library_filename)
             
             return library
         return None
