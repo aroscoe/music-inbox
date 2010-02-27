@@ -1,11 +1,10 @@
-import threading
+import logging
 
 from django.http import Http404
 from django.conf import settings
 from django.views.generic.simple import direct_to_template
 
-from library.models import Library as LibraryModel
-from library.models import Artist
+from library.models import Library, Artist
 from library.forms import *
 from library import signals
 from library.utils import decrypt_id, encrypt_id
@@ -26,7 +25,7 @@ class LibraryView:
             
             # Create Library to send along with the signal and send id back in
             # the response
-            library = LibraryModel(name=library_name)
+            library = Library(name=library_name)
             library.save()
 
             library_filename = self._save_library_file(request.FILES['file'], 
@@ -57,8 +56,8 @@ def upload(request):
 
 def library(request, library_id):
     try:
-        library = LibraryModel.objects.get(pk=decrypt_id(library_id, Http404))
-    except LibraryModel.DoesNotExist:
+        library = Library.objects.get(pk=decrypt_id(library_id, Http404))
+    except Library.DoesNotExist:
         raise Http404
     albums = library.albums_dict()
     return direct_to_template(request, 'library/library.html', locals())

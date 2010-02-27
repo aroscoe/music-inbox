@@ -216,11 +216,7 @@ def search_on_amazon(asin, album, artist):
 # Library Signal Handling
 
 from library import signals
-from library.utils.importer import LibraryImporter
 from library.utils.mb import album_diff
 
-library_importer = LibraryImporter()
-signals.upload_done.connect(library_importer.itunes)
-
-signals.import_done.connect(album_diff)
+#signals1.import_done.connect(album_diff)
 
