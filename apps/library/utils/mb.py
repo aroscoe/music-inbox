@@ -19,6 +19,8 @@ def album_diff(library):
         logger.debug(artist.name + " ...")
         name_filter = ws.ArtistFilter(name=artist.name, limit=5)
         q = ws.Query()
+        # query 1 get list of matching artists from mb
+        # could do lookup in db first
         artist_results = q.getArtists(name_filter) # TODO aliases if no albums match
         time.sleep(1)
         if artist_results:
@@ -26,6 +28,7 @@ def album_diff(library):
             artist.mb_artist_id = mb_artist_id
             artist.save()
             
+            # query for each single album that the user has, but not used
             local_release_group_ids = set([get_release_group_id(release_group, mb_artist_id) for release_group in artist.album_set.all()])
             mb_artist_entry, created_artist = MBArtist.objects.get_or_create(mb_id=mb_artist_id)
             if created_artist:

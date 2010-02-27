@@ -107,6 +107,7 @@ class MBArtist(models.Model):
         include = ws.ArtistIncludes(
                 releases=(m.Release.TYPE_OFFICIAL, m.Release.TYPE_ALBUM), tags=True, releaseGroups=True)
         q = ws.Query()
+        # artist query including their releases
         mb_artist = q.getArtistById(self.mb_id, include)
         time.sleep(1)
         for release in mb_artist.getReleaseGroups():
@@ -119,6 +120,7 @@ class MBArtist(models.Model):
                 if asin:
                     mb_album.asin = asin
                 if amazon_enabled:
+                    # amazon query
                     mb_album.amazon_url = search_on_amazon(asin, release.title, self.name)
                 mb_album.save()
     
