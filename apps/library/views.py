@@ -1,38 +1,43 @@
+import threading
+
 from django.http import Http404
 from django.conf import settings
 from django.views.generic.simple import direct_to_template
+
 from library.models import Library as LibraryModel
 from library.models import Artist
 from library.forms import *
 from library import signals
-import threading
-
 from library.utils import decrypt_id, encrypt_id
+from library.tasks import import_itunes_file
+
+logging.basicConfig()
+logger = logging.getLogger("library_views")
+logger.setLevel(settings.LOG_LEVEL)
 
 class LibraryView:
 
     def post_library(self, request):
-        print "posted"
+        logger.debug("posted")
         form = UploadFileForm(request.POST, request.FILES)
         if form.is_valid():
-            print "valid"
+            logger.debug("valid")
             library_name = form.cleaned_data['name']
             
-            # Create Library to send along with the signal and send pk back in
+            # Create Library to send along with the signal and send id back in
             # the response
             library = LibraryModel(name=library_name)
             library.save()
 
-            library_file = self._handle_uploaded_file(request.FILES['file'], 
-                                                      library.id)
+            library_filename = self._save_library_file(request.FILES['file'], 
+                                                       library.id)
             
-            t = threading.Thread(target=signals.upload_done.send, kwargs={'sender': self, 'file': library_file, 'library': library})
-            t.setDaemon(True)
-            t.start()
+            import_itunes_file(library.id, library_filename)
+            
             return library
         return None
     
-    def _handle_uploaded_file(self, file, library_id):
+    def _save_library_file(self, file, library_id):
         file_path = settings.UPLOADS_DIR + str(library_id) + ".xml"
         destination = open(file_path, 'wb+')
         for chunk in file.chunks():

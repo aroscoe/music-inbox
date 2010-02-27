@@ -1,14 +1,15 @@
-import musicbrainz2.webservice as ws
-import musicbrainz2.model as m
 import logging
 import time
 from datetime import date
+
+from django.conf import settings
+import musicbrainz2.webservice as ws
+import musicbrainz2.model as m
 
 from library.models import *
 
 logging.basicConfig()
 logger = logging.getLogger("album_diff")
-from django.conf import settings
 
 def album_diff(sender, **kwargs):
     library = kwargs['library']
