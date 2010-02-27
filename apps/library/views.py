@@ -12,10 +12,8 @@ from library.utils import decrypt_id, encrypt_id
 class LibraryView:
 
     def post_library(self, request):
-        print "posted"
         form = UploadFileForm(request.POST, request.FILES)
         if form.is_valid():
-            print "valid"
             library_name = form.cleaned_data['name']
             
             # Create Library to send along with the signal and send pk back in
