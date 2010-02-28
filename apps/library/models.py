@@ -8,9 +8,9 @@ import logging
 
 logging.basicConfig()
 logger = logging.getLogger("models")
-from settings import LOG_LEVEL
-logger.setLevel(LOG_LEVEL)
-from settings import SLEEP_TIME
+
+from django.conf import settings
+logger.setLevel(settings.LOG_LEVEL)
 
 try:
     from settings import AMAZON_KEY, AMAZON_SECRET, AMAZON_ASSOCIATE_TAG
@@ -108,8 +108,8 @@ class MBArtist(models.Model):
         include = ws.ArtistIncludes(
                 releases=(m.Release.TYPE_OFFICIAL, m.Release.TYPE_ALBUM), tags=True, releaseGroups=True)
         q = ws.Query()
-        mb_artist = q.getArtistById(self.mb_id, include)
-        time.sleep(SLEEP_TIME)
+        mb_artist = call_mb_ws(q.getArtistById, self.mb_id, include)
+        time.sleep(settings.SLEEP_TIME)
         for release in mb_artist.getReleaseGroups():
             mb_album, created_album = MBAlbum.objects.get_or_create(mb_id=release.id, artist = self)
             if created_album:
@@ -126,13 +126,13 @@ class MBArtist(models.Model):
     def get_release_date(self, release_group_id):
         includes = ws.ReleaseGroupIncludes(releases=True)
         q = ws.Query()
-        release_group = q.getReleaseGroupById(release_group_id, includes)
-        time.sleep(SLEEP_TIME)
+        release_group = call_mb_ws(q.getReleaseGroupById, release_group_id, includes)
+        time.sleep(settings.SLEEP_TIME)
         if release_group and release_group.releases:
             release = release_group.releases[0] # TODO iterate over all
             includes = ws.ReleaseIncludes(releaseEvents = True)
-            release = q.getReleaseById(release.id, includes)
-            time.sleep(SLEEP_TIME)
+            release = call_mb_ws(q.getReleaseById, release.id, includes)
+            time.sleep(settings.SLEEP_TIME)
             release_date = release.getEarliestReleaseDate()
             if release_date:
                 logger.debug("   " + release_date)
@@ -212,6 +212,19 @@ def search_on_amazon(asin, album, artist):
     except :
         pass
     return ''
+
+def call_mb_ws(function, *args):
+    i = 1
+    while True:
+        try:
+            return function(*args)
+        except ws.WebServiceError as e:            
+            if e.message.count('503') > -1:
+                logger.debug('function ' + function.func_name + ' failed with 503, sleeping ' + str(settings.SLEEP_TIME * i) + ' seconds')
+                time.sleep(settings.SLEEP_TIME * i)
+                i *= 2
+            else:
+                raise e
 
 #################################################################
 # Library Signal Handling

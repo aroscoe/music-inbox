@@ -5,11 +5,12 @@
 <ul>
     <li>Library Name: {{library.name}}</li>
     <li>Library ID: {{library.pk}}</li>
+    <li>Encrypted library id: {{library_id}}</li>
 </ul>
 <br/>
 <p>Add the rss feed to google reader:</p>
 <a target="_blank"
-href="http://fusion.google.com/add?source=atgs&feedurl=http%3A//musicinbox.org/api/feeds/newalbums/{{library.pk}}/"><img
+href="http://fusion.google.com/add?source=atgs&feedurl=http%3A//beta.musicinbox.org/library/feeds/newalbums/{{library_id}}/"><img
 src="http://buttons.googlesyndication.com/fusion/add.gif" border="0" alt="Add
 to Google"></a>
 {% endblock %}

@@ -1,11 +1,17 @@
 v1:
 
-* Add long random id to feed urls to make them private
-* Add a first entry to the rss feed while others are computed explaining how
-  the feed works, so there is immediate feedback after adding it.
+* privacy policy
+* nice success page
+* favicon
+* logo
+* Issue #2
+* Issue #3
+* confirm debugging is logging to logs
 
 v2:
 
 * Add email support as alternative to rss
 * Have own 302 amazon link forwards to track clicked on albums
 * What does feedburner offer?
+* grab log files via other users
+* 3 step explanation with pics

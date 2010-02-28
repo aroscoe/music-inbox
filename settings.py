@@ -24,6 +24,7 @@ DATABASE_PORT = ''             # Set to empty string for default. Not used with 
 
 AMAZON_KEY = ''
 AMAZON_SECRET = ''
+KEY = [1, 1, 1, 1]
 
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
@@ -93,7 +94,7 @@ INSTALLED_APPS = (
     'api',
 )
 
-UPLOADS_DIR = 'uploads/'
+UPLOADS_DIR = os.path.join(PROJECT_ROOT, 'uploads/')
 
 LOG_FILE = '/tmp/music-inbox-log'
 # override in local_settings.py

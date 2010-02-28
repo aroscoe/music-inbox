@@ -11,8 +11,9 @@ admin.autodiscover()
 django_cron.autodiscover()
 
 urlpatterns = patterns('',
-    (r'^library/', include('library.urls')),
-    (r'^api/', include('api.urls')),
+    url(r'^$', 'library.views.upload', name="home"),
+    url(r'^library/', include('library.urls'), name="library"),
+    url(r'^api/', include('api.urls'), name="api"),
     (r'^admin/', include(admin.site.urls)),
 )
 
