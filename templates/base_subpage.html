@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block body %}
+
+<!-- Sticky Wrapper -->
+<div id="sticky_wrapper">
+
+    <div id="header">
+        <div class="wrapper">
+            <h1><a href="/">Music Inbox</a></h1>
+        </div>
+        <div class="bg_left"></div>
+        <div class="bg_right"></div>
+    </div>
+
+    <div id="content">
+        {% block content %}{% endblock %}
+    </div>
+
+    <div id="sticky_push"></div>
+</div>
+<!-- END - Sticky Wrapper -->
+
+<div id="sticky_footer">
+    <p><a href="{% url privacy %}">Privacy Policy</a></p>
+</div>
+
+{% endblock %}
