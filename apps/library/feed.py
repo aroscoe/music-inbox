@@ -1,9 +1,11 @@
+from datetime import datetime
+
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.syndication.feeds import FeedDoesNotExist
 from django.contrib.syndication.feeds import Feed
-from library.models import *
-from datetime import datetime
+from django.contrib.sites.models import Site
 
+from library.models import *
 from library.utils import decrypt_id, encrypt_id
 
 class FirstItem(object):
@@ -12,7 +14,7 @@ class FirstItem(object):
     NewAlbums feed yet. For this purpose, the FirstItem has to have the fields
     an actual feed item has.
     '''
-    amazon_url = "http://musicinbox.org/"
+    amazon_url = "http://%s/" % Site.objects.get_current().domain
     release_date = datetime.now()
     title = 'Music Inbox: No new albums available yet'
     description = '''You successfully installed your personal music inbox feed.
@@ -21,7 +23,9 @@ In the future, you will be notified about new releases from your favorite artist
 here.
 '''
     def __init__(self, library_id):
-        self.amazon_url = 'http://musicinbox.org/library/feeds/newalbums/%s/' % encrypt_id(library_id)
+        self.amazon_url = 'http://%s/library/feeds/newalbums/%s/' % \
+            (Site.objects.get_current().domain, encrypt_id(library_id))
+
 
 class NewAlbums(Feed):
 
@@ -39,7 +43,8 @@ class NewAlbums(Feed):
     def link(self, obj):
         if not obj:
             raise FeedDoesNotExist
-        return 'http://musicinbox.org/library/feeds/newalbums/%s/' % encrypt_id(obj.id)
+        return 'http://%s/library/%s/' % \
+            (Site.objects.get_current().domain, encrypt_id(obj.id))
 
     def description(self, obj):
         return "New albums for artists in %s's library" % obj.name

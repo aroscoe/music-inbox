@@ -1,7 +1,7 @@
-{% extends "base.html" %}
+{% extends "base_subpage.html" %}
 
-{% block document_content %}
-<h1>SUCCESS!</h1>
+{% block content %}
+<h2>SUCCESS!</h2>
 <ul>
     <li>Library Name: {{library.name}}</li>
     <li>Library ID: {{library.pk}}</li>
@@ -10,7 +10,7 @@
 <br/>
 <p>Add the rss feed to google reader:</p>
 <a target="_blank"
-href="http://fusion.google.com/add?source=atgs&feedurl=http%3A//beta.musicinbox.org/library/feeds/newalbums/{{library_id}}/"><img
+href="http://fusion.google.com/add?source=atgs&feedurl=http%3A//{{site_domain|urlencode}}/library/feeds/newalbums/{{library_id}}/"><img
 src="http://buttons.googlesyndication.com/fusion/add.gif" border="0" alt="Add
 to Google"></a>
 {% endblock %}

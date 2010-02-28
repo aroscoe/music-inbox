@@ -7,15 +7,15 @@ from library.forms import *
 from library import signals
 import threading
 
+from django.contrib.sites.models import Site
+
 from library.utils import decrypt_id, encrypt_id
 
 class LibraryView:
 
     def post_library(self, request):
-        print "posted"
         form = UploadFileForm(request.POST, request.FILES)
         if form.is_valid():
-            print "valid"
             library_name = form.cleaned_data['name']
             
             # Create Library to send along with the signal and send pk back in
@@ -45,6 +45,7 @@ def upload(request):
         library = LibraryView().post_library(request)
         if library:
             library_id = encrypt_id(library.pk)
+            site_domain = Site.objects.get_current().domain
             return direct_to_template(request, 'library/success.html', locals())
     else:
         form = UploadFileForm()
