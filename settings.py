@@ -105,9 +105,9 @@ LOG_LEVEL = logging.CRITICAL
 # celery settings
 BROKER_HOST = "localhost"
 BROKER_PORT = 5672
-BROKER_USER = "felix"
-BROKER_PASSWORD = "felix"
-BROKER_VHOST = "flx"
+BROKER_USER = "musicinbox"
+BROKER_PASSWORD = "musicinbox"
+BROKER_VHOST = "musicinbox"
 
 # musicbrainz rate limiting
 SLEEP_TIME = 2
