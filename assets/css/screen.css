@@ -1,36 +1,131 @@
-/* SCREEN **************************************************/ 
+/* SCREEN **************************************************/
 
 html, body {
     font-family: Helvetica, "Helvetica Neue", Arial, sans-serif;
 }
 
+/* Sticky Footer Settings
+---------------------------------------------------------- */
+html, body {
+    height: 100%;
+}
+#sticky_wrapper {
+    position: relative;
+    min-height: 100%;
+    height: auto !important;
+    height: 100%;
+    margin: 0 auto -22px; /* the bottom margin is the negative value of the footer's height */
+    background-color: #fff;
+}
+#sticky_footer, #sticky_push {
+    height: 22px; /* .push must be the same height as .footer */
+}
+
+/* Typography
+---------------------------------------------------------- */
+p {margin-bottom: 10px;}
+
+/* Header
+---------------------------------------------------------- */
+#header {
+    height: 72px;
+    background: #468ecd url("../img/subpage_header_bg.png") repeat-x;
+}
+#header .bg_left, #header .bg_right {
+    position: absolute;
+    z-index: 1;
+    top: 0;
+    width: 25px;
+    height: 72px;
+    background: url("../img/subpage_header_bg_corners.png") no-repeat;
+}
+#header .bg_left {
+    left: 0;
+}
+#header .bg_right {
+    right: 0;
+    background-position: 0 -72px;
+}
+#header .wrapper {
+    position: relative;
+    z-index: 2;
+}
+#header h1 {
+    margin-left: 25px;
+    padding-top: 22px;
+}
+#header h1 a {
+    display: block;
+    width: 271px;
+    height: 25px;
+    text-indent: -10000px;
+    outline: none;
+    background: url("../img/subpage_header_logo.png") no-repeat;
+}
+
+/* Content
+---------------------------------------------------------- */
+#content {
+    padding: 20px 25px;
+    background: #fff url("../img/subpage_content_bg.png") repeat-x;
+}
+
+/* Footer
+---------------------------------------------------------- */
+#sticky_footer {
+    position: relative;
+    background-color: #003663;
+}
+#sticky_footer p {
+    padding-top: 4px;
+    text-align: center;
+    color: #fff;
+    font-size: 12px;
+}
+#sticky_footer a {
+    color: #fff;
+}
+
 /* Splash
 -----------------------------------------------------------*/
+#document {
+    padding-top: 60px;
+}
 #splash {
-    margin-top: 60px;
     width: 100%;
     height: 220px;
-    background: url("../img/splash_bg.gif") repeat-x top center;
+    background: url("../img/splash_bg.png") repeat-x top center;
 }
 #splash .container {
+    position: relative;
+    overflow: auto;
     margin: 0 auto;
     padding-top: 36px;
-    width: 650px;
+    width: 800px;
 }
 #splash .col {
+/*    position: relative;*/
     float: left;
 }
 #splash h1 {
     width: 326px;
     height: 29px;
     text-indent: -10000px;
-    background: url("../img/logo.png") no-repeat;
+    background: url("../img/splash_logo.png") no-repeat;
 }
 #splash p#tagline {
     margin-top: 20px;
     color: #fff;
-    line-height: 20px;
     text-shadow: #3772a5 1px 1px;
+}
+#splash p#privacy {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    font-size: 11px;
+}
+#splash p#privacy a {
+    color: #fff;
 }
 
 /* Form */
@@ -43,7 +138,7 @@ html, body {
 }
 #splash #frm_upload label {
     display: block;
-    margin-bottom: 1px;
+    margin-bottom: 2px;
     color: #fff;
     font-size: 14px;
     text-shadow: #3772a5 1px 1px;
@@ -54,7 +149,10 @@ html, body {
     font-size: 14px;
     border: 1px solid #275074;
 }
-#splash #frm_upload #file_path {
+#splash #frm_upload input {
+    margin-top: 0; /* Webkit adds margins to text inputs */
+}
+#splash #frm_upload input#file_path {
     float: left;
     margin-right: 3px;
     width: 172px !important;
@@ -81,7 +179,7 @@ html, body {
 #splash #frm_upload .btn_submit {
     width: 123px;
     height: 28px;
-    font-size: 0;
+    font-size: 0em;
     text-indent: -100000px;
     background: url("../img/splash_btn.png") no-repeat;
     border: 0;

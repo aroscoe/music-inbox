@@ -1,32 +1,30 @@
 {% extends "base.html" %}
 
-{% block document_content %}
-<div id="splash">
-    <div class="container">
-        <div class="col">
-            <h1>Music Inbox</h1>
-            <p id="tagline">Get information about your music<br /> using your library.</p>
-        </div>
-        <form id="frm_upload" enctype="multipart/form-data" method="post" action=".">
-            <div class="input_wrapper">
-                <label for="id_name">Library Name</label>
-                {{form.name}}
-                <!-- <input type="text" name="name" value="" class="txtbox" /> -->
+{% block body %}
+<div id="document">
+    <div id="splash">
+        <div class="container">
+            <div class="col">
+                <h1>Music Inbox</h1>
+                <p id="tagline">Get information about your music<br /> using your library.</p>
+                <p id="privacy"><a href="{% url privacy %}">Privacy Policy</a></p>
             </div>
-            <div class="input_wrapper">
-                <label for="id_file">iTunes XML File</label>
-                <input type="text" name="file_path" value="" id="file_path" class="txtbox" />
-                <div class="file_wrapper">
-                    {{form.file}}
-                    <!-- <input type="file" name="file" value="" id="file" class="btn_browse" /> -->
+            <form id="frm_upload" enctype="multipart/form-data" method="post" action=".">
+                <div class="input_wrapper">
+                    <label for="id_name">Library Name</label>
+                    {{form.name}}
+                    <!-- <input type="text" name="name" value="" class="txtbox" /> -->
                 </div>
-            </div>
-            <input type="submit" name="submit" value="Upload Library" class="btn_submit" />
-        </form>
+                <div class="input_wrapper">
+                    <label for="id_file">iTunes XML File</label>
+                    <input type="text" name="file_path" value="" id="file_path" class="txtbox" />
+                    <div class="file_wrapper">
+                        {{form.file}}
+                    </div>
+                </div>
+                <input type="submit" name="submit" value="Upload Library" class="btn_submit" />
+            </form>
+        </div>
     </div>
 </div>
-{% endblock %}
-
-{% block footer %}
-<center><a href="/library/privacy/">Privacy</a></center>
 {% endblock %}

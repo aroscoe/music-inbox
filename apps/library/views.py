@@ -3,6 +3,7 @@ import logging
 from django.http import Http404
 from django.conf import settings
 from django.views.generic.simple import direct_to_template
+from django.contrib.sites.models import Site
 
 from library.models import Library, Artist
 from library.forms import *
@@ -48,6 +49,7 @@ def upload(request):
         library = LibraryView().post_library(request)
         if library:
             library_id = encrypt_id(library.pk)
+            site_domain = Site.objects.get_current().domain
             return direct_to_template(request, 'library/success.html', locals())
     else:
         form = UploadFileForm()

@@ -109,6 +109,9 @@ BROKER_USER = "felix"
 BROKER_PASSWORD = "felix"
 BROKER_VHOST = "flx"
 
+# musicbrainz rate limiting
+SLEEP_TIME = 2
+
 # Local Settings
 # Check for local_settings to override production enviroment
 try:
