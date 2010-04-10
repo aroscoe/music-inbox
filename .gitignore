@@ -3,4 +3,5 @@ uploads/*
 *.pyc
 dev.db
 local_settings.py
+celerybeat-schedule
 *~
