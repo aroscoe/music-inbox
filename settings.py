@@ -1,8 +1,8 @@
 # Django settings for music-inbox project.
 
 import os.path
-from django.conf.global_settings import TEMPLATE_CONTEXT_PROCESSORS
 import logging
+from django.conf.global_settings import TEMPLATE_CONTEXT_PROCESSORS
 
 PROJECT_ROOT = os.path.realpath(os.path.dirname(__file__))
 
@@ -22,15 +22,17 @@ DATABASE_PASSWORD = ''         # Not used with sqlite3.
 DATABASE_HOST = ''             # Set to empty string for localhost. Not used with sqlite3.
 DATABASE_PORT = ''             # Set to empty string for default. Not used with sqlite3.
 
+# Celery settings
+BROKER_HOST = "localhost"
+BROKER_PORT = 5672
+BROKER_USER = "musicinbox"
+BROKER_PASSWORD = "musicinbox"
+BROKER_VHOST = "musicinbox"
+
 AMAZON_KEY = ''
 AMAZON_SECRET = ''
 KEY = [1, 1, 1, 1]
 
-# Local time zone for this installation. Choices can be found here:
-# http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
-# although not all choices may be available on all operating systems.
-# If running in a Windows environment this must be set to the same as your
-# system time zone.
 TIME_ZONE = 'US/Eastern'
 
 # Language code for this installation. All choices can be found here:
@@ -90,7 +92,6 @@ INSTALLED_APPS = (
     'django.contrib.sites',
 
     'celery',
-    
     'django_cron',
     'library',
     'api',
@@ -99,21 +100,12 @@ INSTALLED_APPS = (
 UPLOADS_DIR = os.path.join(PROJECT_ROOT, 'uploads/')
 
 LOG_FILE = '/tmp/music-inbox-log'
-# override in local_settings.py
 LOG_LEVEL = logging.CRITICAL
-
-# celery settings
-BROKER_HOST = "localhost"
-BROKER_PORT = 5672
-BROKER_USER = "musicinbox"
-BROKER_PASSWORD = "musicinbox"
-BROKER_VHOST = "musicinbox"
 
 # musicbrainz rate limiting
 SLEEP_TIME = 2
 
 # Local Settings
-# Check for local_settings to override production enviroment
 try:
     from local_settings import *
 except ImportError:
