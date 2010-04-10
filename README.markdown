@@ -11,7 +11,11 @@ Dependencies
  * [Django][1]
  * [lxml][2]
  * [celery][6]
+These can be pip installed using the REQUIREMENTS file.
+
  * [RabbitMQ][7]
+We recommend using a package management tool to install RabbitMQ.
+    
 
 Setup
 -----
@@ -19,6 +23,7 @@ Setup
     $ git clone git://github.com/aroscoe/music-inbox.git
     $ cd music-inbox/
     music-inbox $ git submodule update --init
+    music-inbox $ pip install -r REQUIREMENTS
     music-inbox $ sudo rabbitmqctl add_user musicinbox musicinbox
     music-inbox $ sudo rabbitmqctl add_vhost musicinbox
     music-inbox $ sudo rabbitmqctl set_permissions -p musicinbox musicinbox "" ".*" ".*"
