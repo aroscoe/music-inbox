@@ -44,5 +44,5 @@ Authors
 [3]: http://github.com/tjulien
 [4]: http://github.com/aroscoe
 [5]: http://github.com/fberger
-[6]: http://github.com/celery
+[6]: http://github.com/ask/celery
 [7]: http://www.rabbitmq.com
