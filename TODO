@@ -4,6 +4,10 @@ v1:
 * logo
 * Issue #2
 * confirm debugging is logging to logs
+* merge bunny branch
+* enable celery admin
+* add status while uploading file
+* fabric deploy
 
 v2:
 
@@ -12,3 +16,6 @@ v2:
 * What does feedburner offer?
 * grab log files via other users
 * 3 step explanation with pics
+
+future:
+* sessions for each user?
