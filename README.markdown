@@ -11,6 +11,7 @@ Dependencies
  * [Django][1]
  * [lxml][2]
  * [celery][6]
+ * [RabbitMQ][7]
 
 Setup
 -----
@@ -18,7 +19,6 @@ Setup
     $ git clone git://github.com/aroscoe/music-inbox.git
     $ cd music-inbox/
     music-inbox $ git submodule update --init
-    music-inbox $ sudo apt-get install rabbitmq-server
     music-inbox $ sudo rabbitmqctl add_user musicinbox musicinbox
     music-inbox $ sudo rabbitmqctl add_vhost musicinbox
     music-inbox $ sudo rabbitmqctl set_permissions -p musicinbox musicinbox "" ".*" ".*"
@@ -45,3 +45,4 @@ Authors
 [4]: http://github.com/aroscoe
 [5]: http://github.com/fberger
 [6]: http://github.com/celery
+[7]: http://www.rabbitmq.com
