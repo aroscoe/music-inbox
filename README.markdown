@@ -11,9 +11,11 @@ Dependencies
  * [Django][1]
  * [lxml][2]
  * [celery][6]
+
 These can be pip installed using the REQUIREMENTS file.
 
  * [RabbitMQ][7]
+
 We recommend using a package management tool to install RabbitMQ.
     
 
