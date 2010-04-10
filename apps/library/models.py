@@ -108,18 +108,21 @@ class MBArtist(models.Model):
         include = ws.ArtistIncludes(
                 releases=(m.Release.TYPE_OFFICIAL, m.Release.TYPE_ALBUM), tags=True, releaseGroups=True)
         q = ws.Query()
+        # artist query including their releases
         mb_artist = call_mb_ws(q.getArtistById, self.mb_id, include)
         time.sleep(settings.SLEEP_TIME)
         for release in mb_artist.getReleaseGroups():
             mb_album, created_album = MBAlbum.objects.get_or_create(mb_id=release.id, artist = self)
             if created_album:
                 logger.debug(release.title + " ...")
+                # query
                 date, asin = self.get_release_date(release.id)
                 mb_album.release_date = date
                 mb_album.name = release.title
                 if asin:
                     mb_album.asin = asin
                 if amazon_enabled:
+                    # amazon query
                     mb_album.amazon_url = search_on_amazon(asin, release.title, self.name)
                 mb_album.save()
     
@@ -218,7 +221,7 @@ def call_mb_ws(function, *args):
     while True:
         try:
             return function(*args)
-        except ws.WebServiceError as e:            
+        except ws.WebServiceError, e:            
             if e.message.count('503') > -1:
                 logger.debug('function ' + function.func_name + ' failed with 503, sleeping ' + str(settings.SLEEP_TIME * i) + ' seconds')
                 time.sleep(settings.SLEEP_TIME * i)
@@ -230,11 +233,7 @@ def call_mb_ws(function, *args):
 # Library Signal Handling
 
 from library import signals
-from library.utils.importer import LibraryImporter
 from library.utils.mb import album_diff
 
-library_importer = LibraryImporter()
-signals.upload_done.connect(library_importer.itunes)
-
-signals.import_done.connect(album_diff)
+#signals1.import_done.connect(album_diff)
 

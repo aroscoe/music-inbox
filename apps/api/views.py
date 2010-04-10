@@ -10,7 +10,6 @@ from data_responder import JSONDataResponder
 
 from library.models import Artist
 from library.models import Library as LibraryModel
-from library import signals
 from library.forms import *
 from library.views import LibraryView
 
@@ -45,7 +44,6 @@ def missing(request, library_id):
     try:
         library = LibraryModel.objects.get(pk=library_id)
     except LibraryModel.DoesNotExist:
-        #return HttpResponseNotFound
         raise Http404
     
     response = {}

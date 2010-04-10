@@ -10,6 +10,7 @@ Dependencies
 ------------
  * [Django][1]
  * [lxml][2]
+ * [celery][6]
 
 Setup
 -----
@@ -17,7 +18,12 @@ Setup
     $ git clone git://github.com/aroscoe/music-inbox.git
     $ cd music-inbox/
     music-inbox $ git submodule update --init
+    music-inbox $ sudo apt-get install rabbitmq-server
+    music-inbox $ sudo rabbitmqctl add_user musicinbox musicinbox
+    music-inbox $ sudo rabbitmqctl add_vhost musicinbox
+    music-inbox $ sudo rabbitmqctl set_permissions -p musicinbox musicinbox "" ".*" ".*"
     music-inbox $ ./manage.py syncdb
+    music-inbox $ ./manage.py celeryd -B
     music-inbox $ ./manage.py runserver
 
 Your local Django server should be running now. Upload a library and try out some of the following REST calls.
@@ -38,3 +44,4 @@ Authors
 [3]: http://github.com/tjulien
 [4]: http://github.com/aroscoe
 [5]: http://github.com/fberger
+[6]: http://github.com/celery

@@ -88,6 +88,8 @@ INSTALLED_APPS = (
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.sites',
+
+    'celery',
     
     'django_cron',
     'library',
@@ -99,6 +101,13 @@ UPLOADS_DIR = os.path.join(PROJECT_ROOT, 'uploads/')
 LOG_FILE = '/tmp/music-inbox-log'
 # override in local_settings.py
 LOG_LEVEL = logging.CRITICAL
+
+# celery settings
+BROKER_HOST = "localhost"
+BROKER_PORT = 5672
+BROKER_USER = "musicinbox"
+BROKER_PASSWORD = "musicinbox"
+BROKER_VHOST = "musicinbox"
 
 # musicbrainz rate limiting
 SLEEP_TIME = 2

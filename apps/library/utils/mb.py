@@ -1,17 +1,17 @@
-import musicbrainz2.webservice as ws
-import musicbrainz2.model as m
 import logging
 import time
 from datetime import date
+
+from django.conf import settings
+import musicbrainz2.webservice as ws
+import musicbrainz2.model as m
 
 from library.models import *
 
 logging.basicConfig()
 logger = logging.getLogger("album_diff")
-from django.conf import settings
 
-def album_diff(sender, **kwargs):
-    library = kwargs['library']
+def album_diff(library):
     logger.setLevel(settings.LOG_LEVEL)
     logger.debug("processing " + library.name + " ...")
     
@@ -19,7 +19,8 @@ def album_diff(sender, **kwargs):
         logger.debug(artist.name + " ...")
         name_filter = ws.ArtistFilter(name=artist.name, limit=5)
         q = ws.Query()
-        #artist_results = q.getArtists(name_filter) # TODO aliases if no albums match
+        # query 1 get list of matching artists from mb
+        # could do lookup in db first
         artist_results = call_mb_ws(q.getArtists, name_filter)
         time.sleep(settings.SLEEP_TIME)
         if artist_results:
@@ -27,7 +28,10 @@ def album_diff(sender, **kwargs):
             artist.mb_artist_id = mb_artist_id
             artist.save()
             
-            local_release_group_ids = set([get_release_group_id(release_group, mb_artist_id) for release_group in artist.album_set.all()])
+            # query for each single album that the user has
+            for release_group in artist.album_set.all():
+                get_release_group_id(release_group, mb_artist_id)
+
             mb_artist_entry, created_artist = MBArtist.objects.get_or_create(mb_id=mb_artist_id)
             if created_artist:
                 mb_artist_entry.name = artist.name
@@ -67,7 +71,7 @@ def call_mb_ws(function, *args):
     while True:
         try:
             return function(*args)
-        except ws.WebServiceError as e:            
+        except ws.WebServiceError, e:            
             if e.message.count('503') > -1:
                 logger.debug('function ' + function.func_name + ' failed with 503, sleeping ' + str(settings.SLEEP_TIME * i) + ' seconds')
                 time.sleep(settings.SLEEP_TIME * i)
