@@ -229,11 +229,3 @@ def call_mb_ws(function, *args):
             else:
                 raise e
 
-#################################################################
-# Library Signal Handling
-
-from library import signals
-from library.utils.mb import album_diff
-
-#signals1.import_done.connect(album_diff)
-

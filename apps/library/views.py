@@ -23,11 +23,9 @@ class LibraryView:
             logger.debug("valid")
             library_name = form.cleaned_data['name']
             
-            # Create Library to send along with the signal and send id back in
-            # the response
             library = Library(name=library_name)
             library.save()
-
+            
             library_filename = self._save_library_file(request.FILES['file'], 
                                                        library.id)
             
