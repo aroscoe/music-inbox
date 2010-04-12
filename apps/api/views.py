@@ -13,8 +13,6 @@ from library.models import Library as LibraryModel
 from library.forms import *
 from library.views import LibraryView
 
-import threading
-
 libraries_resource = Collection(
     queryset = LibraryModel.objects.all(),
     responder = JSONResponder()
