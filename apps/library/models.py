@@ -1,15 +1,16 @@
 import sys
+import time
+import logging
+from datetime import date
+
+from django.conf import settings
 from django.db import models
+
 import musicbrainz2.webservice as ws
 import musicbrainz2.model as m
-import time
-from datetime import date
-import logging
 
 logging.basicConfig()
 logger = logging.getLogger("models")
-
-from django.conf import settings
 logger.setLevel(settings.LOG_LEVEL)
 
 try:
@@ -18,8 +19,6 @@ try:
 except ImportError:
     logger.debug("amazon search disabled")
     amazon_enabled = False
-
-# Create your models here.
 
 class Library(models.Model):
     name = models.CharField(max_length=60, blank=True)
@@ -55,7 +54,7 @@ class Library(models.Model):
         if not album2.release_date:
             return -sys.maxint
         return -1 * cmp(album1.release_date, album2.release_date)
-
+    
     def albums_dict(self):
         """return a dictionary of Albums with the key being Artist"""
         response = {}

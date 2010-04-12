@@ -1,12 +1,11 @@
 import logging
-
-from celery.decorators import task
-from django.conf import settings
 import plistlib
+
+from django.conf import settings
+from celery.decorators import task
 
 from library.models import *
 from library.utils.mb import album_diff
-
 
 @task
 def import_itunes_file(library_id, library_filename, **kwargs):
@@ -16,15 +15,15 @@ def import_itunes_file(library_id, library_filename, **kwargs):
     
     '''
     logger = import_itunes_file.get_logger(**kwargs)
-
+    
     logger.debug("reading file %s for library %s" 
                  % (library_filename, library_id))
-
+    
     library = Library.objects.get(pk=library_id)
-
+    
     itunes = plistlib.readPlist(library_filename)
     tracks = itunes["Tracks"]
-
+    
     for track in tracks.values():
         if track.get("Artist") and track.get("Album"):
             artist, created = library.artist_set.get_or_create(name=track["Artist"])
@@ -42,8 +41,8 @@ def diff_albums(library_id, **kwargs):
     ''' '''
     logger = import_itunes_file.get_logger(**kwargs)
     logger.debug("diffing albums of library %s" % library_id)
-
+    
     library = Library.objects.get(pk=library_id)
     
-    album_diff(library)    
+    album_diff(library)
 

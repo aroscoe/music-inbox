@@ -1,6 +1,7 @@
 from django.conf.urls.defaults import *
-from library.feed import NewAlbums
 from django.contrib.syndication.views import feed as feedview
+
+from library.feed import NewAlbums
 
 feeds = {'newalbums': NewAlbums}
 

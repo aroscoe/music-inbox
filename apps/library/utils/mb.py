@@ -31,7 +31,7 @@ def album_diff(library):
             # query for each single album that the user has
             for release_group in artist.album_set.all():
                 get_release_group_id(release_group, mb_artist_id)
-
+            
             mb_artist_entry, created_artist = MBArtist.objects.get_or_create(mb_id=mb_artist_id)
             if created_artist:
                 mb_artist_entry.name = artist.name
@@ -71,7 +71,7 @@ def call_mb_ws(function, *args):
     while True:
         try:
             return function(*args)
-        except ws.WebServiceError, e:            
+        except ws.WebServiceError, e:
             if e.message.count('503') > -1:
                 logger.debug('function ' + function.func_name + ' failed with 503, sleeping ' + str(settings.SLEEP_TIME * i) + ' seconds')
                 time.sleep(settings.SLEEP_TIME * i)

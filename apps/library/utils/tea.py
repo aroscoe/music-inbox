@@ -12,15 +12,15 @@ def encrypt(value, key):
         sum += delta
         v0 += ((v1<<4) + k0) ^ (v1 + sum) ^ ((v1>>5) + k1)
         v0 &= 0xFFFFFFFFL
-        v1 += ((v0<<4) + k2) ^ (v0 + sum) ^ ((v0>>5) + k3)  
+        v1 += ((v0<<4) + k2) ^ (v0 + sum) ^ ((v0>>5) + k3)
         v1 &= 0xFFFFFFFFL
-        
+    
     return (v0 << 32) | (v1 & 0xFFFFFFFFL)
 
 def decrypt(value, key):
     '''
     Decrypts a value with key using the Tiny Encryption Algorithm.
-
+    
     * value has to be a long
     * key has to be an integer array of length 4
     '''
@@ -32,6 +32,6 @@ def decrypt(value, key):
         v1 &= 0xFFFFFFFFL
         v0 -= ((v1<<4) + k0) ^ (v1 + sum) ^ ((v1>>5) + k1)
         v0 &= 0xFFFFFFFFL
-        sum -= delta                                   
+        sum -= delta
     return (v0 << 32) | (v1 & 0xFFFFFFFFL)
 
