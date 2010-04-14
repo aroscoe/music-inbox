@@ -5,7 +5,6 @@ v1:
 * Issue #2
 * confirm debugging is logging to logs
 * enable celery admin
-* add file upload validation
 * add status while uploading file
 * remove upload dir and just have django create it
 * fabric deploy
