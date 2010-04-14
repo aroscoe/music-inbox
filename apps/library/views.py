@@ -31,8 +31,8 @@ class LibraryView:
             
             import_itunes_file.delay(library.id, library_filename)
             
-            return library
-        return None
+            return library, None
+        return None, form
     
     def _save_library_file(self, file, library_id):
         file_path = settings.UPLOADS_DIR + str(library_id) + ".xml"
@@ -44,7 +44,7 @@ class LibraryView:
 
 def upload(request):
     if request.method == 'POST':
-        library = LibraryView().post_library(request)
+        library, form = LibraryView().post_library(request)
         if library:
             library_id = encrypt_id(library.pk)
             site_domain = Site.objects.get_current().domain

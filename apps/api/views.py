@@ -33,7 +33,7 @@ class LibraryResource(Resource):
     # curl -H "Content-Type: multipart/form-data" -F "file=@test_library.xml" -F "name=Anthony" http://localhost:8000/library/
     def create(self, request, *args):
         if request.method == 'POST':
-            library = LibraryView().post_library(request)
+            library, form = LibraryView().post_library(request)
             if library:
                 responder = JSONDataResponder({'library_id': library.pk})
                 return responder.response
