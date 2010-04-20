@@ -9,6 +9,8 @@ PROJECT_ROOT = os.path.realpath(os.path.dirname(__file__))
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
+INTERNAL_IPS = ('127.0.0.1',)
+
 ADMINS = (
     # ('Your Name', 'your_email@domain.com'),
 )
@@ -90,6 +92,7 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
 )
 
 ROOT_URLCONF = 'music-inbox.urls'
@@ -107,7 +110,8 @@ INSTALLED_APPS = (
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.sites',
-
+    
+    'debug_toolbar',
     'celery',
     'django_cron',
     'library',
