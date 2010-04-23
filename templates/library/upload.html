@@ -1,6 +1,36 @@
 {% extends "base.html" %}
 
 {% block body %}
+
+<script type="text/javascript" src="{{MEDIA_URL}}js/swfupload.js"></script>
+
+<script type="text/javascript">
+var swfu;
+    
+window.onload = function () {
+    swfu = new SWFUpload({
+        debug : true,
+        upload_url : "{% url library_home %}",
+        flash_url : "{{MEDIA_URL}}swf/swfupload.swf",
+        
+        // File Settings
+        file_post_name: "file",
+        file_queue_limit : "1",
+        file_size_limit : "20 MB",
+        file_types: "*.xml",
+        
+        // Button Settings
+        button_placeholder_id : "btn_upload",
+        button_width: 71,
+        button_height: 28,
+        button_window_mode: SWFUpload.WINDOW_MODE.TRANSPARENT,
+        button_cursor: SWFUpload.CURSOR.HAND,
+        button_action: SWFUpload.BUTTON_ACTION.SELECT_FILE,
+    });
+};
+
+</script>
+
 <div id="document">
     <div id="splash">
         <div class="container">
@@ -14,16 +44,17 @@
                     <label for="id_name">Library Name</label>
                     {{form.name}}
                     {{form.name.errors}}
-                    <!-- <input type="text" name="name" value="" class="txtbox" /> -->
                 </div>
+                
                 <div class="input_wrapper">
                     <label for="id_file">iTunes XML File</label>
                     <input type="text" name="file_path" value="" id="file_path" class="txtbox" />
                     <div class="file_wrapper">
-                        {{form.file}}
+                        <div id="btn_upload"></div>
                     </div>
                     {{form.file.errors}}
                 </div>
+                
                 <input type="submit" name="submit" value="Upload Library" class="btn_submit" />
             </form>
         </div>
