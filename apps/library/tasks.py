@@ -39,7 +39,7 @@ def import_itunes_file(library_id, library_filename, **kwargs):
 @task
 def diff_albums(library_id, **kwargs):
     ''' '''
-    logger = import_itunes_file.get_logger(**kwargs)
+    logger = diff_albums.get_logger(**kwargs)
     logger.debug("diffing albums of library %s" % library_id)
     
     library = Library.objects.get(pk=library_id)
