@@ -13,6 +13,7 @@
                 <div class="input_wrapper">
                     <label for="id_name">Library Name</label>
                     {{form.name}}
+                    {{form.name.errors}}
                     <!-- <input type="text" name="name" value="" class="txtbox" /> -->
                 </div>
                 <div class="input_wrapper">
@@ -21,6 +22,7 @@
                     <div class="file_wrapper">
                         {{form.file}}
                     </div>
+                    {{form.file.errors}}
                 </div>
                 <input type="submit" name="submit" value="Upload Library" class="btn_submit" />
             </form>
