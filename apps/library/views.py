@@ -1,3 +1,4 @@
+import uuid
 import logging
 
 from django.http import Http404
@@ -26,16 +27,16 @@ class LibraryView:
             library = Library(name=library_name)
             library.save()
             
-            library_filename = self._save_library_file(request.FILES['file'], 
-                                                       library.id)
+            library_filename = self._save_library_file(request.FILES['file'])
             
             import_itunes_file.delay(library.id, library_filename)
             
             return library, None
         return None, form
     
-    def _save_library_file(self, file, library_id):
-        file_path = settings.UPLOADS_DIR + str(library_id) + ".xml"
+    def _save_library_file(self, file):
+        guid = uuid.uuid4().get_hex()
+        file_path = settings.UPLOADS_DIR + guid + ".xml"
         destination = open(file_path, 'wb+')
         for chunk in file.chunks():
             destination.write(chunk)
