@@ -226,5 +226,5 @@ def call_mb_ws(function, *args):
                 time.sleep(settings.SLEEP_TIME * i)
                 i *= 2
             else:
-            raise e
+                raise e
 
