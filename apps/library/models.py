@@ -108,46 +108,52 @@ class MBArtist(models.Model):
                 releases=(m.Release.TYPE_OFFICIAL, m.Release.TYPE_ALBUM), tags=True, releaseGroups=True)
         q = ws.Query()
         # artist query including their releases
-        mb_artist = call_mb_ws(q.getArtistById, self.mb_id, include)
-        time.sleep(settings.SLEEP_TIME)
-        for release in mb_artist.getReleaseGroups():
-            mb_album, created_album = MBAlbum.objects.get_or_create(mb_id=release.id, artist = self)
-            if created_album:
-                logger.debug(release.title + " ...")
-                # query
-                date, asin = self.get_release_date(release.id)
-                mb_album.release_date = date
-                mb_album.name = release.title
-                if asin:
-                    mb_album.asin = asin
-                if amazon_enabled:
-                    # amazon query
-                    mb_album.amazon_url = search_on_amazon(asin, release.title, self.name)
-                mb_album.save()
+        try:
+            mb_artist = call_mb_ws(q.getArtistById, self.mb_id, include)
+            time.sleep(settings.SLEEP_TIME)
+            for release in mb_artist.getReleaseGroups():
+                mb_album, created_album = MBAlbum.objects.get_or_create(mb_id=release.id, artist = self)
+                if created_album:
+                    logger.debug(release.title + " ...")
+                    # query
+                    date, asin = self.get_release_date(release.id)
+                    mb_album.release_date = date
+                    mb_album.name = release.title
+                    if asin:
+                        mb_album.asin = asin
+                    if amazon_enabled:
+                        # amazon query
+                        mb_album.amazon_url = search_on_amazon(asin, release.title, self.name)
+                    mb_album.save()
+        except ws.WebServiceError, e:
+            logger.debug('q.getArtistById failed for ' + self.mb_id)
     
     def get_release_date(self, release_group_id):
         includes = ws.ReleaseGroupIncludes(releases=True)
         q = ws.Query()
-        release_group = call_mb_ws(q.getReleaseGroupById, release_group_id, includes)
-        time.sleep(settings.SLEEP_TIME)
-        if release_group and release_group.releases:
-            release = release_group.releases[0] # TODO iterate over all
-            includes = ws.ReleaseIncludes(releaseEvents = True)
-            release = call_mb_ws(q.getReleaseById, release.id, includes)
+        try:
+            release_group = call_mb_ws(q.getReleaseGroupById, release_group_id, includes)
             time.sleep(settings.SLEEP_TIME)
-            release_date = release.getEarliestReleaseDate()
-            if release_date:
-                logger.debug("   " + release_date)
-                month = 1
-                day = 1
-                parsed_release_date = release_date.split('-')
-                year = int(parsed_release_date[0])
-                if len(parsed_release_date) > 1:
-                    month = int(parsed_release_date[1])
-                if len(parsed_release_date) > 2:
-                    day = int(parsed_release_date[2])
-                return date(year, month, day), release.asin
-        return None, None
+            if release_group and release_group.releases:
+                release = release_group.releases[0] # TODO iterate over all
+                includes = ws.ReleaseIncludes(releaseEvents = True)
+                release = call_mb_ws(q.getReleaseById, release.id, includes)
+                time.sleep(settings.SLEEP_TIME)
+                release_date = release.getEarliestReleaseDate()
+                if release_date:
+                    logger.debug("   " + release_date)
+                    month = 1
+                    day = 1
+                    parsed_release_date = release_date.split('-')
+                    year = int(parsed_release_date[0])
+                    if len(parsed_release_date) > 1:
+                        month = int(parsed_release_date[1])
+                    if len(parsed_release_date) > 2:
+                        day = int(parsed_release_date[2])
+                    return date(year, month, day), release.asin
+            return None, None
+        except ws.WebServiceError, e:
+            return None, None
     
     class Admin:
         pass
@@ -221,7 +227,7 @@ def call_mb_ws(function, *args):
         try:
             return function(*args)
         except ws.WebServiceError, e:       
-            if e.message.count('503') > 0:
+            if '503' in e.message:
                 logger.debug('function ' + function.func_name + ' failed with 503, sleeping ' + str(settings.SLEEP_TIME * i) + ' seconds')
                 time.sleep(settings.SLEEP_TIME * i)
                 i *= 2

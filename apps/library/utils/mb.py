@@ -21,23 +21,26 @@ def album_diff(library):
         q = ws.Query()
         # query 1 get list of matching artists from mb
         # could do lookup in db first
-        artist_results = call_mb_ws(q.getArtists, name_filter)
-        time.sleep(settings.SLEEP_TIME)
-        if artist_results:
-            mb_artist_id = artist_results[0].artist.id
-            artist.mb_artist_id = mb_artist_id
-            artist.save()
+        try:
+            artist_results = call_mb_ws(q.getArtists, name_filter)
+            time.sleep(settings.SLEEP_TIME)
+            if artist_results:
+                mb_artist_id = artist_results[0].artist.id
+                artist.mb_artist_id = mb_artist_id
+                artist.save()
             
-            # query for each single album that the user has
-            for release_group in artist.album_set.all():
-                get_release_group_id(release_group, mb_artist_id)
+                # query for each single album that the user has
+                for release_group in artist.album_set.all():
+                    get_release_group_id(release_group, mb_artist_id)
             
-            mb_artist_entry, created_artist = MBArtist.objects.get_or_create(mb_id=mb_artist_id)
-            if created_artist:
-                mb_artist_entry.name = artist.name
-                mb_artist_entry.save()
+                mb_artist_entry, created_artist = MBArtist.objects.get_or_create(mb_id=mb_artist_id)
+                if created_artist:
+                    mb_artist_entry.name = artist.name
+                    mb_artist_entry.save()
             
-                mb_artist_entry.fetch_albums()
+                    mb_artist_entry.fetch_albums()
+        except ws.WebServiceError, e:
+            pass
                 
 def get_artist_id(artist_name):
     name_filter = ws.ArtistFilter(name=artist_name, limit=5)
@@ -72,7 +75,7 @@ def call_mb_ws(function, *args):
         try:
             return function(*args)
         except ws.WebServiceError, e:
-            if '503' in message:
+            if '503' in e.message:
                 logger.debug('function ' + function.func_name + ' failed with 503, sleeping ' + str(settings.SLEEP_TIME * i) + ' seconds')
                 time.sleep(settings.SLEEP_TIME * i)
                 i *= 2

@@ -23,9 +23,8 @@ class Tests(TestCase):
         from library.models import *
         from musicbrainz2.webservice import *
         artist = MBArtist.objects.create(name = 'Galactic', mb_id = 'http://musicbrainz.org/artist/cabbdf87-5cb2-4f3c-be65-254655c87508.html')
-        self.assertRaises(ResourceNotFoundError, 
-                          artist.get_release_date, 
-                          'http://musicbrainz.org/release-group/32195cf1-5d5c-412e-b308-1d586c08e6c4.html')
+        self.assertEqual((None, None),
+                          artist.get_release_date('http://musicbrainz.org/release-group/32195cf1-5d5c-412e-b308-1d586c08e6c4.html'))
         
         
     def test_null_release_dates(self):
