@@ -1,4 +1,9 @@
+from datetime import date
+
 from django.test import TestCase
+
+from library.models import *
+
 
 class Tests(TestCase):
     def test_views_missing(self):
@@ -33,7 +38,7 @@ class Tests(TestCase):
         '''
         makes sure the Library._newest_ function can accept null MBAlbum.release_date's
         '''
-        from library.models import *
+        
         from datetime import datetime
         import sys
         
@@ -50,3 +55,18 @@ class Tests(TestCase):
         self.assertEquals(-sys.maxint, library._newest_(album1, album2))
         self.assertEquals(sys.maxint, library._newest_(album1, album3))
         self.assertEquals(-sys.maxint, library._newest_(album3, album2))
+        
+
+        
+    def test_fetch_albums(self):
+        artist = MBArtist.objects.create(name='4 Non Blondes',
+                                        mb_id='http://musicbrainz.org/artist/efef848b-63e4-4323-8ef7-69a48fbdd51d.html')
+        artist.fetch_albums()
+        self.assertEquals(1, len(MBAlbum.objects.all()))
+        album = MBAlbum.objects.get(name='Bigger, Better, Faster, More!')
+        self.assertNotEquals(None, album)
+        self.assertEquals('http://musicbrainz.org/release-group/0d26ee11-05f3-3a02-ba40-1414fa325554',
+                          album.mb_id)
+        self.assertEquals(date(1992, 10, 13), album.release_date)
+        self.assertEquals(artist, album.artist)
+        
