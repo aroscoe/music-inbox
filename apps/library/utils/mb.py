@@ -71,7 +71,7 @@ def call_mb_ws(function, *args):
         try:
             return function(*args)
         except ws.WebServiceError, e:
-            if '503' in message:
+            if '503' in e.message:
                 logger.debug('function ' + function.func_name + ' failed with 503, sleeping ' + str(settings.SLEEP_TIME * i) + ' seconds')
                 time.sleep(settings.SLEEP_TIME * i)
                 i *= 2

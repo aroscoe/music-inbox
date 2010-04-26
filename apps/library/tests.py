@@ -3,6 +3,7 @@ from datetime import date
 from django.test import TestCase
 
 from library.models import *
+from library.utils import mb
 
 
 class Tests(TestCase):
@@ -76,3 +77,8 @@ class Tests(TestCase):
                                          mb_id='http://musicbrainz.org/artist/efef848b-63e4-4323-8ef7-69a48fbdd51d.html')
         release_date, asin = artist.get_release_date('http://musicbrainz.org/release-group/0d26ee11-05f3-3a02-ba40-1414fa325554')
         self.assertEquals(date(1992, 10, 13), release_date)
+
+    def test_utils_mb_get_releases(self):
+        result = mb.get_releases('Bigger, Better, Faster, More!', 
+                                 'http://musicbrainz.org/artist/efef848b-63e4-4323-8ef7-69a48fbdd51d.html')
+        print result
