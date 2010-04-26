@@ -16,36 +16,38 @@ def album_diff(library):
     logger.debug("processing " + library.name + " ...")
     
     for artist in library.artist_set.order_by("-play_count"):
-        logger.debug(artist.name + " ...")
+        lookup_artist(artist)
+
+def get_local_mb_artist(artist_name):
+    '''Returns local MBArtist object or None'''
+    try:
+        return MBArtist.objects.get(name=artist_name)
+    except MBArtist.DoesNotExist:
+        return None
+
+def lookup_artist(artist):
+    '''Looks up Artist locally or in musicbrainz and asssociates Artist object
+    with MBArtist.'''
+    logger.debug(artist.name + " ...")
+    mb_artist = get_local_mb_artist(artist.name)
+    if mb_artist:
+        artist.mb_artist_id = mb_artist.mb_id
+        artist.name = mb_artist_id.name
+        artist.save()
+    else:
         name_filter = ws.ArtistFilter(name=artist.name, limit=5)
         q = ws.Query()
-        # query 1 get list of matching artists from mb
-        # could do lookup in db first
-        try:
-            artist_results = call_mb_ws(q.getArtists, name_filter)
-            time.sleep(settings.SLEEP_TIME)
-            if artist_results:
-                mb_artist_id = artist_results[0].artist.id
-                artist.mb_artist_id = mb_artist_id
-                artist.save()
-            
-                # query for each single album that the user has
-                for release_group in artist.album_set.all():
-                    get_release_group_id(release_group, mb_artist_id)
-            
-                mb_artist_entry, created_artist = MBArtist.objects.get_or_create(mb_id=mb_artist_id)
-                if created_artist:
-                    mb_artist_entry.name = artist.name
-                    mb_artist_entry.save()
-            
-                    mb_artist_entry.fetch_albums()
-        except ws.WebServiceError, e:
-            pass
-                
-def get_artist_id(artist_name):
-    name_filter = ws.ArtistFilter(name=artist_name, limit=5)
-    q = ws.Query()
-    return call_mb_ws(q.getArtists, name_filter)[0].artist.id
+        artist_results = call_mb_ws(q.getArtists, name_filter)
+        time.sleep(settings.SLEEP_TIME)
+        if artist_results:
+            mb_artist_name = artist_results[0].artist.name
+            mb_artist_id = artist_results[0].artist.id
+            artist.mb_artist_id = mb_artist_id
+            artist.name = mb_artist_name
+            artist.save()
+            mb_artist, created = MBArtist.objects.get_or_create(mb_id=mb_artist_id, name=mb_artist_name)
+            if created:
+                mb_artist.fetch_albums()
 
 def get_release_group_id(album, mb_artist_id):
     releases = get_releases(album.name, mb_artist_id)

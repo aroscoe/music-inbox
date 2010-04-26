@@ -58,7 +58,7 @@ class Tests(TestCase):
 
     def test_fetch_albums(self):
         artist = MBArtist.objects.create(name='4 Non Blondes',
-                                        mb_id='http://musicbrainz.org/artist/efef848b-63e4-4323-8ef7-69a48fbdd51d.html')
+                                        mb_id='http://musicbrainz.org/artist/efef848b-63e4-4323-8ef7-69a48fbdd51d')
         artist.fetch_albums()
         self.assertEquals(1, len(MBAlbum.objects.all()))
         album = MBAlbum.objects.get(name='Bigger, Better, Faster, More!')
@@ -71,7 +71,7 @@ class Tests(TestCase):
 
     def test_get_release_date(self):
         artist = MBArtist.objects.create(name='4 Non Blondes',
-                                         mb_id='http://musicbrainz.org/artist/efef848b-63e4-4323-8ef7-69a48fbdd51d.html')
+                                         mb_id='http://musicbrainz.org/artist/efef848b-63e4-4323-8ef7-69a48fbdd51d')
         release_date, asin = artist.get_release_date('http://musicbrainz.org/release-group/0d26ee11-05f3-3a02-ba40-1414fa325554')
         self.assertEquals(date(1992, 10, 13), release_date)
 
@@ -87,3 +87,45 @@ class Tests(TestCase):
         id  = mb.get_release_group_id(album, 
                                       'efef848b-63e4-4323-8ef7-69a48fbdd51d')
         self.assertEquals('http://musicbrainz.org/release-group/0d26ee11-05f3-3a02-ba40-1414fa325554', id)
+
+
+    def test_lookup_artist_for_new_artist(self):
+        library = Library.objects.create(name='test')
+        artist = library.artist_set.create(name='4 Non Blondes')
+        
+        mb.lookup_artist(artist)
+        
+        self.assertEquals('http://musicbrainz.org/artist/efef848b-63e4-4323-8ef7-69a48fbdd51d', artist.mb_artist_id)
+
+        mb_artist = MBArtist.objects.get(name='4 Non Blondes')
+        self.assertNotEquals(None, mb_artist)
+        self.assertEquals('http://musicbrainz.org/artist/efef848b-63e4-4323-8ef7-69a48fbdd51d',
+                          mb_artist.mb_id)
+        
+        self.assertEquals(1, len(MBAlbum.objects.all()))
+        album = MBAlbum.objects.get(name='Bigger, Better, Faster, More!')
+        self.assertNotEquals(None, album)
+        self.assertEquals('http://musicbrainz.org/release-group/0d26ee11-05f3-3a02-ba40-1414fa325554',
+                          album.mb_id)
+        self.assertEquals(date(1992, 10, 13), album.release_date)
+        self.assertEquals(mb_artist, album.artist)
+
+    def test_lookup_artist_for_existing_artist(self):
+        mb_artist = MBArtist.objects.create(name='4 Non Blondes',
+                                         mb_id='http://musicbrainz.org/artist/efef848b-63e4-4323-8ef7-69a48fbdd51d')
+        library = Library.objects.create(name='test')
+        artist = library.artist_set.create(name='4 Non Blondes')
+        
+        mb.lookup_artist(artist)
+
+        self.assertEquals(mb_artist.mb_id, artist.mb_artist_id)
+        # albums should not be fetched
+        self.assertEquals(0, len(MBAlbum.objects.all()))
+
+    def test_lookup_artist_for_new_artist_fixes_name(self):
+        library = Library.objects.create(name='test')
+        artist = library.artist_set.create(name='4 non blondes')
+        
+        mb.lookup_artist(artist)
+        
+        self.assertEquals('4 Non Blondes', artist.name)
