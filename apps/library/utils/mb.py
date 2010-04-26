@@ -8,40 +8,41 @@ import musicbrainz2.model as m
 
 from library.models import *
 
-logging.basicConfig()
-logger = logging.getLogger("album_diff")
-
-def album_diff(library):
-    logger.setLevel(settings.LOG_LEVEL)
+def album_diff(library, logger):
     logger.debug("processing " + library.name + " ...")
     
     for artist in library.artist_set.order_by("-play_count"):
-        lookup_artist(artist)
+        lookup_artist(artist, logger)
 
-def lookup_artist(artist):
+def get_local_mb_artist(artist_name):
+    '''Returns local MBArtist object or none'''
+    try:
+        return MBArtist.objects.get(name=artist.name)
+    except MBArtist.DoesNotExist:
+        return None
+
+def lookup_artist(artist, logger):
     logger.debug(artist.name + " ...")
-    name_filter = ws.ArtistFilter(name=artist.name, limit=5)
-    q = ws.Query()
-    # query 1 get list of matching artists from mb
-    # could do lookup in db first
-    artist_results = call_mb_ws(q.getArtists, name_filter)
-    time.sleep(settings.SLEEP_TIME)
-    if artist_results:
-        mb_artist_id = artist_results[0].artist.id
-        artist.mb_artist_id = mb_artist_id
+    mb_artist = get_local_mb_artist(artist.name)
+    if mb_artist:
+        artist.mb_artist = mb_artist.mb_id
         artist.save()
+    else:
+        name_filter = ws.ArtistFilter(name=artist.name, limit=5)
+        q = ws.Query()
+        artist_results = call_mb_ws(q.getArtists, name_filter)
+        time.sleep(settings.SLEEP_TIME)
+        if artist_results:
+            mb_artist_id = artist_results[0].artist.id
+            artist.mb_artist_id = mb_artist_id
+            artist.save()
+            mb_artist, created = MBArtist.objects.get_or_create(mb_id=mb_artist_id, name=artist.name)
+            if created:
+                mb_artist_entry.fetch_albums()
         
-        # query for each single album that the user has
-        for release_group in artist.album_set.all():
-            get_release_group_id(release_group, mb_artist_id)
+    for release_group in artist.album_set.all():
+        get_release_group_id(release_group, mb_artist.mb_id)
             
-        mb_artist_entry, created_artist = MBArtist.objects.get_or_create(mb_id=mb_artist_id)
-        if created_artist:
-            mb_artist_entry.name = artist.name
-            mb_artist_entry.save()
-            
-            mb_artist_entry.fetch_albums()
-                
 def get_release_group_id(album, mb_artist_id):
     releases = get_releases(album.name, mb_artist_id)
     time.sleep(settings.SLEEP_TIME)

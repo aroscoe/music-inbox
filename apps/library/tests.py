@@ -2,6 +2,7 @@ from django.test import TestCase
 
 class Tests(TestCase):
     def test_views_missing(self):
+        print 'running'
         from api.views import *
         from django.http import Http404
         try:

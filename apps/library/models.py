@@ -95,7 +95,7 @@ class Artist(models.Model):
     
 class MBArtist(models.Model):
     mb_id = models.CharField(max_length=150, unique=True)
-    name = models.CharField(max_length=150)
+    name = models.CharField(max_length=150, db_index=True)
     
     def __str__(self):
         return self.name
@@ -105,13 +105,14 @@ class MBArtist(models.Model):
     
     def fetch_albums(self):
         include = ws.ArtistIncludes(
-                releases=(m.Release.TYPE_OFFICIAL, m.Release.TYPE_ALBUM), tags=True, releaseGroups=True)
+            releases=(m.Release.TYPE_OFFICIAL, m.Release.TYPE_ALBUM), 
+            tags=True, releaseGroups=True)
         q = ws.Query()
         # artist query including their releases
         mb_artist = call_mb_ws(q.getArtistById, self.mb_id, include)
         time.sleep(settings.SLEEP_TIME)
         for release in mb_artist.getReleaseGroups():
-            mb_album, created_album = MBAlbum.objects.get_or_create(mb_id=release.id, artist = self)
+            mb_album, created_album = MBAlbum.objects.get_or_create(mb_id=release.id, artist=self)
             if created_album:
                 logger.debug(release.title + " ...")
                 # query

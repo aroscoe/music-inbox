@@ -44,5 +44,5 @@ def diff_albums(library_id, **kwargs):
     
     library = Library.objects.get(pk=library_id)
     
-    album_diff(library)
+    album_diff(library, logger)
 
