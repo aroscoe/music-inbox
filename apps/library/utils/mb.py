@@ -60,9 +60,9 @@ def get_release_group_id(album, mb_artist_id):
             return id
     return None
 
-def get_releases(name, mb_artist_id):
+def get_releases(album_name, mb_artist_id):
     release_filter = ws.ReleaseFilter(
-                            title=name,
+                            title=album_name,
                             artistId=mb_artist_id,
                             releaseTypes=(m.Release.TYPE_OFFICIAL,
                                     m.Release.TYPE_ALBUM))

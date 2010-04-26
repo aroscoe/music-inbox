@@ -1,4 +1,10 @@
+from datetime import date
+
 from django.test import TestCase
+
+from library.models import *
+from library.utils import mb
+
 
 class Tests(TestCase):
     def test_views_missing(self):
@@ -23,7 +29,7 @@ class Tests(TestCase):
         from library.models import *
         from musicbrainz2.webservice import *
         artist = MBArtist.objects.create(name = 'Galactic', mb_id = 'http://musicbrainz.org/artist/cabbdf87-5cb2-4f3c-be65-254655c87508.html')
-        self.assertEqual((None, None),
+        self.assertEquals((None, None),
                           artist.get_release_date('http://musicbrainz.org/release-group/32195cf1-5d5c-412e-b308-1d586c08e6c4.html'))
         
         
@@ -31,7 +37,7 @@ class Tests(TestCase):
         '''
         makes sure the Library._newest_ function can accept null MBAlbum.release_date's
         '''
-        from library.models import *
+        
         from datetime import datetime
         import sys
         
@@ -48,3 +54,29 @@ class Tests(TestCase):
         self.assertEquals(-sys.maxint, library._newest_(album1, album2))
         self.assertEquals(sys.maxint, library._newest_(album1, album3))
         self.assertEquals(-sys.maxint, library._newest_(album3, album2))
+        
+
+        
+    def test_fetch_albums(self):
+        artist = MBArtist.objects.create(name='4 Non Blondes',
+                                        mb_id='http://musicbrainz.org/artist/efef848b-63e4-4323-8ef7-69a48fbdd51d.html')
+        artist.fetch_albums()
+        self.assertEquals(1, len(MBAlbum.objects.all()))
+        album = MBAlbum.objects.get(name='Bigger, Better, Faster, More!')
+        self.assertNotEquals(None, album)
+        self.assertEquals('http://musicbrainz.org/release-group/0d26ee11-05f3-3a02-ba40-1414fa325554',
+                          album.mb_id)
+        self.assertEquals(date(1992, 10, 13), album.release_date)
+        self.assertEquals(artist, album.artist)
+        
+
+    def test_get_release_date(self):
+        artist = MBArtist.objects.create(name='4 Non Blondes',
+                                         mb_id='http://musicbrainz.org/artist/efef848b-63e4-4323-8ef7-69a48fbdd51d.html')
+        release_date, asin = artist.get_release_date('http://musicbrainz.org/release-group/0d26ee11-05f3-3a02-ba40-1414fa325554')
+        self.assertEquals(date(1992, 10, 13), release_date)
+
+    def test_utils_mb_get_releases(self):
+        result = mb.get_releases('Bigger, Better, Faster, More!', 
+                                 'http://musicbrainz.org/artist/efef848b-63e4-4323-8ef7-69a48fbdd51d.html')
+        print result
