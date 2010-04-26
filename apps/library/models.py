@@ -127,6 +127,8 @@ class MBArtist(models.Model):
                 mb_album.save()
     
     def get_release_date(self, release_group_id):
+        '''Returns release date and amazon asin or None or tuple (None, None)
+        in case of error'''
         includes = ws.ReleaseGroupIncludes(releases=True)
         q = ws.Query()
         release_group = call_mb_ws(q.getReleaseGroupById, release_group_id, includes)

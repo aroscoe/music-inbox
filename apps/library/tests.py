@@ -70,3 +70,9 @@ class Tests(TestCase):
         self.assertEquals(date(1992, 10, 13), album.release_date)
         self.assertEquals(artist, album.artist)
         
+
+    def test_get_release_date(self):
+        artist = MBArtist.objects.create(name='4 Non Blondes',
+                                         mb_id='http://musicbrainz.org/artist/efef848b-63e4-4323-8ef7-69a48fbdd51d.html')
+        release_date, asin = artist.get_release_date('http://musicbrainz.org/release-group/0d26ee11-05f3-3a02-ba40-1414fa325554')
+        self.assertEquals(date(1992, 10, 13), release_date)
