@@ -56,7 +56,6 @@ class Tests(TestCase):
         self.assertEquals(-sys.maxint, library._newest_(album3, album2))
         
 
-        
     def test_fetch_albums(self):
         artist = MBArtist.objects.create(name='4 Non Blondes',
                                         mb_id='http://musicbrainz.org/artist/efef848b-63e4-4323-8ef7-69a48fbdd51d.html')
@@ -78,5 +77,13 @@ class Tests(TestCase):
 
     def test_utils_mb_get_releases(self):
         result = mb.get_releases('Bigger, Better, Faster, More!', 
-                                 'http://musicbrainz.org/artist/efef848b-63e4-4323-8ef7-69a48fbdd51d.html')
+                                 'efef848b-63e4-4323-8ef7-69a48fbdd51d')
         print result
+
+    def test_utils_mb_get_release_group_id(self):
+        library = Library.objects.create(name='test')
+        artist = library.artist_set.create(name='4 Non Blondes')
+        album = artist.album_set.create(name='Bigger, Better, Faster, More!')
+        id  = mb.get_release_group_id(album, 
+                                      'efef848b-63e4-4323-8ef7-69a48fbdd51d')
+        self.assertEquals('http://musicbrainz.org/release-group/0d26ee11-05f3-3a02-ba40-1414fa325554', id)
