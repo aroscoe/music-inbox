@@ -2,9 +2,17 @@
 
 {% block body %}
 
+<script type="text/javascript" src="{{MEDIA_URL}}js/jquery.validate.min.js"></script>
 <script type="text/javascript" src="{{MEDIA_URL}}js/swfupload.js"></script>
 
 <script type="text/javascript">
+
+$(function(){
+    // TODO: check if a file is ready to be uploaded
+    // TODO: style error message
+    $("#frm_upload").validate();
+})
+
 var swfu;
     
 window.onload = function () {
