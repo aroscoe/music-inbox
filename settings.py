@@ -29,6 +29,23 @@ BROKER_USER = "musicinbox"
 BROKER_PASSWORD = "musicinbox"
 BROKER_VHOST = "musicinbox"
 
+CELERY_DEFAULT_QUEUE = 'musicinbox_tasks'
+CELERY_QUEUES = {
+    'musicinbox_tasks': {'binding_key': 'task.#',},
+    'musicbrainz_tasks': {'binding_key': 'musicbrainz.#',},
+}
+CELERY_DEFAULT_EXCHANGE = 'musicinbox'
+CELERY_DEFAULT_EXCHANGE_TYPE = "topic"
+CELERY_DEFAULT_ROUTING_KEY = "task.regular"
+CELERYD_CONCURRENCY=1
+
+# celerybeat settings
+CELERYBEAT_LOG_FILE='/tmp/celerybeat.log'
+CELERYBEAT_LOG_LEVEL=logging.DEBUG
+
+CELERYD_LOG_FILE='/tmp/celeryd.log'
+CELERYD_LOG_LEVEL='DEBUG'
+
 AMAZON_KEY = ''
 AMAZON_SECRET = ''
 KEY = [1, 1, 1, 1]

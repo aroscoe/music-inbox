@@ -1,8 +1,9 @@
 import logging
 import plistlib
+from datetime import timedelta
 
 from django.conf import settings
-from celery.decorators import task
+from celery.decorators import task, periodic_task
 
 from library.models import *
 from library.utils.mb import album_diff
@@ -36,13 +37,24 @@ def import_itunes_file(library_id, library_filename, **kwargs):
     
     diff_albums.delay(library_id)
 
-@task
+@task(routing_key='musicbrainz.diff_albums')
 def diff_albums(library_id, **kwargs):
     ''' '''
-    logger = import_itunes_file.get_logger(**kwargs)
+    logger = diff_albums.get_logger(**kwargs)
     logger.debug("diffing albums of library %s" % library_id)
     
     library = Library.objects.get(pk=library_id)
     
-    album_diff(library)
+    album_diff(library, logger)
 
+@task(routing_key='musicbrainz.fetch_albums')
+def fetch_albums(mb_artist_id, **kwargs):
+    artist = MBArtist.objects.get(mb_id=mb_artist_id)
+    artist.fetch_albums()
+
+@periodic_task(run_every=timedelta(days=1))
+def fetch_albums_cron(**kwargs):
+    logger = fetch_albums_cron.get_logger(**kwargs)
+    logger.debug('fetching albums running')
+    for artist in MBArtist.objects.all():
+        fetch_albums.delay(artist.mb_id)

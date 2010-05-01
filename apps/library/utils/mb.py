@@ -11,12 +11,11 @@ from library.models import *
 logging.basicConfig()
 logger = logging.getLogger("album_diff")
 
-def album_diff(library):
-    logger.setLevel(settings.LOG_LEVEL)
+def album_diff(library, logger):
     logger.debug("processing " + library.name + " ...")
     
     for artist in library.artist_set.order_by("-play_count"):
-        lookup_artist(artist)
+        lookup_artist(artist, logger)
 
 def get_local_mb_artist(artist_name):
     '''Returns local MBArtist object or None'''
@@ -25,14 +24,14 @@ def get_local_mb_artist(artist_name):
     except MBArtist.DoesNotExist:
         return None
 
-def lookup_artist(artist):
+def lookup_artist(artist, logger):
     '''Looks up Artist locally or in musicbrainz and asssociates Artist object
     with MBArtist.'''
     logger.debug(artist.name + " ...")
     mb_artist = get_local_mb_artist(artist.name)
     if mb_artist:
         artist.mb_artist_id = mb_artist.mb_id
-        artist.name = mb_artist_id.name
+        artist.name = mb_artist.name
         artist.save()
     else:
         name_filter = ws.ArtistFilter(name=artist.name, limit=5)
