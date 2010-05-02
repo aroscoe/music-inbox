@@ -36,7 +36,7 @@ def lookup_artist(artist, logger):
     else:
         name_filter = ws.ArtistFilter(name=artist.name, limit=5)
         q = ws.Query()
-        artist_results = call_mb_ws(q.getArtists, name_filter)
+        artist_results = call_mb_ws(q.getArtists, logger, name_filter)
         time.sleep(settings.SLEEP_TIME)
         if artist_results:
             mb_artist_name = artist_results[0].artist.name
@@ -46,35 +46,14 @@ def lookup_artist(artist, logger):
             artist.save()
             mb_artist, created = MBArtist.objects.get_or_create(mb_id=mb_artist_id, name=mb_artist_name)
             if created:
-                mb_artist.fetch_albums()
+                mb_artist.fetch_albums(logger)
 
-def get_release_group_id(album, mb_artist_id):
-    releases = get_releases(album.name, mb_artist_id)
-    time.sleep(settings.SLEEP_TIME)
-    if releases:
-            includes = ws.ReleaseIncludes(releaseGroup=True)
-            q = ws.Query()
-            id = call_mb_ws(q.getReleaseById, releases[0].release.id, includes).releaseGroup.id
-            time.sleep(settings.SLEEP_TIME)
-            album.mb_id = id;
-            album.save()
-            return id
-    return None
-
-def get_releases(album_name, mb_artist_id):
-    release_filter = ws.ReleaseFilter(
-                            title=album_name,
-                            artistId=mb_artist_id,
-                            releaseTypes=(m.Release.TYPE_OFFICIAL,
-                                    m.Release.TYPE_ALBUM))
-    q = ws.Query()
-    return call_mb_ws(q.getReleases, release_filter)
-
-def call_mb_ws(function, *args):
+def call_mb_ws(function, logger, *args):
     i = 1
     while True:
         try:
-            return function(*args)
+            result = function(*args)
+            return result
         except ws.WebServiceError, e:
             if '503' in e.message:
                 logger.debug('function ' + function.func_name + ' failed with 503, sleeping ' + str(settings.SLEEP_TIME * i) + ' seconds')

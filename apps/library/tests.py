@@ -35,7 +35,7 @@ class Tests(TestCase):
         from musicbrainz2.webservice import *
         artist = MBArtist.objects.create(name = 'Galactic', mb_id = 'http://musicbrainz.org/artist/cabbdf87-5cb2-4f3c-be65-254655c87508.html')
         self.assertEquals((None, None),
-                          artist.get_release_date('http://musicbrainz.org/release-group/32195cf1-5d5c-412e-b308-1d586c08e6c4.html'))
+                          artist.get_release_date('http://musicbrainz.org/release-group/32195cf1-5d5c-412e-b308-1d586c08e6c4.html', logger))
 
         
     def test_null_release_dates(self):
@@ -64,7 +64,7 @@ class Tests(TestCase):
     def test_fetch_albums(self):
         artist = MBArtist.objects.create(name='4 Non Blondes',
                                          mb_id='http://musicbrainz.org/artist/efef848b-63e4-4323-8ef7-69a48fbdd51d')
-        artist.fetch_albums()
+        artist.fetch_albums(logger)
         self.assertEquals(1, len(MBAlbum.objects.all()))
         album = MBAlbum.objects.get(name='Bigger, Better, Faster, More!')
         self.assertNotEquals(None, album)
@@ -77,21 +77,8 @@ class Tests(TestCase):
     def test_get_release_date(self):
         artist = MBArtist.objects.create(name='4 Non Blondes',
                                          mb_id='http://musicbrainz.org/artist/efef848b-63e4-4323-8ef7-69a48fbdd51d')
-        release_date, asin = artist.get_release_date('http://musicbrainz.org/release-group/0d26ee11-05f3-3a02-ba40-1414fa325554')
+        release_date, asin = artist.get_release_date('http://musicbrainz.org/release-group/0d26ee11-05f3-3a02-ba40-1414fa325554', logger)
         self.assertEquals(date(1992, 10, 13), release_date)
-        
-    def test_utils_mb_get_releases(self):
-        result = mb.get_releases('Bigger, Better, Faster, More!', 
-                                 'efef848b-63e4-4323-8ef7-69a48fbdd51d')
-        print result
-
-    def test_utils_mb_get_release_group_id(self):
-        library = Library.objects.create(name='test')
-        artist = library.artist_set.create(name='4 Non Blondes')
-        album = artist.album_set.create(name='Bigger, Better, Faster, More!')
-        id  = mb.get_release_group_id(album, 
-                                       'efef848b-63e4-4323-8ef7-69a48fbdd51d')
-        self.assertEquals('http://musicbrainz.org/release-group/0d26ee11-05f3-3a02-ba40-1414fa325554', id)
         
         
     def test_lookup_artist_for_new_artist(self):

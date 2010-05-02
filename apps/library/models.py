@@ -9,6 +9,8 @@ from django.db import models
 import musicbrainz2.webservice as ws
 import musicbrainz2.model as m
 
+from library.utils import mb
+
 logging.basicConfig()
 logger = logging.getLogger("models")
 logger.setLevel(settings.LOG_LEVEL)
@@ -103,20 +105,21 @@ class MBArtist(models.Model):
     def __unicode__(self):
         return u'%s' % (self.name)
     
-    def fetch_albums(self):
+    def fetch_albums(self, logger):
         include = ws.ArtistIncludes(
-                releases=(m.Release.TYPE_OFFICIAL, m.Release.TYPE_ALBUM), tags=True, releaseGroups=True)
+                releases=(m.Release.TYPE_OFFICIAL, m.Release.TYPE_ALBUM), 
+                tags=True, releaseGroups=True)
         q = ws.Query()
         # artist query including their releases
         try:
-            mb_artist = call_mb_ws(q.getArtistById, self.mb_id, include)
-            time.sleep(settings.SLEEP_TIME)
+            mb_artist = mb.call_mb_ws(q.getArtistById, logger, self.mb_id,
+                                      include)
             for release in mb_artist.getReleaseGroups():
                 mb_album, created_album = MBAlbum.objects.get_or_create(mb_id=release.id, artist = self)
                 if created_album:
                     logger.debug(release.title + " ...")
                     # query
-                    date, asin = self.get_release_date(release.id)
+                    date, asin = self.get_release_date(release.id, logger)
                     mb_album.release_date = date
                     mb_album.name = release.title
                     if asin:
@@ -128,16 +131,17 @@ class MBArtist(models.Model):
         except ws.WebServiceError, e:
             logger.debug('q.getArtistById failed for ' + self.mb_id)
     
-    def get_release_date(self, release_group_id):
+    def get_release_date(self, release_group_id, logger):
         includes = ws.ReleaseGroupIncludes(releases=True)
         q = ws.Query()
         try:
-            release_group = call_mb_ws(q.getReleaseGroupById, release_group_id, includes)
+            release_group = mb.call_mb_ws(q.getReleaseGroupById, logger, release_group_id, includes)
             time.sleep(settings.SLEEP_TIME)
             if release_group and release_group.releases:
                 release = release_group.releases[0] # TODO iterate over all
                 includes = ws.ReleaseIncludes(releaseEvents = True)
-                release = call_mb_ws(q.getReleaseById, release.id, includes)
+                release = mb.call_mb_ws(q.getReleaseById, logger, release.id, 
+                                        includes)
                 time.sleep(settings.SLEEP_TIME)
                 release_date = release.getEarliestReleaseDate()
                 if release_date:
@@ -220,17 +224,3 @@ def search_on_amazon(asin, album, artist):
     except :
         pass
     return ''
-
-def call_mb_ws(function, *args):
-    i = 1
-    while True:
-        try:
-            return function(*args)
-        except ws.WebServiceError, e:       
-            if '503' in e.message:
-                logger.debug('function ' + function.func_name + ' failed with 503, sleeping ' + str(settings.SLEEP_TIME * i) + ' seconds')
-                time.sleep(settings.SLEEP_TIME * i)
-                i *= 2
-            else:
-                raise e
-
