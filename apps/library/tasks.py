@@ -6,7 +6,6 @@ from django.conf import settings
 from celery.decorators import task, periodic_task
 
 from library.models import *
-from library.utils.mb import album_diff
 
 @task
 def import_itunes_file(library_id, library_filename, **kwargs):

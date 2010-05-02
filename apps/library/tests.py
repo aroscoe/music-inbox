@@ -4,8 +4,6 @@ import logging
 from django.test import TestCase
 
 from library.models import *
-from library.utils import mb
-
 
 class Tests(TestCase):
 
@@ -85,7 +83,7 @@ class Tests(TestCase):
         library = Library.objects.create(name='test')
         artist = library.artist_set.create(name='4 Non Blondes')
         
-        mb.lookup_artist(artist, self.logger)
+        lookup_artist(artist, self.logger)
         
         self.assertEquals('http://musicbrainz.org/artist/efef848b-63e4-4323-8ef7-69a48fbdd51d', artist.mb_artist_id)
         
@@ -108,7 +106,7 @@ class Tests(TestCase):
         library = Library.objects.create(name='test')
         artist = library.artist_set.create(name='4 Non Blondes')
 
-        mb.lookup_artist(artist, self.logger)
+        lookup_artist(artist, self.logger)
         
         self.assertEquals(mb_artist.mb_id, artist.mb_artist_id)
         # albums should not be fetched
@@ -118,6 +116,6 @@ class Tests(TestCase):
         library = Library.objects.create(name='test')
         artist = library.artist_set.create(name='4 non blondes')
         
-        mb.lookup_artist(artist, self.logger)
+        lookup_artist(artist, self.logger)
         
         self.assertEquals('4 Non Blondes', artist.name)
