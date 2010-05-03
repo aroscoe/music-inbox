@@ -17,7 +17,7 @@ var swfu;
 
 window.onload = function() {
     var fileDialogComplete = function() {
-        fileName = swfu.getFile().name;
+        var fileName = swfu.getFile().name;
         $("#file_path").val(fileName);
     }
     
