@@ -35,6 +35,7 @@ class LibraryResource(Resource):
         if request.method == 'POST':
             library, form = LibraryView().post_library(request)
             if library:
+                # TODO: return hash instead of library pk
                 responder = JSONDataResponder({'library_id': library.pk})
                 return responder.response
 
