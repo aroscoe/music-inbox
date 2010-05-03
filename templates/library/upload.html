@@ -8,6 +8,7 @@
 <script type="text/javascript">
 
 var swfu;
+var ajaxLoader = '<img id="loader" src="{{MEDIA_URL}}img/loader.gif" alt="uploading" />';
 
 window.onload = function() {
     var fileDialogComplete = function() {
@@ -18,6 +19,7 @@ window.onload = function() {
     var uploadSuccess = function(file, data, response) {
         console.log("upload compete");
         console.log(data);
+        $("#loader").remove();
     }
     
     swfu = new SWFUpload({
@@ -51,9 +53,9 @@ $(function(){
         submitHandler: function(form) {
             var libraryName = $(form).find("#id_name").val();
             console.log("running submit handler");
-            console.log(swfu);
             swfu.addPostParam("name", libraryName);
             swfu.startUpload();
+            $(form).append(ajaxLoader);
             return false;
         }
     });
