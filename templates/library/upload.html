@@ -7,12 +7,6 @@
 
 <script type="text/javascript">
 
-$(function(){
-    // TODO: check if a file is ready to be uploaded
-    // TODO: style error message
-    $("#frm_upload").validate();
-})
-
 var swfu;
 
 window.onload = function() {
@@ -21,9 +15,14 @@ window.onload = function() {
         $("#file_path").val(fileName);
     }
     
+    var uploadSuccess = function(file, data, response) {
+        console.log("upload compete");
+        console.log(data);
+    }
+    
     swfu = new SWFUpload({
         debug : true,
-        upload_url : "{% url library_home %}",
+        upload_url : "/api/library/upload/",
         flash_url : "{{MEDIA_URL}}swf/swfupload.swf",
         
         // File Settings
@@ -41,8 +40,24 @@ window.onload = function() {
         button_action: SWFUpload.BUTTON_ACTION.SELECT_FILE,
         
         file_dialog_complete_handler : fileDialogComplete,
+        upload_success_handler : uploadSuccess,
     });
 };
+
+$(function(){
+    // TODO: check if a file is ready to be uploaded
+    // TODO: style error message
+    $("#frm_upload").validate({
+        submitHandler: function(form) {
+            var libraryName = $(form).find("#id_name").val();
+            console.log("running submit handler");
+            console.log(swfu);
+            swfu.addPostParam("name", libraryName);
+            swfu.startUpload();
+            return false;
+        }
+    });
+});
 
 </script>
 

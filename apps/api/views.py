@@ -37,7 +37,7 @@ class LibraryResource(Resource):
             if library:
                 responder = JSONDataResponder({'library_id': library.pk})
                 return responder.response
-    
+
 def missing(request, library_id):
     try:
         library = LibraryModel.objects.get(pk=library_id)
