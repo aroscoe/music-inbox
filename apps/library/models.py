@@ -1,10 +1,12 @@
 import sys
 import time
 import logging
+import fcntl
 from datetime import date
 
 from django.conf import settings
 from django.db import models
+from django.core.cache import cache
 
 import musicbrainz2.webservice as ws
 import musicbrainz2.model as m
@@ -79,7 +81,7 @@ class Library(models.Model):
         pass
 
 class Artist(models.Model):
-    name = models.CharField(max_length=150)
+    name = models.CharField(max_length=200)
     library = models.ForeignKey(Library)
     mb_artist_id = models.CharField(max_length=150)
     play_count = models.IntegerField(default=0)
@@ -263,9 +265,12 @@ def lookup_artist(artist, logger):
 
 def call_mb_ws(function, logger, *args):
     i = 1
+    lock = open(settings.MEDIA_ROOT + '/lock', 'w')
     while True:
         try:
+            fcntl.lockf(lock, fcntl.LOCK_EX)
             result = function(*args)
+            time.sleep(settings.SLEEP_TIME)
             return result
         except ws.WebServiceError, e:
             if '503' in e.message:
@@ -274,4 +279,6 @@ def call_mb_ws(function, logger, *args):
                 i *= 2
             else:
                 raise e
+        finally:
+            fcntl.lockf(lock, fcntl.LOCK_UN)
  
