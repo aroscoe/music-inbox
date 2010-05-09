@@ -276,7 +276,7 @@ def lookup_artist(artist, logger):
 
 def call_mb_ws(function, logger, *args):
     i = 1
-    lock = open(settings.MEDIA_ROOT + '/lock', 'w')
+    lock = open(settings.PROJECT_ROOT + '/lock', 'w')
     while True:
         try:
             fcntl.lockf(lock, fcntl.LOCK_EX)
