@@ -36,7 +36,7 @@ class LibraryResource(Resource):
         if request.method == 'POST':
             library, form = LibraryView().post_library(request)
             if library:
-                responder = JSONDataResponder({'library_id': encrypt_id(library.pk)})
+                responder = JSONDataResponder({'library_id': str(encrypt_id(library.pk))})
                 return responder.response
 
 def missing(request, library_id):
