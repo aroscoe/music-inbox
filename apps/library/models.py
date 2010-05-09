@@ -21,7 +21,7 @@ try:
     from settings import AMAZON_KEY, AMAZON_SECRET, AMAZON_ASSOCIATE_TAG
     amazon_enabled = True
 except ImportError:
-    logger.debug("amazon search disabled")
+    logger.info("amazon search disabled")
     amazon_enabled = False
 
 class Library(models.Model):
@@ -139,7 +139,7 @@ class MBArtist(models.Model):
                         mb_album.amazon_url = search_on_amazon(asin, release.title, self.name)
                     mb_album.save()
         except ws.WebServiceError, e:
-            logger.debug('q.getArtistById failed for ' + self.mb_id)
+            logger.error('failed for %s ' % self.mb_id, exc_info=True)
     
     def get_release_date(self, release_group_id, logger):
         includes = ws.ReleaseGroupIncludes(releases=True)
@@ -153,7 +153,6 @@ class MBArtist(models.Model):
                 includes = ws.ReleaseIncludes(releaseEvents = True)
                 release = call_mb_ws(q.getReleaseById, logger, release.id, 
                                      includes)
-                time.sleep(settings.SLEEP_TIME)
                 release_date = release.getEarliestReleaseDate()
                 if release_date:
                     logger.debug("   " + release_date)
@@ -237,7 +236,7 @@ def search_on_amazon(asin, album, artist):
     return ''
 
 def album_diff(library, logger):
-    logger.debug("processing " + library.name + " ...")
+    logger.info("processing " + library.name + " ...")
     
     for artist in library.artist_set.order_by("-play_count"):
         lookup_artist(artist, logger)
@@ -252,7 +251,7 @@ def get_local_mb_artist(artist_name):
 def lookup_artist(artist, logger):
     '''Looks up Artist locally or in musicbrainz and asssociates Artist object
     with MBArtist.'''
-    logger.debug(artist.name + " ...")
+    logger.info(artist.name + " ...")
     mb_artist = get_local_mb_artist(artist.name)
     if mb_artist:
         artist.mb_artist_id = mb_artist.mb_id
@@ -261,17 +260,19 @@ def lookup_artist(artist, logger):
     else:
         name_filter = ws.ArtistFilter(name=artist.name, limit=5)
         q = ws.Query()
-        artist_results = call_mb_ws(q.getArtists, logger, name_filter)
-        time.sleep(settings.SLEEP_TIME)
-        if artist_results:
-            mb_artist_name = artist_results[0].artist.name
-            mb_artist_id = artist_results[0].artist.id
-            artist.mb_artist_id = mb_artist_id
-            artist.name = mb_artist_name
-            artist.save()
-            mb_artist, created = MBArtist.objects.get_or_create(mb_id=mb_artist_id, name=mb_artist_name)
-            if created:
-                mb_artist.fetch_albums(logger)
+        try:
+            artist_results = call_mb_ws(q.getArtists, logger, name_filter)
+            if artist_results:
+                mb_artist_name = artist_results[0].artist.name
+                mb_artist_id = artist_results[0].artist.id
+                artist.mb_artist_id = mb_artist_id
+                artist.name = mb_artist_name
+                artist.save()
+                mb_artist, created = MBArtist.objects.get_or_create(mb_id=mb_artist_id, name=mb_artist_name)
+                if created:
+                    mb_artist.fetch_albums(logger)
+        except ws.WebServiceError, e:
+            logger.error('error fetching artist %s' % artist.name, exc_info=True)
 
 def call_mb_ws(function, logger, *args):
     i = 1
@@ -284,7 +285,7 @@ def call_mb_ws(function, logger, *args):
             return result
         except ws.WebServiceError, e:
             if '503' in e.message:
-                logger.debug('function ' + function.func_name + ' failed with 503, sleeping ' + str(settings.SLEEP_TIME * i) + ' seconds')
+                logger.info('function ' + function.func_name + ' failed with 503, sleeping ' + str(settings.SLEEP_TIME * i) + ' seconds', exc_info=True)
                 time.sleep(settings.SLEEP_TIME * i)
                 i *= 2
             else:
