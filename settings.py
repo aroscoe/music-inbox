@@ -109,7 +109,6 @@ INSTALLED_APPS = (
     'django.contrib.sites',
 
     'celery',
-    'django_cron',
     'library',
     'api',
 )

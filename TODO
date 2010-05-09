@@ -7,7 +7,6 @@ v1:
 * add status while uploading file
 * remove upload dir and just have django create it
 * fabric deploy
-* remove django_cron by adding tasks into celery
 
 v2:
 
