@@ -43,8 +43,7 @@ class NewAlbums(Feed):
     def link(self, obj):
         if not obj:
             raise FeedDoesNotExist
-        return 'http://%s/library/%s/' % \
-            (Site.objects.get_current().domain, encrypt_id(obj.id))
+        return obj.url()
 
     def description(self, obj):
         return "New albums for artists in %s's library" % obj.name

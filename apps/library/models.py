@@ -6,10 +6,12 @@ from datetime import date
 
 from django.conf import settings
 from django.db import models
-from django.core.cache import cache
+from django.contrib.sites.models import Site
 
 import musicbrainz2.webservice as ws
 import musicbrainz2.model as m
+
+from library import utils
 
 logging.basicConfig()
 logger = logging.getLogger("models")
@@ -28,6 +30,14 @@ class Library(models.Model):
     
     def __str__(self):
         return self.name
+
+    def url(self):
+        return 'http://%s/library/%s/' % \
+            (Site.objects.get_current().domain, utils.encrypt_id(self.id))
+
+    def url_link(self):
+        return '<a target="_blank" href="%s">%s</a>' % (self.url(), self.url())
+    url_link.allow_tags = True
     
     def missing_albums_dict(self):
         """return a dictionary of MBArtist to a list of MBAlbum, only containing missing albums"""
