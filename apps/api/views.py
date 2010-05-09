@@ -12,6 +12,7 @@ from library.models import Artist
 from library.models import Library as LibraryModel
 from library.forms import *
 from library.views import LibraryView
+from library.utils import decrypt_id, encrypt_id
 
 libraries_resource = Collection(
     queryset = LibraryModel.objects.all(),
@@ -21,7 +22,7 @@ libraries_resource = Collection(
 class LibraryResource(Resource):
     def read(self, request, library_id):
         try:
-            library = LibraryModel.objects.get(pk=library_id)
+            library = LibraryModel.objects.get(pk=decrypt_id(library_id, LibraryModel.DoesNotExist))
         except LibraryModel.DoesNotExist:
             raise Http404
         albums = library.albums_dict()
@@ -35,13 +36,12 @@ class LibraryResource(Resource):
         if request.method == 'POST':
             library, form = LibraryView().post_library(request)
             if library:
-                # TODO: return hash instead of library pk
-                responder = JSONDataResponder({'library_id': library.pk})
+                responder = JSONDataResponder({'library_id': encrypt_id(library.pk)})
                 return responder.response
 
 def missing(request, library_id):
     try:
-        library = LibraryModel.objects.get(pk=library_id)
+        library = LibraryModel.objects.get(pk=decrypt_id(library_id, LibraryModel.DoesNotExist))
     except LibraryModel.DoesNotExist:
         raise Http404
     
