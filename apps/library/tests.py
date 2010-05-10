@@ -135,7 +135,7 @@ class Tests(TestCase):
                                          name='Oceanic',
                                          release_date='2002-09-17',
                                          asin='B00006IQHQ')
-        panopticum = MBAlbum.objects.create(mb_id='http://musicbrainz.org/release-group/4d0ec287-514f-32bc-8939-2705f49ca44c',
+        panopticon = MBAlbum.objects.create(mb_id='http://musicbrainz.org/release-group/4d0ec287-514f-32bc-8939-2705f49ca44c',
                                             artist=mb_artist,
                                             name='Panopticon',
                                             release_date='2004-10-19',
@@ -157,4 +157,15 @@ class Tests(TestCase):
 
         lookup_artist(artist, self.logger)
 
+        # fetch album from db again
+        album = list(artist.album_set.all())[0]
+
         self.assertEquals(radiant.mb_id, album.mb_id)
+
+        missing_albums = library.missing_albums()
+
+        self.assertFalse(radiant in missing_albums)
+        self.assertTrue(oceanic in missing_albums)
+        self.assertTrue(absence in missing_albums)
+        self.assertTrue(panopticon in missing_albums)
+        self.assertTrue(celestial in missing_albums)

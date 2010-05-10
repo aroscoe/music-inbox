@@ -107,7 +107,7 @@ class Artist(models.Model):
     
 class MBArtist(models.Model):
     mb_id = models.CharField(max_length=150, unique=True)
-    name = models.CharField(max_length=150)
+    name = models.CharField(max_length=200, db_index=True)
     
     def __str__(self):
         return self.name
@@ -188,7 +188,7 @@ class Album(models.Model):
 
 class MBAlbum(models.Model):
     mb_id  = models.CharField(max_length=150, unique=True)
-    name   = models.CharField(max_length=150)
+    name   = models.CharField(max_length=150, db_index=True)
     release_date = models.DateField(null=True)
     artist = models.ForeignKey(MBArtist)
     asin = models.CharField(max_length=40, blank=True)
@@ -248,6 +248,17 @@ def get_local_mb_artist(artist_name):
     except MBArtist.DoesNotExist:
         return None
 
+def match_up_albums(artist, mb_artist, logger):
+    '''Matches up the user albums by artist with the albums from musicbrainz'''
+    for album in artist.album_set.all():
+        try:
+            mb_album = MBAlbum.objects.get(name=album.name, artist=mb_artist)
+            album.mb_id = mb_album.mb_id
+            album.save()
+        except MBAlbum.DoesNotExist:
+            logger.info('no album match for %s from %s' \
+                            % (album.name, artist.name))
+
 def lookup_artist(artist, logger):
     '''Looks up Artist locally or in musicbrainz and asssociates Artist object
     with MBArtist.'''
@@ -273,6 +284,8 @@ def lookup_artist(artist, logger):
                     mb_artist.fetch_albums(logger)
         except ws.WebServiceError, e:
             logger.error('error fetching artist %s' % artist.name, exc_info=True)
+            return
+    match_up_albums(artist, mb_artist, logger)
 
 def call_mb_ws(function, logger, *args):
     i = 1
