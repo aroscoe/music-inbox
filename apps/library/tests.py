@@ -119,3 +119,42 @@ class Tests(TestCase):
         lookup_artist(artist, self.logger)
         
         self.assertEquals('4 Non Blondes', artist.name)
+
+    def test_missing_albums(self):
+        mb_artist = MBArtist.objects.create(mb_id='http://musicbrainz.org/artist/5e521e8c-0ab2-44c4-8fd8-14d8d3321265',
+                                            name='Isis')
+
+        celestial = MBAlbum.objects.create(mb_id='http://musicbrainz.org/release-group/e371d1e5-8737-3c79-a16e-0d4c487eedfd',
+                                           artist=mb_artist,
+                                           name='Celestial',
+                                           release_date='2000-07-19',
+                                           asin='B00008RWXM')
+        
+        oceanic = MBAlbum.objects.create(mb_id='http://musicbrainz.org/release-group/2426e089-b3e2-3513-b43e-f1b73fb54e60',
+                                         artist=mb_artist,
+                                         name='Oceanic',
+                                         release_date='2002-09-17',
+                                         asin='B00006IQHQ')
+        panopticum = MBAlbum.objects.create(mb_id='http://musicbrainz.org/release-group/4d0ec287-514f-32bc-8939-2705f49ca44c',
+                                            artist=mb_artist,
+                                            name='Panopticon',
+                                            release_date='2004-10-19',
+                                            asin='B0002Z83KC')
+        absence = MBAlbum.objects.create(mb_id='http://musicbrainz.org/release-group/bd21552f-34ac-37bf-b53f-10f7c8bd043d',
+                                         artist=mb_artist,
+                                         name='In the Absence of Truth',
+                                         release_date='2006-01-01',
+                                         asin='')
+        radiant = MBAlbum.objects.create(mb_id='http://musicbrainz.org/release-group/750d7870-f7eb-3a50-8b3d-2e0e8eb4a981',
+                                         artist=mb_artist,
+                                         name='Wavering Radiant',
+                                         release_date='2009-04-21',
+                                         asin='B001SZ298M')
+
+        library = Library.objects.create(name='test')
+        artist = library.artist_set.create(name='Isis')
+        album = artist.album_set.create(name='Wavering Radiant')
+
+        lookup_artist(artist, self.logger)
+
+        self.assertEquals(radiant.mb_id, album.mb_id)
