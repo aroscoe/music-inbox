@@ -251,11 +251,12 @@ def get_local_mb_artist(artist_name):
 def match_up_albums(artist, mb_artist, logger):
     '''Matches up the user albums by artist with the albums from musicbrainz'''
     for album in artist.album_set.all():
-        try:
-            mb_album = MBAlbum.objects.get(name=album.name, artist=mb_artist)
-            album.mb_id = mb_album.mb_id
+        mb_albums = MBAlbum.objects.filter(name__iexact=album.name, 
+                                           artist=mb_artist)
+        if mb_albums:
+            album.mb_id = mb_albums[0].mb_id
             album.save()
-        except MBAlbum.DoesNotExist:
+        else:
             logger.info('no album match for %s from %s' \
                             % (album.name, artist.name))
 
