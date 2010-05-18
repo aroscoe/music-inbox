@@ -43,8 +43,7 @@ window.onload = function() {
     var uploadSuccess = function(file, data, response) {
         json = $.parseJSON(data);
         $("#loader").remove();
-        // TODO: go to success page instead of library page
-        window.location = "http://localhost:8000/library/" + json.data.library_id;
+        window.location = "/library/success/" + json.data.library_id;
     }
     
     swfu = new SWFUpload({

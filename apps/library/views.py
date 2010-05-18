@@ -3,6 +3,7 @@ import logging
 
 from django.http import Http404
 from django.conf import settings
+from django.shortcuts import redirect
 from django.views.generic.simple import direct_to_template
 from django.contrib.sites.models import Site
 
@@ -48,8 +49,7 @@ def upload(request):
         library, form = LibraryView().post_library(request)
         if library:
             library_id = encrypt_id(library.pk)
-            site_domain = Site.objects.get_current().domain
-            return direct_to_template(request, 'library/success.html', locals())
+            return redirect('library_success', library_id=library_id)
     else:
         form = UploadFileForm()
     return direct_to_template(request, 'library/upload.html', locals())
@@ -61,4 +61,12 @@ def library(request, library_id):
         raise Http404
     albums = library.albums_dict()
     return direct_to_template(request, 'library/library.html', locals())
+
+def success(request, library_id):
+    try:
+        library = Library.objects.get(pk=decrypt_id(library_id, Http404))
+    except Library.DoesNotExist:
+        raise Http404
+    site_domain = Site.objects.get_current().domain
+    return direct_to_template(request, 'library/success.html', locals())
 
