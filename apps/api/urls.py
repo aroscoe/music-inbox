@@ -9,7 +9,7 @@ urlpatterns = patterns('',
     url(r'^test/(.*?)/?$', libraries_resource),
     
     # Library
-    url(r'^library/upload/?$', library.create),
-    url(r'^library/(\d+)/missing/?$', missing),
-    url(r'^library/(.*?)/?$', library),
+    url(r'^library/upload/?$', library.create, name="api_library_upload"),
+    url(r'^library/(\d+)/missing/?$', missing, name="api_library_missing"),
+    url(r'^library/(.*?)/?$', library, name="api_library"),
 )
