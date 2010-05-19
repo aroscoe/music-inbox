@@ -43,13 +43,13 @@ window.onload = function() {
     var uploadSuccess = function(file, data, response) {
         json = $.parseJSON(data);
         $("#loader").remove();
-        // TODO: replace all hardcoded urls with url template tag
-        window.location = "/library/success/" + json.data.library_id;
+        var url = "{% url library_success "0000" %}";
+        window.location = url.replace('0000', json.data.library_id);
     }
     
     swfu = new SWFUpload({
         debug : true,
-        upload_url : "/api/library/upload/",
+        upload_url : "{% url api_library_upload %}",
         flash_url : "{{MEDIA_URL}}swf/swfupload.swf",
         
         // File Settings
