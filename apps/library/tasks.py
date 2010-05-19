@@ -3,9 +3,26 @@ import plistlib
 from datetime import timedelta
 
 from django.conf import settings
+from django.utils import simplejson
+
 from celery.decorators import task, periodic_task
 
 from library.models import *
+
+@task
+def import_json(library_id, json_filename, **kwargs):
+    '''Reads a file with json library data and imports it into the library'''
+    logger = import_json.get_logger(**kwargs)
+    library = Library.objects.get(pk=library_id)
+    
+    json = simplesjon.load(open(json_filename), 'utf8')
+    
+    for artist, albums in json.iteritems():
+        for album in albums:
+            artist, created = library.artist_set.get_or_create(name=artist)
+            artist.album_set.get_or_create(name=album)
+
+    diff_albums.delay(library_id)
 
 @task
 def import_itunes_file(library_id, library_filename, **kwargs):

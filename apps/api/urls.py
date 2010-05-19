@@ -10,6 +10,7 @@ urlpatterns = patterns('',
     
     # Library
     url(r'^library/upload/?$', library.create),
+    url(r'^json/?$', library.upload_json),
     url(r'^library/(\d+)/missing/?$', missing),
     url(r'^library/(.*?)/?$', library),
 )

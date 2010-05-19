@@ -37,6 +37,13 @@ class LibraryResource(Resource):
             if library:
                 responder = JSONDataResponder({'library_id': library.pk})
                 return responder.response
+
+    def upload_json(self, request):
+        if request.method == 'POST':
+            print request.POST
+        return HttpResponse(json.dumps('hello', 'utf-8'), 
+                            mimetype='application/json; charset=utf-8')
+            
     
 def missing(request, library_id):
     try:
