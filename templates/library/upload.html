@@ -48,26 +48,26 @@ window.onload = function() {
     }
     
     swfu = new SWFUpload({
-        debug : true,
-        upload_url : "{% url api_library_upload %}",
-        flash_url : "{{MEDIA_URL}}swf/swfupload.swf",
+        debug: true,
+        upload_url: "{% url api_library_upload %}",
+        flash_url: "{{MEDIA_URL}}swf/swfupload.swf",
         
         // File Settings
         file_post_name: "file",
-        file_queue_limit : "1",
-        file_size_limit : "20 MB",
+        file_queue_limit: "1",
+        file_size_limit: "20 MB",
         file_types: "*.xml",
         
         // Button Settings
-        button_placeholder_id : "btn_upload",
+        button_placeholder_id: "btn_upload",
         button_width: 71,
         button_height: 28,
         button_window_mode: SWFUpload.WINDOW_MODE.TRANSPARENT,
         button_cursor: SWFUpload.CURSOR.HAND,
         button_action: SWFUpload.BUTTON_ACTION.SELECT_FILE,
         
-        file_dialog_complete_handler : fileDialogComplete,
-        upload_success_handler : uploadSuccess,
+        file_dialog_complete_handler: fileDialogComplete,
+        upload_success_handler: uploadSuccess,
     });
 };
 
