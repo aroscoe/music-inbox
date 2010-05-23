@@ -9,7 +9,7 @@
 
 var swfu;
 var ajaxLoader = '<img id="loader" src="{{MEDIA_URL}}img/loader.gif" alt="uploading" />';
-var filePath;
+var fileInQueue = null;
 
 $(function(){
     form = $("#frm_upload");
@@ -46,11 +46,18 @@ $(function(){
 });
 
 window.onload = function() {
+    var fileQueuedHandler = function(file) {
+        if (fileInQueue) swfu.cancelUpload(fileInQueue.id, false);
+        fileInQueue = file;
+    }
+    
     var fileDialogComplete = function() {
-        var fileName = swfu.getFile().name;
-        filePath.val(fileName);
-        fileQueued.val("true");
-        form.validate().element(fileQueued);
+        if (fileInQueue) {
+            var fileName = swfu.getFile().name;
+            filePath.val(fileName);
+            fileQueued.val("true");
+            form.validate().element(fileQueued);
+        }
     }
     
     var uploadSuccess = function(file, data, response) {
@@ -67,7 +74,7 @@ window.onload = function() {
         
         // File Settings
         file_post_name: "file",
-        file_queue_limit: "1",
+        file_queue_limit: "2",
         file_size_limit: "20 MB",
         file_types: "*.xml",
         
@@ -79,6 +86,7 @@ window.onload = function() {
         button_cursor: SWFUpload.CURSOR.HAND,
         button_action: SWFUpload.BUTTON_ACTION.SELECT_FILE,
         
+        file_queued_handler: fileQueuedHandler,
         file_dialog_complete_handler: fileDialogComplete,
         upload_success_handler: uploadSuccess,
     });
