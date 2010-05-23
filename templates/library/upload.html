@@ -12,19 +12,30 @@ var ajaxLoader = '<img id="loader" src="{{MEDIA_URL}}img/loader.gif" alt="upload
 var filePath;
 
 $(function(){
-    
+    form = $("#frm_upload");
     filePath = $("#file_path");
+    fileQueued = $("#file_queued");
+    
+    $.validator.addMethod("validateFileQueue", function(value, el){
+        return (fileQueued.val() == "true") ? true : false;
+    }, "This field is required.");
     
     // TODO: style error message
-    $("#frm_upload").validate({
+    form.validate({
         submitHandler: function(form) {
             var libraryName = $(form).find("#id_name").val();
-            console.log("running submit handler");
             swfu.addPostParam("name", libraryName);
             swfu.startUpload();
             $(form).append(ajaxLoader);
             return false;
-        }
+        }, errorPlacement: function(error, el) {
+            if (el.attr("name") == "file_queued") {
+                error.appendTo(filePath.parent());
+            } else {
+                error.appendTo(el.parent());
+            }
+        },
+        errorElement: "p"
     });
     
     // if no flash
@@ -38,6 +49,8 @@ window.onload = function() {
     var fileDialogComplete = function() {
         var fileName = swfu.getFile().name;
         filePath.val(fileName);
+        fileQueued.val("true");
+        form.validate().element(fileQueued);
     }
     
     var uploadSuccess = function(file, data, response) {
@@ -48,7 +61,7 @@ window.onload = function() {
     }
     
     swfu = new SWFUpload({
-        debug: true,
+        // debug: true,
         upload_url: "{% url api_library_upload %}",
         flash_url: "{{MEDIA_URL}}swf/swfupload.swf",
         
@@ -60,6 +73,7 @@ window.onload = function() {
         
         // Button Settings
         button_placeholder_id: "btn_upload",
+        // TODO: have the button area cover the text input too
         button_width: 71,
         button_height: 28,
         button_window_mode: SWFUpload.WINDOW_MODE.TRANSPARENT,
@@ -92,11 +106,12 @@ window.onload = function() {
                     <label for="id_file">iTunes XML File</label>
                     <input type="text" name="file_path" value="" id="file_path" class="txtbox" />
                     <div class="file_wrapper">
+                        <!-- {{form.file}} -->
                         <div id="btn_upload"></div>
                     </div>
                     {{form.file.errors}}
                 </div>
-                
+                <input type="hidden" name="file_queued" value="false" id="file_queued" class="validateFileQueue" />
                 <input type="submit" name="submit" value="Upload Library" class="btn_submit" />
             </form>
         </div>
