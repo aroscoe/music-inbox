@@ -36,8 +36,12 @@ class LibraryResource(Resource):
         if request.method == 'POST':
             library, form = LibraryView().post_library(request)
             if library:
-                responder = JSONDataResponder({'library_id': str(encrypt_id(library.pk))})
-                return responder.response
+                responder = JSONDataResponder({'upload_success': 'true', 'library_id': str(encrypt_id(library.pk))})
+            else:
+                # Create real dict from form.errors (ErrorDict)
+                errors = dict([(k, [unicode(e) for e in v]) for k,v in form.errors.items()])
+                responder = JSONDataResponder({'upload_success': 'false', 'errors': errors})
+            return responder.response
 
 def missing(request, library_id):
     try:

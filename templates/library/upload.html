@@ -10,7 +10,7 @@
 var swfu;
 var ajaxLoader = '<img id="loader" src="{{MEDIA_URL}}img/loader.gif" alt="uploading" />';
 var fileInQueue = null;
-var form, filePath, fileQueued;
+var validator, form, filePath, fileQueued;
 
 $(function(){
     form = $("#frm_upload");
@@ -21,8 +21,7 @@ $(function(){
         return (fileQueued.val() == "true") ? true : false;
     }, "This field is required.");
     
-    // TODO: style error message
-    form.validate({
+    validator = form.validate({
         submitHandler: function(form) {
             var libraryName = $(form).find("#id_name").val();
             swfu.addPostParam("name", libraryName);
@@ -57,15 +56,19 @@ window.onload = function() {
             var fileName = swfu.getFile().name;
             filePath.val(fileName);
             fileQueued.val("true");
-            form.validate().element(fileQueued);
+            validator.element(fileQueued);
         }
     }
     
     var uploadSuccess = function(file, data, response) {
         json = $.parseJSON(data);
         $("#loader").remove();
-        var url = "{% url library_success "0000" %}";
-        window.location = url.replace('0000', json.data.library_id);
+        if (json.data.upload_success == 'true') {
+            var url = "{% url library_success "0000" %}";
+            window.location = url.replace('0000', json.data.library_id);
+        } else {
+            validator.showErrors({"file_queued": json.data.errors.file[0]});
+        }
     }
     
     swfu = new SWFUpload({
