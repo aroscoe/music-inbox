@@ -141,7 +141,12 @@ ul.errorlist, .error {
     width: 252px;
 }
 #splash #frm_upload .input_wrapper {
+    position: relative;
     margin-bottom: 14px;
+}
+#splash #frm_upload .input_wrapper .overlay {
+    position: absolute;
+    z-index: 100;
 }
 #splash #frm_upload label {
     display: block;
