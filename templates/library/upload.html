@@ -10,6 +10,7 @@
 var swfu;
 var ajaxLoader = '<img id="loader" src="{{MEDIA_URL}}img/loader.gif" alt="uploading" />';
 var fileInQueue = null;
+var form, filePath, fileQueued;
 
 $(function(){
     form = $("#frm_upload");
