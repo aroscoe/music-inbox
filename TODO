@@ -10,6 +10,7 @@ v1:
 
 v2:
 
+* upgrade to Django 1.2.1
 * Add email support as alternative to rss
 * Have own 302 amazon link forwards to track clicked on albums
 * What does feedburner offer?
