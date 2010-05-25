@@ -3,7 +3,6 @@ v1:
 * favicon
 * logo
 * Issue #2
-* add status while uploading file
 * remove upload dir and just have django create it
 * fabric deploy
 * check why some amazon links are failing or are audio cds
