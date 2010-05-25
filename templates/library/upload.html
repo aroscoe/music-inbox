@@ -25,7 +25,6 @@ $(function(){
     validator = form.validate({
         submitHandler: function(form) {
             if (swfu.getStats().in_progress == 0) {
-                console.log("inside");
                 var libraryName = $(form).find("#id_name").val();
                 swfu.addPostParam("name", libraryName);
                 swfu.startUpload();
