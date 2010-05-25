@@ -5,10 +5,7 @@ from django.conf.urls.defaults import *
 from django.conf import settings
 from django.contrib import admin
 
-import django_cron
-
 admin.autodiscover()
-django_cron.autodiscover()
 
 urlpatterns = patterns('',
     url(r'^$', 'library.views.upload', name="home"),

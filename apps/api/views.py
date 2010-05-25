@@ -12,6 +12,7 @@ from library.models import Artist
 from library.models import Library as LibraryModel
 from library.forms import *
 from library.views import LibraryView
+from library.utils import decrypt_id, encrypt_id
 
 libraries_resource = Collection(
     queryset = LibraryModel.objects.all(),
@@ -21,7 +22,7 @@ libraries_resource = Collection(
 class LibraryResource(Resource):
     def read(self, request, library_id):
         try:
-            library = LibraryModel.objects.get(pk=library_id)
+            library = LibraryModel.objects.get(pk=decrypt_id(library_id, LibraryModel.DoesNotExist))
         except LibraryModel.DoesNotExist:
             raise Http404
         albums = library.albums_dict()
@@ -35,12 +36,16 @@ class LibraryResource(Resource):
         if request.method == 'POST':
             library, form = LibraryView().post_library(request)
             if library:
-                responder = JSONDataResponder({'library_id': library.pk})
-                return responder.response
-    
+                responder = JSONDataResponder({'upload_success': 'true', 'library_id': str(encrypt_id(library.pk))})
+            else:
+                # Create real dict from form.errors (ErrorDict)
+                errors = dict([(k, [unicode(e) for e in v]) for k,v in form.errors.items()])
+                responder = JSONDataResponder({'upload_success': 'false', 'errors': errors})
+            return responder.response
+
 def missing(request, library_id):
     try:
-        library = LibraryModel.objects.get(pk=library_id)
+        library = LibraryModel.objects.get(pk=decrypt_id(library_id, LibraryModel.DoesNotExist))
     except LibraryModel.DoesNotExist:
         raise Http404
     

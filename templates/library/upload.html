@@ -1,6 +1,113 @@
 {% extends "base.html" %}
 
 {% block body %}
+
+<script type="text/javascript" src="{{MEDIA_URL}}js/jquery.validate.min.js"></script>
+<script type="text/javascript" src="{{MEDIA_URL}}js/swfupload.js"></script>
+
+<script type="text/javascript">
+
+var swfu;
+var ajaxLoader = '<img id="loader" src="{{MEDIA_URL}}img/loader.gif" alt="uploading" />';
+var fileInQueue = null;
+var validator, form, filePath, fileQueued;
+
+$(function(){
+    form = $("#frm_upload");
+    formSubmit = $("#submit");
+    filePath = $("#file_path");
+    fileQueued = $("#file_queued");
+    
+    $.validator.addMethod("validateFileQueue", function(value, el){
+        return (fileQueued.val() == "true") ? true : false;
+    }, "This field is required.");
+    
+    validator = form.validate({
+        submitHandler: function(form) {
+            if (swfu.getStats().in_progress == 0) {
+                var libraryName = $(form).find("#id_name").val();
+                swfu.addPostParam("name", libraryName);
+                swfu.startUpload();
+            }
+            return false;
+        }, errorPlacement: function(error, el) {
+            if (el.attr("name") == "file_queued") {
+                error.appendTo(filePath.parent());
+            } else {
+                error.appendTo(el.parent());
+            }
+        },
+        errorElement: "p"
+    });
+    
+    // if no flash
+    // FIXME: is there going to be a no flash state so this has a reason to exist?
+    $("#id_file").change(function(){
+        filePath.val($(this).val());
+    });
+    
+});
+
+window.onload = function() {
+    var fileQueuedHandler = function(file) {
+        if (fileInQueue) swfu.cancelUpload(fileInQueue.id, false);
+        fileInQueue = file;
+    }
+    
+    var fileDialogComplete = function() {
+        if (fileInQueue) {
+            var fileName = swfu.getFile().name;
+            filePath.val(fileName);
+            fileQueued.val("true");
+            validator.element(fileQueued);
+        }
+    }
+    
+    var uploadStart = function() {
+        formSubmit.addClass("uploading");
+        form.append(ajaxLoader);
+    }
+    
+    var uploadSuccess = function(file, data, response) {
+        json = $.parseJSON(data);
+        formSubmit.removeClass("uploading");
+        $("#loader").remove();
+        if (json.data.upload_success == 'true') {
+            var url = "{% url library_success "0000" %}";
+            window.location = url.replace('0000', json.data.library_id);
+        } else {
+            validator.showErrors({"file_queued": json.data.errors.file[0]});
+        }
+    }
+    
+    swfu = new SWFUpload({
+        // debug: true,
+        upload_url: "{% url api_library_upload %}",
+        flash_url: "{{MEDIA_URL}}swf/swfupload.swf",
+        
+        // File Settings
+        file_post_name: "file",
+        file_queue_limit: "2",
+        file_size_limit: "20 MB",
+        file_types: "*.xml",
+        
+        // Button Settings
+        button_placeholder_id: "btn_upload",
+        button_width: 252,
+        button_height: 28,
+        button_window_mode: SWFUpload.WINDOW_MODE.TRANSPARENT,
+        button_cursor: SWFUpload.CURSOR.HAND,
+        button_action: SWFUpload.BUTTON_ACTION.SELECT_FILE,
+        
+        file_queued_handler: fileQueuedHandler,
+        file_dialog_complete_handler: fileDialogComplete,
+        upload_start_handler: uploadStart,
+        upload_success_handler: uploadSuccess,
+    });
+};
+
+</script>
+
 <div id="document">
     <div id="splash">
         <div class="container">
@@ -14,17 +121,21 @@
                     <label for="id_name">Library Name</label>
                     {{form.name}}
                     {{form.name.errors}}
-                    <!-- <input type="text" name="name" value="" class="txtbox" /> -->
                 </div>
+                
                 <div class="input_wrapper">
                     <label for="id_file">iTunes XML File</label>
+                    <div class="overlay">
+                        <div id="btn_upload"></div>
+                    </div>
                     <input type="text" name="file_path" value="" id="file_path" class="txtbox" />
                     <div class="file_wrapper">
-                        {{form.file}}
+                        <!-- {{form.file}} -->
                     </div>
                     {{form.file.errors}}
                 </div>
-                <input type="submit" name="submit" value="Upload Library" class="btn_submit" />
+                <input type="hidden" name="file_queued" value="false" id="file_queued" class="validateFileQueue" />
+                <input type="submit" name="submit" value="Upload Library" id="submit" class="btn_submit" />
             </form>
         </div>
     </div>
