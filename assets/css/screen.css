@@ -199,3 +199,6 @@ ul.errorlist, .error {
 #splash #frm_upload .btn_submit:hover {
     background-position: 0 -28px;
 }
+#splash #frm_upload .btn_submit.uploading, #splash #frm_upload .btn_submit.uploading:hover {
+    background-position: 0 -56px;
+}

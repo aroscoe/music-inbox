@@ -14,6 +14,7 @@ var validator, form, filePath, fileQueued;
 
 $(function(){
     form = $("#frm_upload");
+    formSubmit = $("#submit");
     filePath = $("#file_path");
     fileQueued = $("#file_queued");
     
@@ -23,10 +24,12 @@ $(function(){
     
     validator = form.validate({
         submitHandler: function(form) {
-            var libraryName = $(form).find("#id_name").val();
-            swfu.addPostParam("name", libraryName);
-            swfu.startUpload();
-            $(form).append(ajaxLoader);
+            if (swfu.getStats().in_progress == 0) {
+                console.log("inside");
+                var libraryName = $(form).find("#id_name").val();
+                swfu.addPostParam("name", libraryName);
+                swfu.startUpload();
+            }
             return false;
         }, errorPlacement: function(error, el) {
             if (el.attr("name") == "file_queued") {
@@ -60,8 +63,14 @@ window.onload = function() {
         }
     }
     
+    var uploadStart = function() {
+        formSubmit.addClass("uploading");
+        form.append(ajaxLoader);
+    }
+    
     var uploadSuccess = function(file, data, response) {
         json = $.parseJSON(data);
+        formSubmit.removeClass("uploading");
         $("#loader").remove();
         if (json.data.upload_success == 'true') {
             var url = "{% url library_success "0000" %}";
@@ -92,6 +101,7 @@ window.onload = function() {
         
         file_queued_handler: fileQueuedHandler,
         file_dialog_complete_handler: fileDialogComplete,
+        upload_start_handler: uploadStart,
         upload_success_handler: uploadSuccess,
     });
 };
@@ -125,7 +135,7 @@ window.onload = function() {
                     {{form.file.errors}}
                 </div>
                 <input type="hidden" name="file_queued" value="false" id="file_queued" class="validateFileQueue" />
-                <input type="submit" name="submit" value="Upload Library" class="btn_submit" />
+                <input type="submit" name="submit" value="Upload Library" id="submit" class="btn_submit" />
             </form>
         </div>
     </div>
