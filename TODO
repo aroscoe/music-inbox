@@ -6,6 +6,7 @@ v1:
 * remove upload dir and just have django create it
 * fabric deploy
 * check why some amazon links are failing or are audio cds
+* switch celery to django-celery
 
 v2:
 
