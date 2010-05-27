@@ -8,9 +8,9 @@ from django.views.generic.simple import direct_to_template
 from django.contrib.sites.models import Site
 
 from library.models import Library, Artist
-from library.forms import *
+from library import forms
 from library.utils import decrypt_id, encrypt_id
-from library.tasks import import_itunes_file
+from library import tasks
 
 logging.basicConfig(filename=settings.LOG_FILE)
 logger = logging.getLogger("library_views")
@@ -20,7 +20,7 @@ class LibraryView:
 
     def post_library(self, request):
         logger.debug("posted")
-        form = UploadFileForm(request.POST, request.FILES)
+        form = forms.UploadFileForm(request.POST, request.FILES)
         if form.is_valid():
             logger.debug("valid")
             library_name = form.cleaned_data['name']
@@ -30,15 +30,30 @@ class LibraryView:
             
             library_filename = self._save_library_file(request.FILES['file'])
             
-            import_itunes_file.delay(library.id, library_filename)
+            tasks.import_itunes_file.delay(library.id, library_filename)
             
             return library, None
         return None, form
+
+    def post_form_data(self, request):
+        '''Accepts an 'application/x-www-form-urlencoded' post request with 
+        key-value pairs of artist=album and a name=name of library pair'''
+        logger.debug('form posted')
+        data = request.POST
+        if 'name' in data:
+            library_name = data['name']
+            library = Library(name=library_name)
+            library.save()
+            tasks.import_form_data.delay(library.pk, data)
+            return library.pk
+        else:
+            logger.debug('posted data invalid %s' % data)
+            return None
     
     def _save_library_file(self, file):
         guid = uuid.uuid4().get_hex()
         file_path = settings.UPLOADS_DIR + guid + ".xml"
-        destination = open(file_path, 'wb+')
+        destination = open(file_path, 'wb')
         for chunk in file.chunks():
             destination.write(chunk)
         destination.close()
@@ -51,7 +66,7 @@ def upload(request):
             library_id = encrypt_id(library.pk)
             return redirect('library_success', library_id=library_id)
     else:
-        form = UploadFileForm()
+        form = forms.UploadFileForm()
     return direct_to_template(request, 'library/upload.html', locals())
 
 def library(request, library_id):

@@ -11,5 +11,6 @@ urlpatterns = patterns('',
     # Library
     url(r'^library/upload/?$', library.create, name="api_library_upload"),
     url(r'^library/(\d+)/missing/?$', missing, name="api_library_missing"),
+    url(r'^library/form/?$', library.handle_form_data),
     url(r'^library/(.*?)/?$', library, name="api_library"),
 )

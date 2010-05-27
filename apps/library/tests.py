@@ -4,6 +4,7 @@ import logging
 from django.test import TestCase
 
 from library.models import *
+from library import utils
 
 class Tests(TestCase):
 
@@ -22,7 +23,8 @@ class Tests(TestCase):
         from library.models import *
         Library.objects.create(pk=1, name='foo')
 
-        self.assertEqual('{"processing": 2, "data": {}}', missing(None, 1).content)
+        content = missing(None, utils.encrypt_id(1)).content
+        self.assertEqual('{"processing": 2, "data": {}}', content)
 
     def test_release_group_no_releases(self):
         '''

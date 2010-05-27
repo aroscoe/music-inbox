@@ -6,7 +6,7 @@ from django.contrib.syndication.feeds import Feed
 from django.contrib.sites.models import Site
 
 from library.models import *
-from library.utils import decrypt_id, encrypt_id
+from library import utils
 
 class FirstItem(object):
     '''
@@ -23,8 +23,7 @@ In the future, you will be notified about new releases from your favorite artist
 here.
 '''
     def __init__(self, library_id):
-        self.amazon_url = 'http://%s/library/feeds/newalbums/%s/' % \
-            (Site.objects.get_current().domain, encrypt_id(library_id))
+        self.amazon_url = utils.rss_url(library_id) 
 
 
 class NewAlbums(Feed):
@@ -35,7 +34,7 @@ class NewAlbums(Feed):
     def get_object(self, bits):
         if len(bits) != 1:
             raise ObjectDoesNotExist
-        return Library.objects.get(id=decrypt_id(bits[0], ObjectDoesNotExist))
+        return Library.objects.get(id=utils.decrypt_id(bits[0], ObjectDoesNotExist))
     
     def title(self, obj):
         return "New albums for %s" % obj.name
