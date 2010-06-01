@@ -2,7 +2,23 @@
 
 {% block head %}
 <link rel="alternate" type="application/rss+xml" title="{{library.name}}"
-href="{{library.rss_url}}"> 
+href="{{library.rss_url}}">
+
+<script type="text/javascript">
+function bookmark(url, title){
+    if (window.sidebar) {
+	window.sidebar.addPanel(title, url, "");
+    } else if (window.opera && window.print) {
+	var elem = document.createElement('a');
+	elem.setAttribute('href',url);
+	elem.setAttribute('title',title);
+	elem.setAttribute('rel','sidebar');
+	elem.click();
+    } else if(document.all) {
+	window.external.AddFavorite(url, title);
+    }
+}
+</script>
 {% endblock %}
 
 {% block content %}
@@ -21,5 +37,6 @@ href="{{library.rss_url}}">
   to your rss reader.</li>
   <li><a href="{% url library library_id %}">View</a> your uploaded
   artists data.</li>
+  <li><a href="javascript:bookmark('{{library.rss_url}}', '{{library.name}}');">Bookmark</a> your library page.</li>
 </ul>
 {% endblock %}

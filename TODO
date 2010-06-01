@@ -2,14 +2,14 @@ v1:
 
 * favicon
 * logo
-* Issue #2
 * remove upload dir and just have django create it
-* fabric deploy
-* check why some amazon links are failing or are audio cds
-* switch celery to django-celery
+
 
 v2:
 
+* fabric deploy
+* check why some amazon links are failing or are audio cds
+* switch celery to django-celery
 * upgrade to Django 1.2.1
 * Add email support as alternative to rss
 * Have own 302 amazon link forwards to track clicked on albums
