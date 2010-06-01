@@ -50,12 +50,15 @@ class LibraryResource(Resource):
             library_id = LibraryView().post_form_data(request)
             if library_id:
                 data = {'rssUri': utils.rss_url(library_id)}
+                return HttpResponse(json.dumps(data, 'utf-8'), 
+                                    mimetype='application/json; charset=utf-8')
             else:
                 data = {'error': 'library name missing'}
-            return HttpResponse(json.dumps(data, 'utf-8'), 
-                                mimetype='application/json; charset=utf-8')
+                
         else:
-            return HttpResponseBadRequest('POST expected')
+            data = {'error': 'POST expected'}
+        return HttpResponseBadRequest(json.dumps(data, 'utf-8'), 
+                                      mimetype='application/json; charset=utf-8')
     
 def missing(request, library_id):
     try:

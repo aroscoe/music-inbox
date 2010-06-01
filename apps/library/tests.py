@@ -2,6 +2,8 @@ from datetime import date
 import logging
 
 from django.test import TestCase
+from django.test import client
+from django.utils import simplejson
 
 from library.models import *
 from library import utils
@@ -171,3 +173,69 @@ class Tests(TestCase):
         self.assertTrue(absence in missing_albums)
         self.assertTrue(panopticon in missing_albums)
         self.assertTrue(celestial in missing_albums)
+
+class HttpTests(TestCase):
+    '''Client tests that make http requests and verify the right responses.''' 
+    
+    def setUp(self):
+        self.client = client.Client()
+
+
+    def test_post_form_and_rss(self):
+        '''Uploads library data via the form api and verifies that the an rss
+        uri is returned correctly. Then verifies that the new release is in the 
+        rss feed.
+        
+        '''
+
+        mb_artist = MBArtist.objects.create(mb_id='http://musicbrainz.org/artist/5e521e8c-0ab2-44c4-8fd8-14d8d3321265',
+                                            name='Isis')
+
+        celestial = MBAlbum.objects.create(mb_id='http://musicbrainz.org/release-group/e371d1e5-8737-3c79-a16e-0d4c487eedfd',
+                                           artist=mb_artist,
+                                           name='Celestial',
+                                           release_date='2000-07-19',
+                                           asin='B00008RWXM')
+        
+        oceanic = MBAlbum.objects.create(mb_id='http://musicbrainz.org/release-group/2426e089-b3e2-3513-b43e-f1b73fb54e60',
+                                         artist=mb_artist,
+                                         name='Oceanic',
+                                         release_date='2002-09-17',
+                                         asin='B00006IQHQ')
+
+        response = self.client.post('/api/library/form/', {'name': 'test_lib',
+                                                           'Isis': 'Celestial' })
+        self.assertEquals('application/json; charset=utf-8', 
+                          response['Content-Type'])
+        json = simplejson.loads(response.content, 'utf-8')
+        self.assertTrue('rssUri' in json)
+        self.assertEquals('http://example.com/library/feeds/newalbums/5013407824245992320/', 
+                          json['rssUri'])
+        
+        response = self.client.get('/library/feeds/newalbums/5013407824245992320/')
+        # should contain 'Oceanic' release
+        self.assertTrue('Oceanic' in response.content)
+
+    def test_form_post_fails_without_name(self):
+        '''Asserts that form post fails if there is no name in the post data.'''
+        
+        response = self.client.post('/api/library/form', {'Isis': 'Celestial'})
+        self.assertTrue('error' in response.content)
+        self.assertEquals(400, response.status_code)
+
+    def test_get_non_existant_rss_feed_not_found(self):
+        '''Asserts that a GET request on a non existant rss feed returns 404
+        error code.
+
+        '''
+        response = self.client.get('/library/feeds/newalbums/5013407824245992320/')
+        self.assertEquals(404, response.status_code)
+
+    def test_get_on_form_post_url_fails(self):
+        '''Asserts that a GET request on the form post url returns a 400 error
+        code.
+
+        '''
+        response = self.client.get('/api/library/form')
+        self.assertEquals(400, response.status_code)
+        self.assertTrue('error' in response.content)

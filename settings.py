@@ -125,6 +125,9 @@ LOG_LEVEL = logging.CRITICAL
 # musicbrainz rate limiting
 SLEEP_TIME = 2
 
+# use celery test runner that runs celery tasks eagerly
+TEST_RUNNER = 'celery.contrib.test_runner.run_tests'
+
 # Local Settings
 try:
     from local_settings import *
