@@ -1,16 +1,22 @@
 {% extends "base_subpage.html" %}
 
+{% block head %}
+<link rel="alternate" type="application/rss+xml" title="{{library.name}}"
+href="{{rss_url}}"> 
+{% endblock %}
+
 {% block content %}
-<h2>Done! You successfully uploaded your artists.</h2>
+<h2>Done! You successfully uploaded your artists data.</h2>
+<p>Add the rss feed to google reader:</p>
+<a target="_blank"
+href="http://fusion.google.com/add?source=atgs&feedurl={{rss_url|urlencode}}"><img
+src="http://buttons.googlesyndication.com/fusion/add.gif" border="0" alt="Add
+to Google"></a>
 <ul>
     <li>Library Name: {{library.name}}</li>
     <li>Library ID: {{library.pk}}</li>
     <li>Encrypted library id: <a href="{% url library library_id %}">{{library_id}}</a></li>
 </ul>
 <br/>
-<p>Add the rss feed to google reader:</p>
-<a target="_blank"
-href="http://fusion.google.com/add?source=atgs&feedurl=http%3A//{{site_domain|urlencode}}/library/feeds/newalbums/{{library_id}}/"><img
-src="http://buttons.googlesyndication.com/fusion/add.gif" border="0" alt="Add
-to Google"></a>
+
 {% endblock %}
