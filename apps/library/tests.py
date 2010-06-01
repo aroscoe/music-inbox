@@ -219,7 +219,7 @@ class HttpTests(TestCase):
     def test_form_post_fails_without_name(self):
         '''Asserts that form post fails if there is no name in the post data.'''
         
-        response = self.client.post('/api/library/form', {'Isis': 'Celestial'})
+        response = self.client.post('/api/library/form/', {'Isis': 'Celestial'})
         self.assertTrue('error' in response.content)
         self.assertEquals(400, response.status_code)
 
@@ -236,6 +236,6 @@ class HttpTests(TestCase):
         code.
 
         '''
-        response = self.client.get('/api/library/form')
+        response = self.client.get('/api/library/form/')
         self.assertEquals(400, response.status_code)
         self.assertTrue('error' in response.content)
