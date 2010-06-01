@@ -7,16 +7,19 @@ href="{{library.rss_url}}">
 
 {% block content %}
 <h2>Done! You successfully uploaded your artists data.</h2>
-<p>Add the rss feed to google reader:</p>
-<a target="_blank"
-href="http://fusion.google.com/add?source=atgs&feedurl={{library.rss_url|urlencode}}"><img
-src="http://buttons.googlesyndication.com/fusion/add.gif" border="0" alt="Add
-to Google"></a>
-<ul>
-    <li>Library Name: {{library.name}}</li>
-    <li>Library ID: {{library.pk}}</li>
-    <li>Encrypted library id: <a href="{% url library library_id %}">{{library_id}}</a></li>
-</ul>
 <br/>
-
+<div>You can do any of the following things now:</div>
+<br/>
+<ul>
+  <li><a target="_blank"
+  href="http://fusion.google.com/add?source=atgs&feedurl={{library.rss_url|urlencode}}"><img
+  src="http://buttons.googlesyndication.com/fusion/add.gif" border="0" alt="Add
+  to Google"/></a>
+  <strong>Add news feed to google reader.</strong></li>
+  <li><a target="_blank" href="{{library.rss_url}}"<img
+  src="{{MEDIA_URL}}img/application-rss+xml.png"/></a> <strong>Add news feed
+  to your rss reader.</strong></li>
+  <li><strong><a href="{% url library library_id %}">View</a> your uploaded
+  artists data.</strong></li>
+</ul>
 {% endblock %}
