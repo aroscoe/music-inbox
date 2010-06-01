@@ -38,6 +38,10 @@ class Library(models.Model):
     def url_link(self):
         return '<a target="_blank" href="%s">%s</a>' % (self.url(), self.url())
     url_link.allow_tags = True
+
+    def rss_url(self):
+        '''Returns the absolute rss url for this library.'''
+        return utils.rss_url(self.id)
     
     def missing_albums_dict(self):
         """return a dictionary of MBArtist to a list of MBAlbum, only containing missing albums"""

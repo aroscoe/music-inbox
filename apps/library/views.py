@@ -82,6 +82,5 @@ def success(request, library_id):
         library = Library.objects.get(pk=utils.decrypt_id(library_id, Http404))
     except Library.DoesNotExist:
         raise Http404
-    rss_url = utils.rss_url(library.pk)
     return direct_to_template(request, 'library/success.html', locals())
 

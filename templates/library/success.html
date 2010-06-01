@@ -2,14 +2,14 @@
 
 {% block head %}
 <link rel="alternate" type="application/rss+xml" title="{{library.name}}"
-href="{{rss_url}}"> 
+href="{{library.rss_url}}"> 
 {% endblock %}
 
 {% block content %}
 <h2>Done! You successfully uploaded your artists data.</h2>
 <p>Add the rss feed to google reader:</p>
 <a target="_blank"
-href="http://fusion.google.com/add?source=atgs&feedurl={{rss_url|urlencode}}"><img
+href="http://fusion.google.com/add?source=atgs&feedurl={{library.rss_url|urlencode}}"><img
 src="http://buttons.googlesyndication.com/fusion/add.gif" border="0" alt="Add
 to Google"></a>
 <ul>
