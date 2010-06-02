@@ -4,10 +4,8 @@ v1:
 * logo
 * remove upload dir and just have django create it
 
-
 v2:
 
-* fabric deploy
 * check why some amazon links are failing or are audio cds
 * switch celery to django-celery
 * upgrade to Django 1.2.1
