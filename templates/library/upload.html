@@ -115,7 +115,8 @@ window.onload = function() {
                 <h1>Music Inbox</h1>
 	      <p id="tagline">Upload your artists<br />and learn about their
 	      new releases.</p>
-                <p id="privacy"><a href="{% url privacy %}">Privacy Policy</a></p>
+                <p id="privacy"><a href="{% url privacy %}">Privacy Policy</a>
+    | <a href="#" onclick="UserVoice.Popin.show(uservoiceOptions); return false;">Feedback</a></p>
             </div>
             <form id="frm_upload" enctype="multipart/form-data" method="post" action=".">
                 <div class="input_wrapper">
