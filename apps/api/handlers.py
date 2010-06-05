@@ -6,17 +6,17 @@ from library.views import LibraryView
 from library import utils
 
 class LibraryHandler(BaseHandler):
-    allowed_methods = ('GET', 'POST')
     model = Library
+    allowed_methods = ('GET', 'POST')
+    fields = ('processing', 'albums')
     
     def read(self, request, library_id):
-        try:
-            library = Library.objects.get(pk=utils.decrypt_id(library_id, Library.DoesNotExist))
-        except Library.DoesNotExist:
-            return rc.NOT_HERE
-        albums = library.albums_dict()
-        processing = 2 if library.processing else 1
-        return {'processing': processing, 'data': albums}
+        library_id = utils.decrypt_id(library_id, '')
+        return super(LibraryHandler, self).read(request, id=library_id)
+    
+    @classmethod
+    def albums(cls, library):
+        return library.albums_dict()
     
     # Example cURL POST
     # curl -H "Content-Type: multipart/form-data" -F "file=@test_library.xml" -F "name=Anthony" http://localhost:8000/api/piston-library/
