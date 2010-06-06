@@ -3,16 +3,18 @@ from django.conf.urls.defaults import *
 from piston.resource import Resource
 
 from api.views import LibraryResource, libraries_resource, missing
-from api.handlers import LibraryHandler
+from api.handlers import LibraryHandler, MissingLibraryHandler
 
 library = LibraryResource(permitted_methods=('GET','POST'))
 piston_library = Resource(handler=LibraryHandler)
+piston_missing_library = Resource(handler=MissingLibraryHandler)
 
 urlpatterns = patterns('',
     # Example of using django_restapi
     url(r'^test/(.*?)/?$', libraries_resource),
     
     # Piston
+    url(r'^piston-library/(\d+)/missing/?$', piston_missing_library, name="piston-api_library_missing"),
     url(r'^piston-library/?$', piston_library, name="piston-api_library_upload"),
     url(r'^piston-library/(?P<library_id>[^/]+)/', piston_library, name="piston-api_library"),
     

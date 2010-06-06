@@ -27,3 +27,11 @@ class LibraryHandler(BaseHandler):
             # Create real dict from form.errors (ErrorDict)
             errors = dict([(k, [unicode(e) for e in v]) for k,v in form.errors.items()])
             return {'upload_success': 'false', 'errors': errors}
+            
+class MissingLibraryHandler(LibraryHandler):
+    allowed_methods = ('GET')
+    fields = ('processing', 'missing_albums')
+    
+    @classmethod
+    def missing_albums(cls, library):
+        return library.missing_albums_dict()
