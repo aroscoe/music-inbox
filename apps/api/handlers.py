@@ -35,3 +35,15 @@ class MissingLibraryHandler(LibraryHandler):
     @classmethod
     def missing_albums(cls, library):
         return library.missing_albums_dict()
+
+# TODO: must be a way to merge this with LibraryHandler.create
+class LibraryFormHandler(BaseHandler):
+    model = Library
+    allowed_methods = ('POST')
+    
+    def create(self, request):
+        library_id = LibraryView().post_form_data(request)
+        if library_id:
+            return {'rssUri': utils.rss_url(library_id)}
+        else:
+            return {'error': 'library name missing'}
