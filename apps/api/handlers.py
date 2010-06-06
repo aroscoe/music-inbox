@@ -1,5 +1,4 @@
 from piston.handler import BaseHandler
-from piston.utils import rc
 
 from library.models import Library
 from library.views import LibraryView

@@ -13,7 +13,7 @@ urlpatterns = patterns('',
     url(r'^test/(.*?)/?$', libraries_resource),
     
     # Piston
-    url(r'^piston-library/?$', piston_library, name="piston-api_library"),
+    url(r'^piston-library/?$', piston_library, name="piston-api_library_upload"),
     url(r'^piston-library/(?P<library_id>[^/]+)/', piston_library, name="piston-api_library"),
     
     # Library
