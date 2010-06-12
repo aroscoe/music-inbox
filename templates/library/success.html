@@ -18,6 +18,13 @@ function bookmark(url, title){
 	window.external.AddFavorite(url, title);
     }
 }
+
+// only show bookmark option for mozilla where it works
+$(document).ready(function() {
+    if ($.browser.mozilla) {
+	$("#actions").append("<li><a href=\"javascript:bookmark('{{library.rss_url}}', '{{library.name}}');\">Bookmark</a> your library page.</li>");
+    }
+});
 </script>
 {% endblock %}
 
@@ -26,7 +33,7 @@ function bookmark(url, title){
 <br/>
 <div>Now you can:</div>
 <br/>
-<ul>
+<ul id="actions">
   <li><a target="_blank"
   href="http://fusion.google.com/add?source=atgs&feedurl={{library.rss_url|urlencode}}"><img
   src="http://buttons.googlesyndication.com/fusion/add.gif" border="0" alt="Add
@@ -37,6 +44,5 @@ function bookmark(url, title){
   to your rss reader.</li>
   <li><a href="{% url library library_id %}">View</a> your uploaded
   artists data.</li>
-  <li><a href="javascript:bookmark('{{library.rss_url}}', '{{library.name}}');">Bookmark</a> your library page.</li>
 </ul>
 {% endblock %}
