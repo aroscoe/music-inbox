@@ -50,7 +50,7 @@ CELERYD_LOG_LEVEL='INFO'
 
 AMAZON_KEY = ''
 AMAZON_SECRET = ''
-KEY = [1, 1, 1, 1]
+KEY = [1, 2, 3, 4]
 
 TIME_ZONE = 'US/Eastern'
 
