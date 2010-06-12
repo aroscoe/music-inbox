@@ -18,9 +18,11 @@ class LibraryHandler(BaseHandler):
     def albums(cls, library):
         return library.albums_dict()
     
-    # Example cURL POST
-    # curl -H "Content-Type: multipart/form-data" -F "file=@test_library.xml" -F "name=Anthony" http://localhost:8000/api/piston-library/
     def create(self, request, *args):
+        '''
+        Example cURL POST
+        curl -H "Content-Type: multipart/form-data" -F "file=@test_library.xml" -F "name=Anthony" http://localhost:8000/api/library/
+        '''
         library, form = LibraryView().post_library(request)
         if library:
             return {'upload_success': 'true', 'library_id': str(utils.encrypt_id(library.pk))}
