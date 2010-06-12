@@ -72,11 +72,11 @@ window.onload = function() {
         json = $.parseJSON(data);
         formSubmit.removeClass("uploading");
         $("#loader").remove();
-        if (json.data.upload_success == 'true') {
+        if (json.upload_success == 'true') {
             var url = "{% url library_success "0000" %}";
-            window.location = url.replace('0000', json.data.library_id);
+            window.location = url.replace('0000', json.library_id);
         } else {
-            validator.showErrors({"file_queued": json.data.errors.file[0]});
+            validator.showErrors({"file_queued": json.errors.file[0]});
         }
     }
     
