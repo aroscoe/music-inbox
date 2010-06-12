@@ -13,21 +13,6 @@ class Tests(TestCase):
     def setUp(self):
         self.logger = logging.getLogger()
 
-    def test_views_missing(self):
-        from api.views import *
-        from django.http import Http404
-        try:
-            missing(None, 1).status_code
-            raise Exception('should have thrown Http404')
-        except Http404:
-            print 'expected result'
-            
-        from library.models import *
-        Library.objects.create(pk=1, name='foo')
-
-        content = missing(None, utils.encrypt_id(1)).content
-        self.assertEqual('{"processing": 2, "data": {}}', content)
-
     def test_release_group_no_releases(self):
         '''
         http://github.com/aroscoe/music-inbox/issues#issue/1
@@ -220,7 +205,7 @@ class HttpTests(TestCase):
         '''Asserts that form post fails if there is no name in the post data.'''
         
         response = self.client.post('/api/library/form/', {'Isis': 'Celestial'})
-        self.assertTrue('error' in response.content)
+        self.assertTrue('Library name missing' in response.content)
         self.assertEquals(400, response.status_code)
 
     def test_get_non_existant_rss_feed_not_found(self):
@@ -237,5 +222,4 @@ class HttpTests(TestCase):
 
         '''
         response = self.client.get('/api/library/form/')
-        self.assertEquals(400, response.status_code)
-        self.assertTrue('error' in response.content)
+        self.assertEquals(405, response.status_code)

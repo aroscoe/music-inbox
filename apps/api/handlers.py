@@ -1,4 +1,5 @@
 from piston.handler import BaseHandler
+from piston.utils import rc
 
 from library.models import Library
 from library.views import LibraryView
@@ -47,4 +48,6 @@ class LibraryFormHandler(BaseHandler):
         if library_id:
             return {'rssUri': utils.rss_url(library_id)}
         else:
-            return {'error': 'library name missing'}
+            response = rc.BAD_REQUEST
+            response.write(': Library name missing')
+            return response
