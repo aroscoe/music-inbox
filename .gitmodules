@@ -1,3 +1,0 @@
-[submodule "libs/rest"]
-	path = libs/rest
-	url = git://github.com/sethtrain/django-rest-interface.git

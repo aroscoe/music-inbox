@@ -24,7 +24,6 @@ Setup
 
     $ git clone git://github.com/aroscoe/music-inbox.git
     $ cd music-inbox/
-    music-inbox $ git submodule update --init
     music-inbox $ pip install -r REQUIREMENTS
     music-inbox $ sudo rabbitmqctl add_user musicinbox musicinbox
     music-inbox $ sudo rabbitmqctl add_vhost musicinbox
