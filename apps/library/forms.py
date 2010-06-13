@@ -3,7 +3,7 @@ import re
 from django import forms
 
 class UploadFileForm(forms.Form):
-    name = forms.CharField(max_length=150, widget=forms.TextInput(attrs={'class': 'txtbox required'}))
+    name = forms.CharField(required=False, max_length=150)
     file = forms.FileField(widget=forms.FileInput(attrs={'class': 'btn_browse'}))
     
     def clean_file(self):
