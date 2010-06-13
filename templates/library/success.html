@@ -22,7 +22,7 @@ function bookmark(url, title){
 // only show bookmark option for mozilla where it works
 $(document).ready(function() {
     if ($.browser.mozilla) {
-	$("#actions").append("<li><a href=\"javascript:bookmark('{{library.rss_url}}', '{{library.name}}');\">Bookmark</a> your library page.</li>");
+	$("#actions").append("<li><br/><a href=\"javascript:bookmark('{{library.rss_url}}', '{{library.name}}');\">Bookmark</a> your library page.</li>");
     }
 });
 </script>
