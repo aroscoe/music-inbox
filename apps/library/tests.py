@@ -201,13 +201,6 @@ class HttpTests(TestCase):
         # should contain 'Oceanic' release
         self.assertTrue('Oceanic' in response.content)
 
-    def test_form_post_fails_without_name(self):
-        '''Asserts that form post fails if there is no name in the post data.'''
-        
-        response = self.client.post('/api/library/form/', {'Isis': 'Celestial'})
-        self.assertTrue('Library name missing' in response.content)
-        self.assertEquals(400, response.status_code)
-
     def test_get_non_existant_rss_feed_not_found(self):
         '''Asserts that a GET request on a non existant rss feed returns 404
         error code.
@@ -215,11 +208,3 @@ class HttpTests(TestCase):
         '''
         response = self.client.get('/library/feeds/newalbums/5013407824245992320/')
         self.assertEquals(404, response.status_code)
-
-    def test_get_on_form_post_url_fails(self):
-        '''Asserts that a GET request on the form post url returns a 400 error
-        code.
-
-        '''
-        response = self.client.get('/api/library/form/')
-        self.assertEquals(405, response.status_code)
