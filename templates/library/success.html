@@ -29,20 +29,23 @@ $(document).ready(function() {
 {% endblock %}
 
 {% block content %}
-<h2>Done! You successfully uploaded your artists data.</h2>
-<br/>
-<div>Now you can:</div>
-<br/>
-<ul id="actions">
-  <li><a target="_blank"
-  href="http://fusion.google.com/add?source=atgs&feedurl={{library.rss_url|urlencode}}"><img
-  src="http://buttons.googlesyndication.com/fusion/add.gif" border="0" alt="Add
-  to Google"/></a>
-  Add news feed to google reader.</li>
-  <li><a target="_blank" href="{{library.rss_url}}"<img
-  src="{{MEDIA_URL}}img/application-rss+xml.png"/></a> Add news feed
-  to your rss reader.</li>
-  <li><a href="{% url library library_id %}">View</a> your uploaded
-  artists data.</li>
-</ul>
+<div id="document">
+  <div id="success">
+    <div id="centered">
+      <h2>You successfully uploaded your artists data.</h2>
+      <br/>
+      <p>Now you can:</p>
+    </div>
+    <ul id="actions">
+      <li><a target="_blank"
+      href="http://fusion.google.com/add?source=atgs&feedurl={{library.rss_url|urlencode}}"><img
+      src="http://buttons.googlesyndication.com/fusion/add.gif" border="0" alt="Add
+      to Google"/></a><br/>Add news feed to google reader.</li>
+      <li><a target="_blank" href="{{library.rss_url}}"<img
+      src="{{MEDIA_URL}}img/application-rss+xml.png"/></a><br/>Add news feed to your rss reader.</li>
+      <li><br/><a href="{% url library library_id %}">View</a> your uploaded
+      artists info.</li>
+    </ul>
+  </div>
+</div>
 {% endblock %}

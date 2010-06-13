@@ -202,3 +202,24 @@ ul.errorlist, .error {
 #splash #frm_upload .btn_submit.uploading, #splash #frm_upload .btn_submit.uploading:hover {
     background-position: 0 -56px;
 }
+/* success.html */
+#success { 
+ width: 600px;
+ margin: 0 auto 0 auto;
+}
+#success p { 
+ margin-bottom: 20px;
+}
+#success li { 
+ margin-bottom: 10px;
+ height: 20px;
+ display:table-cell;
+ line-height: 120%;
+}
+#success li br { 
+ margin-bottom: 5px;
+}
+#success #centered { 
+ margin: 0 auto 0 auto;
+ width: 400px;
+}
