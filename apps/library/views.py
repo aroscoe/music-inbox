@@ -19,10 +19,8 @@ logger.setLevel(settings.LOG_LEVEL)
 class LibraryView:
 
     def post_library(self, request):
-        logger.debug("posted")
         form = forms.UploadFileForm(request.POST, request.FILES)
         if form.is_valid():
-            logger.debug("valid")
             library_name = form.cleaned_data['name']
             
             library = Library(name=library_name)
@@ -36,8 +34,11 @@ class LibraryView:
         return None, form
 
     def post_form_data(self, request):
-        '''Accepts an 'application/x-www-form-urlencoded' post request with 
-        key-value pairs of artist=album and a name=name of library pair'''
+        '''
+        Accepts an 'application/x-www-form-urlencoded' post request with 
+        key-value pairs of artist=album and a name=name of library pair
+        
+        '''
         logger.debug('form posted')
         data = request.POST
         if 'name' in data:
