@@ -21,8 +21,9 @@ class LibraryView:
     def post_library(self, request):
         form = forms.UploadFileForm(request.POST, request.FILES)
         if form.is_valid():
-            library_name = form.cleaned_data['name']
             
+            # TODO: LN - Might need to use form.cleaned_data.get('name', None)
+            library_name = form.cleaned_data['name']
             library = Library(name=library_name)
             library.save()
             
