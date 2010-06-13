@@ -28,7 +28,7 @@ class Library(models.Model):
     name = models.CharField(max_length=60, blank=True)
     processing = models.BooleanField(default=1)
     
-    def __str__(self):
+    def __unicode__(self):
         return self.name
 
     def url(self):
@@ -100,9 +100,6 @@ class Artist(models.Model):
     mb_artist_id = models.CharField(max_length=150)
     play_count = models.IntegerField(default=0)
     
-    def __str__(self):
-        return self.name
-    
     def __unicode__(self):
         return u'%s' % (self.name)
     
@@ -112,9 +109,6 @@ class Artist(models.Model):
 class MBArtist(models.Model):
     mb_id = models.CharField(max_length=150, unique=True)
     name = models.CharField(max_length=200, db_index=True)
-    
-    def __str__(self):
-        return self.name
     
     def __unicode__(self):
         return u'%s' % (self.name)
@@ -181,11 +175,8 @@ class Album(models.Model):
     artist = models.ForeignKey(Artist)
     mb_id = models.CharField(max_length=150)
     
-    def __str__(self):
-        return '%s - %s' % (self.artist.name, self.name)
-    
-    #def __unicode__(self):
-    #    return u'%s - %s' % (self.artist.name, self.name)
+    def __unicode__(self):
+        return u'%s - %s' % (self.artist.name, self.name)
     
     class Admin:
         pass
@@ -197,9 +188,6 @@ class MBAlbum(models.Model):
     artist = models.ForeignKey(MBArtist)
     asin = models.CharField(max_length=40, blank=True)
     amazon_url = models.URLField(verify_exists=False, max_length=500, blank=True)
-    
-    def __str__(self):
-        return '%s - %s' % (self.artist.name, self.name)
     
     def __unicode__(self):
         return u'%s - %s' % (self.artist.name, self.name)
