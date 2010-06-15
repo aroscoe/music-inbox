@@ -37,7 +37,10 @@ class NewAlbums(Feed):
         return Library.objects.get(id=utils.decrypt_id(bits[0], ObjectDoesNotExist))
     
     def title(self, obj):
-        return "New albums for %s" % obj.name
+        if obj.name:
+            return "New albums for %s" % obj.name
+        else:
+            return "New albums"
 
     def link(self, obj):
         if not obj:
@@ -45,7 +48,10 @@ class NewAlbums(Feed):
         return obj.url()
 
     def description(self, obj):
-        return "New albums for artists in %s's library" % obj.name
+        if obj.name:
+            return "New albums for artists in %s's library" % obj.name
+        else:
+            return "New albums for artists in your library"
 
     def items(self, obj):
         albums = obj.missing_albums()[:10]
