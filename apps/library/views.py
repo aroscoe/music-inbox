@@ -17,14 +17,15 @@ logger = logging.getLogger("library_views")
 logger.setLevel(settings.LOG_LEVEL)
 
 class LibraryView:
-
+    
     def post_library(self, request):
         form = forms.UploadFileForm(request.POST, request.FILES)
         if form.is_valid():
-            
-            # TODO: LN - Might need to use form.cleaned_data.get('name', None)
-            library_name = form.cleaned_data['name']
-            library = Library(name=library_name)
+            library_name = form.cleaned_data.get('name', None)
+            if library_name == None:
+                library = Library()
+            else:
+                library = Library(name=library_name)
             library.save()
             
             library_filename = self._save_library_file(request.FILES['file'])
@@ -33,7 +34,7 @@ class LibraryView:
             
             return library, None
         return None, form
-
+    
     def post_form_data(self, request):
         '''
         Accepts an 'application/x-www-form-urlencoded' post request with 

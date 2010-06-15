@@ -25,8 +25,6 @@ $(function(){
     validator = form.validate({
         submitHandler: function(form) {
             if (swfu.getStats().in_progress == 0) {
-                var libraryName = $(form).find("#id_name").val();
-                swfu.addPostParam("name", libraryName);
                 swfu.startUpload();
             }
             return false;
@@ -113,18 +111,12 @@ window.onload = function() {
         <div class="container">
             <div class="col">
                 <h1>Music Inbox</h1>
-	      <p id="tagline">Upload your artists<br />and learn about their
-	      new releases.</p>
+          <p id="tagline">Upload your artists<br />and learn about their
+          new releases.</p>
                 <p id="privacy"><a href="{% url privacy %}">Privacy Policy</a>
     | <a href="#" onclick="UserVoice.Popin.show(uservoiceOptions); return false;">Feedback</a></p>
             </div>
             <form id="frm_upload" enctype="multipart/form-data" method="post" action=".">
-                <div class="input_wrapper">
-                    <label for="id_name">Library Name</label>
-                    {{form.name}}
-                    {{form.name.errors}}
-                </div>
-                
                 <div class="input_wrapper">
                     <label for="id_file">iTunes XML File</label>
                     <div class="overlay">
