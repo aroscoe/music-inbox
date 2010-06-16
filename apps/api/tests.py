@@ -23,14 +23,16 @@ class APILibraryTestCase(TestCase):
         self.assertEquals(200, response.status_code)
     
     def test_form_post_succeeds_without_name(self):
-        '''Asserts that form post fails if there is no name in the post data.
+        '''
+        Asserts that form post fails if there is no name in the post data.
         
         '''
         response = self.client.post('/api/library/form/', {'Isis': 'Celestial'})
         self.assertEquals(200, response.status_code)
     
     def test_get_on_form_post_url_fails(self):
-       '''Asserts that a GET request on the form post url returns a 400 error
+       '''
+       Asserts that a GET request on the form post url returns a 400 error
        code.
        
        '''
