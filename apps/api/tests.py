@@ -11,7 +11,7 @@ class APILibraryTestCase(TestCase):
     def test_library_api_result(self):
         response = self.client.get(reverse('api_library', args=[5013407824245992320]))
         self.assertTrue('Jane Doe' in response.content)
-        self.assertEquals(response.status_code, 200)
+        self.assertEquals(200, response.status_code)
     
     def test_missing_library_api_not_found(self):
         response = self.client.get(reverse('api_library_missing', args=[1234]))
@@ -20,7 +20,7 @@ class APILibraryTestCase(TestCase):
     def test_missing_library_api_result(self):
         response = self.client.get(reverse('api_library_missing', args=[5013407824245992320]))
         self.assertTrue('No Heroes' in response.content)
-        self.assertEquals(response.status_code, 200)
+        self.assertEquals(200, response.status_code)
     
     def test_form_post_succeeds_without_name(self):
         '''Asserts that form post fails if there is no name in the post data.
