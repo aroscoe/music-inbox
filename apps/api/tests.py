@@ -22,6 +22,10 @@ class APILibraryTestCase(TestCase):
         self.assertTrue('No Heroes' in response.content)
         self.assertEquals(200, response.status_code)
     
+    def test_form_post_succeeds_with_name(self):
+        response = self.client.post('/api/library/form/', {'name': 'Test Library', 'Isis': 'Celestial'})
+        self.assertEquals(200, response.status_code)
+    
     def test_form_post_succeeds_without_name(self):
         '''
         Asserts that form post fails if there is no name in the post data.
