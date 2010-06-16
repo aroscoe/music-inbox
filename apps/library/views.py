@@ -46,12 +46,14 @@ class LibraryView:
         if 'name' in data:
             library_name = data['name']
             library = Library(name=library_name)
-            library.save()
-            tasks.import_form_data.delay(library.pk, data)
-            return library.pk
         else:
-            logger.debug('posted data invalid %s' % data)
-            return None
+            library = Library()
+        library.save()
+        tasks.import_form_data.delay(library.pk, data)
+        return library.pk
+        # TODO: validate data is in correct format
+        # logger.debug('posted data invalid %s' % data)
+        # return None
     
     def _save_library_file(self, file):
         guid = uuid.uuid4().get_hex()

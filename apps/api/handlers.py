@@ -48,6 +48,4 @@ class LibraryFormHandler(BaseHandler):
         if library_id:
             return {'rssUri': utils.rss_url(library_id)}
         else:
-            response = rc.BAD_REQUEST
-            response.write(': Library name missing')
-            return response
+            return rc.BAD_REQUEST
