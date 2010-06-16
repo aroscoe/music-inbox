@@ -39,8 +39,6 @@ class MissingLibraryHandler(LibraryHandler):
     def missing_albums(cls, library):
         return library.missing_albums_dict()
 
-# TODO: must be a way to merge this with LibraryHandler.create
-# TODO: what's a better name for this?
 class LibraryFormHandler(BaseHandler):
     model = Library
     allowed_methods = ('POST')
