@@ -1,5 +1,7 @@
 {% extends "base.html" %}
 
+{% block body_id %}home{% endblock %}
+
 {% block body %}
 
 <script type="text/javascript" src="{{MEDIA_URL}}js/jquery.validate.min.js"></script>
@@ -10,33 +12,13 @@
 var swfu;
 var ajaxLoader = '<img id="loader" src="{{MEDIA_URL}}img/loader.gif" alt="uploading" />';
 var fileInQueue = null;
-var validator, form, filePath, fileQueued;
+var validator, form, filePath, fileQueued, message;
 
 $(function(){
     form = $("#frm_upload");
-    formSubmit = $("#submit");
-    filePath = $("#file_path");
+    filePath = $("#query");
     fileQueued = $("#file_queued");
-    
-    $.validator.addMethod("validateFileQueue", function(value, el){
-        return (fileQueued.val() == "true") ? true : false;
-    }, "This field is required.");
-    
-    validator = form.validate({
-        submitHandler: function(form) {
-            if (swfu.getStats().in_progress == 0) {
-                swfu.startUpload();
-            }
-            return false;
-        }, errorPlacement: function(error, el) {
-            if (el.attr("name") == "file_queued") {
-                error.appendTo(filePath.parent());
-            } else {
-                error.appendTo(el.parent());
-            }
-        },
-        errorElement: "p"
-    });
+    message = $("#message");
     
     // if no flash
     // FIXME: is there going to be a no flash state so this has a reason to exist?
@@ -55,26 +37,30 @@ window.onload = function() {
     var fileDialogComplete = function() {
         if (fileInQueue) {
             var fileName = swfu.getFile().name;
-            filePath.val(fileName);
+            filePath.addClass("active").val(fileName);
             fileQueued.val("true");
-            validator.element(fileQueued);
+            swfu.startUpload();
         }
     }
     
     var uploadStart = function() {
-        formSubmit.addClass("uploading");
-        form.append(ajaxLoader);
+        form.addClass("uploading");
+        if (message.length == 0) {
+            form.prepend('<p id="message">Now uploading...</p>');
+            message = $("#message");
+        } else {
+            message.removeClass("error").text('Now uploading...');
+        }
     }
     
     var uploadSuccess = function(file, data, response) {
         json = $.parseJSON(data);
-        formSubmit.removeClass("uploading");
-        $("#loader").remove();
+        form.removeClass("uploading");
         if (json.upload_success == 'true') {
             var url = "{% url library_success "0000" %}";
             window.location = url.replace('0000', json.library_id);
         } else {
-            validator.showErrors({"file_queued": json.errors.file[0]});
+            message.addClass("error").text(json.errors.file[0]);
         }
     }
     
@@ -91,8 +77,8 @@ window.onload = function() {
         
         // Button Settings
         button_placeholder_id: "btn_upload",
-        button_width: 252,
-        button_height: 28,
+        button_width: 480,
+        button_height: 50,
         button_window_mode: SWFUpload.WINDOW_MODE.TRANSPARENT,
         button_cursor: SWFUpload.CURSOR.HAND,
         button_action: SWFUpload.BUTTON_ACTION.SELECT_FILE,
@@ -105,33 +91,22 @@ window.onload = function() {
 };
 
 </script>
-
 <div id="document">
-    <div id="splash">
-        <div class="container">
-            <div class="col">
-                <h1>Music Inbox</h1>
-          <p id="tagline">Upload your artists<br />and learn about their
-          new releases.</p>
-                <p id="privacy"><a href="{% url privacy %}">Privacy Policy</a>
-    | <a href="#" onclick="UserVoice.Popin.show(uservoiceOptions); return false;">Feedback</a></p>
+    <div id="topbar"></div>
+    
+    <h1>Music Inbox <span>Beta</span></h1>
+    <p id="instructions">Upload your artists to learn about their latest releases.</p>
+    <form name="frm_upload" id="frm_upload" method="post" action=".">
+        <div class="input_container">
+            <div class="overlay">
+                <div id="btn_upload"></div>
             </div>
-            <form id="frm_upload" enctype="multipart/form-data" method="post" action=".">
-                <div class="input_wrapper">
-                    <label for="id_file">iTunes XML File</label>
-                    <div class="overlay">
-                        <div id="btn_upload"></div>
-                    </div>
-                    <input type="text" name="file_path" value="" id="file_path" class="txtbox" />
-                    <div class="file_wrapper">
-                        <!-- {{form.file}} -->
-                    </div>
-                    {{form.file.errors}}
-                </div>
-                <input type="hidden" name="file_queued" value="false" id="file_queued" class="validateFileQueue" />
-                <input type="submit" name="submit" value="Upload Library" id="submit" class="btn_submit" />
-            </form>
+            <input type="text" name="query" id="query" value="Click to find your iTunes XML file" />
         </div>
-    </div>
+        <input type="hidden" name="file_queued" value="false" id="file_queued" />
+        <input type="submit" name="upload" id="btn_submit" value="Upload" />
+    </form>
+    
 </div>
+
 {% endblock %}

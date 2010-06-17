@@ -7,22 +7,22 @@ href="{{library.rss_url}}">
 <script type="text/javascript">
 function bookmark(url, title){
     if (window.sidebar) {
-	window.sidebar.addPanel(title, url, "");
+    window.sidebar.addPanel(title, url, "");
     } else if (window.opera && window.print) {
-	var elem = document.createElement('a');
-	elem.setAttribute('href',url);
-	elem.setAttribute('title',title);
-	elem.setAttribute('rel','sidebar');
-	elem.click();
+    var elem = document.createElement('a');
+    elem.setAttribute('href',url);
+    elem.setAttribute('title',title);
+    elem.setAttribute('rel','sidebar');
+    elem.click();
     } else if(document.all) {
-	window.external.AddFavorite(url, title);
+    window.external.AddFavorite(url, title);
     }
 }
 
 // only show bookmark option for mozilla where it works
 $(document).ready(function() {
     if ($.browser.mozilla) {
-	$("#actions").append("<li><br/><a href=\"javascript:bookmark('{{library.rss_url}}', '{{library.name}}');\">Bookmark</a> your library page.</li>");
+    $("#actions").append("<li><br/><a href=\"javascript:bookmark('{{library.rss_url}}', '{{library.name}}');\">Bookmark</a> your library page.</li>");
     }
 });
 </script>

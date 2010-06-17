@@ -1,28 +1,19 @@
 {% extends "base.html" %}
 
+{% block body_id %}sub{% endblock %}
+
 {% block body %}
 
-<!-- Sticky Wrapper -->
-<div id="sticky_wrapper">
-
+<div id="document">
+    <div id="topbar"></div>
     <div id="header">
-        <div class="wrapper">
-            <h1><a href="/">Music Inbox</a></h1>
+        <div class="grid_container">
+            <h1><a href="/">Music Inbox <span>Beta</span></a></h1>
         </div>
-        <div class="bg_left"></div>
-        <div class="bg_right"></div>
     </div>
-
-    <div id="content">
+    <div id="content" class="grid_container">
         {% block content %}{% endblock %}
     </div>
-
-    <div id="sticky_push"></div>
-</div>
-<!-- END - Sticky Wrapper -->
-
-<div id="sticky_footer">
-    <p><a href="{% url privacy %}">Privacy Policy</a> | <a href="#" onclick="UserVoice.Popin.show(uservoiceOptions); return false;">Feedback</a></p>
 </div>
 
 {% endblock %}
