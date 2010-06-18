@@ -1,11 +1,8 @@
 v1:
-
 * favicon
-* logo
 * remove upload dir and just have django create it
 
 v2:
-
 * check why some amazon links are failing or are audio cds
 * switch celery to django-celery
 * upgrade to Django 1.2.1
@@ -13,7 +10,7 @@ v2:
 * Have own 302 amazon link forwards to track clicked on albums
 * What does feedburner offer?
 * grab log files via other users
-* 3 step explanation with pics
 
 future:
+* help area to show how to find your iTunes XML file
 * sessions for each user?
