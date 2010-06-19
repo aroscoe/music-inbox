@@ -1,5 +1,4 @@
 v1:
-* favicon
 * remove upload dir and just have django create it
 
 v2:
