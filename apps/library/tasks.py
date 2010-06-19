@@ -79,6 +79,6 @@ def fetch_albums(mb_artist_id, **kwargs):
 @periodic_task(run_every=timedelta(days=1))
 def fetch_albums_cron(**kwargs):
     logger = fetch_albums_cron.get_logger(**kwargs)
-    logger.debug('fetching albums running')
+    logger.info('running fetch albums cron job')
     for artist in MBArtist.objects.all():
         fetch_albums.delay(artist.mb_id, logger)
