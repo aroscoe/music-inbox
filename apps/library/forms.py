@@ -1,4 +1,5 @@
 import re
+import zlib
 
 from django import forms
 
@@ -8,7 +9,7 @@ class UploadFileForm(forms.Form):
     
     def clean_file(self):
         file = self.cleaned_data['file']
-        if not self.validate_file_content_type(file):
+        if not self.validate_file_content_type(file) or not self.validate_file_contents(file):
             raise forms.ValidationError("Wrong file type. Please choose another file.")
         return file
     
@@ -22,14 +23,12 @@ class UploadFileForm(forms.Form):
     def validate_file_contents(self, file):
         """Read first few lines of a file checking for a specific pattern."""
         max_lines = 4
-        count = 1
         pattern = '<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">'
-        for line in file:
-            if re.match(pattern, line):
+        data = zlib.decompress(file.read())
+        lines = data.split('\n')
+        for count, line in enumerate(lines):
+            if pattern in line:
                 return True
-            else:
-                if count < 4:
-                    count += 1
-                else:
-                    break
+            if count > 4:
+                break
         return False
