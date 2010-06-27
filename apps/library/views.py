@@ -1,5 +1,6 @@
 import uuid
 import logging
+import zlib
 
 from django.http import Http404
 from django.conf import settings
@@ -58,9 +59,11 @@ class LibraryView:
     def _save_library_file(self, file):
         guid = uuid.uuid4().get_hex()
         file_path = settings.UPLOADS_DIR + guid + ".xml"
+        decompressor = zlib.decompressobj()
         destination = open(file_path, 'wb')
         for chunk in file.chunks():
-            destination.write(chunk)
+            destination.write(decompressor.decompress(chunk))
+        destination.write(decompressor.flush())
         destination.close()
         return file_path
 

@@ -6,3 +6,4 @@ local_settings.py
 celerybeat-schedule
 lock
 *~
+TAGS

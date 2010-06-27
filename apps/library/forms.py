@@ -8,7 +8,7 @@ class UploadFileForm(forms.Form):
     
     def clean_file(self):
         file = self.cleaned_data['file']
-        if not self.validate_file_content_type(file) or not self.validate_file_contents(file):
+        if not self.validate_file_content_type(file):
             raise forms.ValidationError("Wrong file type. Please choose another file.")
         return file
     

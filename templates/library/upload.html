@@ -39,7 +39,7 @@ window.onload = function() {
             var fileName = swfu.getFile().name;
             filePath.addClass("active").val(fileName);
             fileQueued.val("true");
-            swfu.startUpload();
+            swfu.startCompressedUpload();
         }
     }
     
@@ -65,7 +65,7 @@ window.onload = function() {
     }
     
     swfu = new SWFUpload({
-        // debug: true,
+//        debug: true,
         upload_url: "{% url api_library_upload %}",
         flash_url: "{{MEDIA_URL}}swf/swfupload.swf",
         

@@ -490,6 +490,10 @@ SWFUpload.prototype.startUpload = function (fileID) {
 	this.callFlash("StartUpload", [fileID]);
 };
 
+SWFUpload.prototype.startCompressedUpload = function() {
+    this.callFlash("StartUpload", ["", null, true]);
+}
+
 // Public: cancelUpload cancels any queued file.  The fileID parameter may be the file ID or index.
 // If you do not specify a fileID the current uploading file or first file in the queue is cancelled.
 // If you do not want the uploadError event to trigger you can specify false for the triggerErrorEvent parameter.
