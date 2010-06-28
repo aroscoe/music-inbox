@@ -2,7 +2,7 @@ import uuid
 import logging
 import zlib
 
-from django.http import Http404, HttpResponseBadRequest
+from django.http import Http404
 from django.conf import settings
 from django.shortcuts import redirect
 from django.views.generic.simple import direct_to_template
