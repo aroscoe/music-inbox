@@ -246,16 +246,20 @@ def match_up_albums(artist, mb_artist, logger):
         mb_albums = MBAlbum.objects.filter(name__iexact=album.name, 
                                            artist=mb_artist)
         if mb_albums:
+            logger.debug('matched up album %s to %s'\
+                             % (album.name, mb_albums[0].name))
             album.mb_id = mb_albums[0].mb_id
             album.save()
         else:
-            logger.info('no album match for %s from %s' \
-                            % (album.name, artist.name))
+            logger.debug('no album match for %s from %s' \
+                             % (album.name, artist.name))
 
 def lookup_artist(artist, logger):
     '''Looks up Artist locally or in musicbrainz and asssociates Artist object
     with MBArtist.'''
     logger.info(artist.name + " ...")
+    if artist.mb_artist_id:
+        return        
     mb_artist = get_local_mb_artist(artist.name)
     if mb_artist:
         artist.mb_artist_id = mb_artist.mb_id

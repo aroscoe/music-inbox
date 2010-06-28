@@ -18,8 +18,6 @@ class Tests(TestCase):
         http://github.com/aroscoe/music-inbox/issues#issue/1
         tests release groups that don't have any releases
         '''
-        from library.models import *
-        from musicbrainz2.webservice import *
         artist = MBArtist.objects.create(name = 'Galactic', mb_id = 'http://musicbrainz.org/artist/cabbdf87-5cb2-4f3c-be65-254655c87508.html')
         self.assertEquals((None, None),
                           artist.get_release_date('http://musicbrainz.org/release-group/32195cf1-5d5c-412e-b308-1d586c08e6c4.html', logger))
