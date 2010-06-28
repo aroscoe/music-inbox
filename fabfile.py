@@ -1,6 +1,8 @@
-from local_settings import FABRIC_USER, FABRIC_HOSTS
+from __future__ import with_statement
 
 from fabric.api import *
+
+from local_settings import FABRIC_USER, FABRIC_HOSTS
 
 env.user = FABRIC_USER     # user
 env.hosts = FABRIC_HOSTS   # ['11.111.111.111']
