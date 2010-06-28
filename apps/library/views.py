@@ -2,7 +2,7 @@ import uuid
 import logging
 import zlib
 
-from django.http import Http404
+from django.http import Http404, HttpResponseBadRequest
 from django.conf import settings
 from django.shortcuts import redirect
 from django.views.generic.simple import direct_to_template
@@ -92,3 +92,16 @@ def success(request, library_id):
         raise Http404
     return direct_to_template(request, 'library/success.html', locals())
 
+def pandora_import(request):
+    form = forms.PandoraUsernameForm(request.POST)
+    if form.is_valid():
+        username = form.cleaned_data.get('username', None)
+        library = Library(name=username)
+        library.save()
+        tasks.import_pandora_artists.delay(library.id, username)
+        library_id = utils.encrypt_id(library.pk)
+        return redirect('library_success', library_id=library_id)
+    else:
+        form = forms.PandoraUsernameForm()
+        return direct_to_template(request, 'library/upload.html', locals())
+            

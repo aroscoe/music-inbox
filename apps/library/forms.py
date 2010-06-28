@@ -32,3 +32,8 @@ class UploadFileForm(forms.Form):
             if count > 4:
                 break
         return False
+
+
+class PandoraUsernameForm(forms.Form):
+    username = forms.CharField(max_length=150)
+    
