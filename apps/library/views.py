@@ -99,7 +99,7 @@ def pandora_import(request):
     '''
     form = forms.PandoraUsernameForm(request.POST)
     if form.is_valid():
-        username = form.cleaned_data.get('username', None)
+        username = form.cleaned_data.get('username')
         library = Library(name=username)
         library.save()
         tasks.import_pandora_artists.delay(library.id, username)
