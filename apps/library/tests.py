@@ -1,5 +1,6 @@
 from datetime import date
 import logging
+from sets import Set
 
 from django.test import TestCase
 from django.test import client
@@ -7,6 +8,7 @@ from django.utils import simplejson
 
 from library.models import *
 from library import utils
+from library import pandora
 
 class Tests(TestCase):
 
@@ -206,3 +208,16 @@ class HttpTests(TestCase):
         '''
         response = self.client.get('/library/feeds/newalbums/5013407824245992320/')
         self.assertEquals(404, response.status_code)
+
+
+class PandoraTests(TestCase):
+    '''Test for the pandora module.'''
+
+    def setUp(self):
+        pass
+
+    def test_fetch_artists_fetches_everything(self):
+        artists = pandora.fetch_artists('john')
+        expected_artists = Set(["Radiohead", "Joshua Radin", "The National", "Yaz", "Prince", "Travis", "Vega4", "Supermen Lovers", "Massive Attack", "Alex Lloyd", "Downtown Singapore", "Kate Nash", "Porcupine Tree", "The Dandy Warhols", "Stars", "Math And Physics Club", "Jem", "The Shins", "Supreme Beings Of Leisure", "Information Society", "Moloko", "Alex Parks", "Frou Frou", "Ray LaMontagne", "Bitter:Sweet", "Duran Duran", "New Order", "Sixth Finger", "John Legend", "Kylie Minogue", "Pernice Brothers", "Andrew Bird", "The Jacksons", "Frou Frou", "Cake", "Jack Penate", "Telepopmusik", "Pelle Carlberg", "Moloko", "Emiliana Torrini", "Arctic Monkeys", "Goldenboy", "The Rosewood Thieves", "Delerium", "Letters To Cleo", "Jessica Simpson", "The Perishers", "Interpol", "Aqualung", "Edel & Weiss", "DNA", "The 1900s", "Tiga", "Robbie Rivera", "The Apples In Stereo", "Train"])
+        self.assertTrue(expected_artists.issubset(artists))
+        
