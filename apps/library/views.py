@@ -93,6 +93,10 @@ def success(request, library_id):
     return direct_to_template(request, 'library/success.html', locals())
 
 def pandora_import(request):
+    '''Handles post request of pandora username for artists import from
+    pandora.
+
+    '''
     form = forms.PandoraUsernameForm(request.POST)
     if form.is_valid():
         username = form.cleaned_data.get('username', None)
