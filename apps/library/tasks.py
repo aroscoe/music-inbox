@@ -15,7 +15,7 @@ def import_pandora_artists(library_id, username, **kwargs):
     '''Imports username's bookmarked and station artists from pandora.com.'''
     logger = import_pandora_artists.get_logger(**kwargs)
     library = Library.objects.get(pk=library_id)
-    logger.info('importing pandor artists for %s' % username)
+    logger.info('importing pandora artists for %s' % username)
     for artist in pandora.fetch_artists(username):
         artist, created = library.artist_set.get_or_create(name=artist)
 
