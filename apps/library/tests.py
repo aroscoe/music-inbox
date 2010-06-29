@@ -8,7 +8,7 @@ from django.utils import simplejson
 
 from library.models import *
 from library import utils
-from library import pandora
+from library.utils import pandora
 
 class Tests(TestCase):
 

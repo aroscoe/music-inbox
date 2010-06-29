@@ -8,7 +8,7 @@ from django.utils import simplejson
 from celery.decorators import task, periodic_task
 
 from library.models import *
-from library import pandora
+from library.utils import pandora
 
 @task
 def import_pandora_artists(library_id, username, **kwargs):
