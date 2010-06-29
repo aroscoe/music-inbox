@@ -108,4 +108,16 @@ def pandora_import(request):
     else:
         form = forms.PandoraUsernameForm()
         return direct_to_template(request, 'library/upload.html', locals())
-            
+
+def lastfm_import(request):
+    '''Handles post request of last.fm username for artists import from
+    last.fm.
+
+    '''
+    form = forms.LastfmUsernameForm(request.POST)
+    if form.is_valid():
+        print 'passed'
+        pass
+    else:
+        form = forms.LastfmUsernameForm()
+        return form.errors

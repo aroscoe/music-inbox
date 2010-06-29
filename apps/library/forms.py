@@ -2,6 +2,9 @@ import re
 import zlib
 
 from django import forms
+from django.conf import settings
+
+from library.utils.lastfm import lastfm
 
 class UploadFileForm(forms.Form):
     name = forms.CharField(required=False, max_length=150)
@@ -33,7 +36,17 @@ class UploadFileForm(forms.Form):
                 break
         return False
 
-
 class PandoraUsernameForm(forms.Form):
     username = forms.CharField(max_length=150)
+
+class LastfmUsernameForm(forms.Form):
+    username = forms.CharField(max_length=150)
     
+    def clean_username(self):
+        username = self.cleaned_data['username']
+        try:
+            user = lastfm.get_user(username)
+            user.get_id()
+        except:
+            raise forms.ValidationError("User doesn't exist.")
+        return username
