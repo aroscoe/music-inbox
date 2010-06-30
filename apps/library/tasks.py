@@ -9,6 +9,7 @@ from celery.decorators import task, periodic_task
 
 from library.models import *
 from library import pandora
+from library.utils import lastfm
 
 @task
 def import_pandora_artists(library_id, username, **kwargs):
@@ -19,6 +20,20 @@ def import_pandora_artists(library_id, username, **kwargs):
     for artist in pandora.fetch_artists(username):
         artist, created = library.artist_set.get_or_create(name=artist)
 
+    library.processing = False
+    library.save()
+
+    diff_albums.delay(library_id)
+
+@task
+def import_lastfm_artists(library_id, user, **kwargs):
+    '''Imports user's library artists from last.fm.'''
+    logger = import_lastfm_artists.get_logger(**kwargs)
+    library = Library.objects.get(pk=library_id)
+    logger.info('importing lastfm artists for %s' % user.name)
+    for artist in lastfm.get_artists(user, min_playcount=4):
+        artist, created = library.artist_set.get_or_create(name=artist.item)
+    
     library.processing = False
     library.save()
 

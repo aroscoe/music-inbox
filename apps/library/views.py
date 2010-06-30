@@ -116,8 +116,13 @@ def lastfm_import(request):
     '''
     form = forms.LastfmUsernameForm(request.POST)
     if form.is_valid():
-        print 'passed'
-        pass
+        user = form.user
+        library = Library(name=user.name)
+        library.save()
+        tasks.import_lastfm_artists.delay(library.id, user)
+        library_id = utils.encrypt_id(library.pk)
+        return redirect('library_success', library_id=library_id)
     else:
+        print form.errors
         form = forms.LastfmUsernameForm()
-        return form.errors
+        return direct_to_template(request, 'library/upload.html', locals())

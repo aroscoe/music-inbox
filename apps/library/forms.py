@@ -49,4 +49,5 @@ class LastfmUsernameForm(forms.Form):
             user.get_id()
         except:
             raise forms.ValidationError("User doesn't exist.")
+        self.user = user
         return username
