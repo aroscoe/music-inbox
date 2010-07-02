@@ -32,7 +32,7 @@ def import_lastfm_artists(library_id, user, **kwargs):
     library = Library.objects.get(pk=library_id)
     logger.info('importing lastfm artists for %s' % user.name)
     for artist in lastfm.get_artists(user, min_playcount=4):
-        artist, created = library.artist_set.get_or_create(name=artist.item)
+        artist, created = library.artist_set.get_or_create(name=str(artist.item))
     
     library.processing = False
     library.save()
