@@ -54,11 +54,12 @@ class NewAlbums(Feed):
             return "New albums for artists in your library"
 
     def items(self, obj):
-        albums = obj.missing_albums()[:10]
+        albums = obj.missing_albums()
         if not albums:
             return [FirstItem(obj.id)]
         else:
-            return albums
+            albums = [album for album in albums if album.amazon_url and album.release_date and album.release_date <= datetime.now()]
+            return albums[:10]
 
     def item_link(self, item):
         if item.amazon_url: 
