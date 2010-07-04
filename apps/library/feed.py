@@ -58,8 +58,7 @@ class NewAlbums(Feed):
         if not albums:
             return [FirstItem(obj.id)]
         else:
-            albums = [album for album in albums if album.amazon_url and album.release_date and album.release_date <= datetime.now()]
-            return albums[:10]
+            return filter(lambda album: album.amazon_url and album.release_date and album.release_date <= datetime.now(), albums)[:10]
 
     def item_link(self, item):
         if item.amazon_url: 
