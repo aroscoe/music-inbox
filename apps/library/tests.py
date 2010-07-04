@@ -212,12 +212,14 @@ class HttpTests(TestCase):
 
 class PandoraTests(TestCase):
     '''Test for the pandora module.'''
-
+    
+    # TODO: create more Pandora tests
+    
     def setUp(self):
         pass
-
+    
     def test_fetch_artists_fetches_everything(self):
         artists = pandora.fetch_artists('john')
         expected_artists = Set(["Radiohead", "Joshua Radin", "The National", "Yaz", "Prince", "Travis", "Vega4", "Supermen Lovers", "Massive Attack", "Alex Lloyd", "Downtown Singapore", "Kate Nash", "Porcupine Tree", "The Dandy Warhols", "Stars", "Math And Physics Club", "Jem", "The Shins", "Supreme Beings Of Leisure", "Information Society", "Moloko", "Alex Parks", "Frou Frou", "Ray LaMontagne", "Bitter:Sweet", "Duran Duran", "New Order", "Sixth Finger", "John Legend", "Kylie Minogue", "Pernice Brothers", "Andrew Bird", "The Jacksons", "Frou Frou", "Cake", "Jack Penate", "Telepopmusik", "Pelle Carlberg", "Moloko", "Emiliana Torrini", "Arctic Monkeys", "Goldenboy", "The Rosewood Thieves", "Delerium", "Letters To Cleo", "Jessica Simpson", "The Perishers", "Interpol", "Aqualung", "Edel & Weiss", "DNA", "The 1900s", "Tiga", "Robbie Rivera", "The Apples In Stereo", "Train"])
         self.assertTrue(expected_artists.issubset(artists))
-        
+    
