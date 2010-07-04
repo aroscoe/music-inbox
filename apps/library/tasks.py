@@ -27,16 +27,24 @@ def import_pandora_artists(library_id, username, **kwargs):
 
 @task
 def import_lastfm_artists(library_id, user, **kwargs):
-    '''Imports user's library artists from last.fm.'''
+    '''Imports user's library artists & albums from last.fm.'''
     logger = import_lastfm_artists.get_logger(**kwargs)
     library = Library.objects.get(pk=library_id)
     logger.info('importing lastfm artists for %s' % user.name)
-    for artist in lastfm.get_artists(user, min_playcount=4):
-        artist, created = library.artist_set.get_or_create(name=str(artist.item))
-    
+    lastfm_library = lastfm.get_library(user, min_playcount=4)
+    for artist_name, artist_data in lastfm_library.iteritems():
+        artist, created = library.artist_set.get_or_create(name=artist_name)
+        if created:
+            artist.play_count = artist_data.get('playcount')
+            artist.save()
+        try:
+            for album in artist_data.get('albums'):
+                artist.album_set.get_or_create(name=album)
+        except TypeError:
+            logger.debug('%s has no albums' % artist_name)
+            pass
     library.processing = False
     library.save()
-
     diff_albums.delay(library_id)
 
 @task
