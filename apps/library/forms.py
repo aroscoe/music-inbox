@@ -45,7 +45,7 @@ class PandoraUsernameForm(forms.Form):
         url = 'http://feeds.pandora.com/feeds/people/%s/stations.xml' % username
         request = urllib.urlopen(url)
         if request.code == 400:
-            raise forms.ValidationError("Username does not exist.")
+            raise forms.ValidationError("User doesn't exist. Please try again.")
         return username
 
 class LastfmUsernameForm(forms.Form):
@@ -57,6 +57,6 @@ class LastfmUsernameForm(forms.Form):
             user = lastfm.get_user(username)
             user.get_id()
         except:
-            raise forms.ValidationError("User doesn't exist.")
+            raise forms.ValidationError("User doesn't exist. Please try again.")
         self.user = user
         return username
