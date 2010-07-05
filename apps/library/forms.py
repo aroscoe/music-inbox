@@ -1,5 +1,6 @@
 import re
 import zlib
+import urllib
 
 from django import forms
 from django.conf import settings
@@ -38,6 +39,14 @@ class UploadFileForm(forms.Form):
 
 class PandoraUsernameForm(forms.Form):
     username = forms.CharField(max_length=150)
+    
+    def clean_username(self):
+        username = self.cleaned_data['username']
+        url = 'http://feeds.pandora.com/feeds/people/%s/stations.xml' % username
+        request = urllib.urlopen(url)
+        if request.code == 400:
+            raise forms.ValidationError("Username does not exist.")
+        return username
 
 class LastfmUsernameForm(forms.Form):
     username = forms.CharField(max_length=150)

@@ -14,10 +14,11 @@ namespaces = { 'pandora': "http://www.pandora.com/rss/1.0/modules/pandora/",
 
 def fetch_artists(username):
     '''Fetches set of artist names from pandora for user 'username'.
-
+    
     Uses station rss feed and the song and artist bookmark feeds.
-
+    
     '''
+    # TODO: what happens when the user has no Pandora favorites?
     url = 'http://feeds.pandora.com/feeds/people/%s/favorites.xml' % username
     tree = etree.fromstring(urllib.urlopen(url).read())
     artist_elements = tree.xpath('//mm:Artist/dc:title/text()', 
@@ -29,7 +30,8 @@ def fetch_artists(username):
     artist_elements = tree.xpath('//pandora:artist/text()',
                                  namespaces=namespaces)
     artists.update([str(element) for element in artist_elements])
-
+    
+    # TODO: what happens when the user has no Pandora favorite artists?
     url = 'http://feeds.pandora.com/feeds/people/%s/favoriteartists.xml' \
         % username
     tree = etree.fromstring(urllib.urlopen(url).read())
