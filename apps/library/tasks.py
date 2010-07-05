@@ -15,13 +15,15 @@ def import_pandora_artists(library_id, username, **kwargs):
     '''Imports username's bookmarked and station artists from pandora.com.'''
     logger = import_pandora_artists.get_logger(**kwargs)
     library = Library.objects.get(pk=library_id)
+    
     logger.info('importing pandora artists for %s' % username)
+    
     for artist in pandora.fetch_artists(username):
         artist, created = library.artist_set.get_or_create(name=artist)
-
+    
     library.processing = False
     library.save()
-
+    
     diff_albums.delay(library_id)
 
 @task
@@ -29,7 +31,9 @@ def import_lastfm_artists(library_id, user, **kwargs):
     '''Imports user's library artists & albums from last.fm.'''
     logger = import_lastfm_artists.get_logger(**kwargs)
     library = Library.objects.get(pk=library_id)
+    
     logger.info('importing lastfm artists for %s' % user.name)
+    
     lastfm_library = lastfm.get_library(user, min_playcount=4)
     for artist_name, artist_data in lastfm_library.iteritems():
         artist, created = library.artist_set.get_or_create(name=artist_name)
@@ -42,8 +46,10 @@ def import_lastfm_artists(library_id, user, **kwargs):
         except TypeError:
             logger.debug('%s has no albums' % artist_name)
             pass
+    
     library.processing = False
     library.save()
+    
     diff_albums.delay(library_id)
 
 @task
@@ -51,9 +57,9 @@ def import_form_data(library_id, form_data, **kwargs):
     '''Reads a file with json library data and imports it into the library'''
     logger = import_form_data.get_logger(**kwargs)
     library = Library.objects.get(pk=library_id)
-
+    
     logger.info('processing form for library %s' % library)
-
+    
     for artist, albums in form_data.lists():
         # skip library name key-value pair
         if artist == 'name':
@@ -62,10 +68,10 @@ def import_form_data(library_id, form_data, **kwargs):
         artist, created = library.artist_set.get_or_create(name=artist)
         for album in albums:
             artist.album_set.get_or_create(name=album)
-
+    
     library.processing = False
     library.save()
-
+    
     diff_albums.delay(library_id)
 
 @task
