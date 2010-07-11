@@ -6,7 +6,7 @@
 
 <script type="text/javascript" src="{{MEDIA_URL}}js/jquery.validate.min.js"></script>
 <script type="text/javascript" src="{{MEDIA_URL}}js/swfupload.js"></script>
-
+<script type="text/javascript" src="{{MEDIA_URL}}js/jquery-ui-1.8.2.custom.min.js"></script>
 <script type="text/javascript">
 
 var swfu;
@@ -90,23 +90,44 @@ window.onload = function() {
     });
 };
 
+$(document).ready(function() {
+    $("#input_tabs").tabs();
+});
+
 </script>
 <div id="document">
     <div id="topbar"></div>
     
     <h1>Music Inbox <span>Beta</span></h1>
-    <p id="instructions">Upload your artists to learn about their latest releases.</p>
-    <form name="frm_upload" id="frm_upload" method="post" action=".">
-        <div class="input_container">
-            <div class="overlay">
-                <div id="btn_upload"></div>
-            </div>
-            <input type="text" name="query" id="query" value="Click to find your iTunes XML file" />
-        </div>
-        <input type="hidden" name="file_queued" value="false" id="file_queued" />
-        <input type="submit" name="upload" id="btn_submit" value="Upload" />
-    </form>
-    
+    <div id="input_tabs">
+      <ul>
+        <li><a href="#itunes_xml"><span>iTunes</span></a></li>
+        <li><a href="#pandora"><span>Pandora</span></a></li>
+        <li><a href="#lastfm"><span>Last.fm</span></a></li>
+      </ul>
+      <div id="itunes_xml">
+	<p id="instructions">Upload your artists to learn about their latest
+	releases.</p>
+	<form name="frm_upload" id="frm_upload" method="post" action=".">
+          <div class="input_container">
+	    <div class="overlay">
+	      <div id="btn_upload"></div>
+	    </div>
+	    <input type="text" name="query" id="query" value="Click to find your iTunes XML file" />
+	  </div>
+	  <input type="hidden" name="file_queued" value="false" id="file_queued" />
+	  <input type="submit" name="upload" id="btn_submit" value="Upload" />
+	</form>
+      </div>
+      <div id="pandora">
+	<p id="instructions">Enter your pandora username and learn about new
+	music.</p>
+      </div>
+      <div id="lastfm">
+	<p id="instructions">Enter your lastfm username and learn about new
+	music.</p>
+      </div>
+    </div>
 </div>
 
 {% endblock %}
