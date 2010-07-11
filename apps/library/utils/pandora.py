@@ -18,7 +18,6 @@ def fetch_artists(username):
     Uses station rss feed and the song and artist bookmark feeds.
     
     '''
-    # TODO: what happens when the user has no Pandora favorites?
     url = 'http://feeds.pandora.com/feeds/people/%s/favorites.xml' % username
     tree = etree.fromstring(urllib.urlopen(url).read())
     artist_elements = tree.xpath('//mm:Artist/dc:title/text()', 
@@ -31,7 +30,6 @@ def fetch_artists(username):
                                  namespaces=namespaces)
     artists.update([str(element) for element in artist_elements])
     
-    # TODO: what happens when the user has no Pandora favorite artists?
     url = 'http://feeds.pandora.com/feeds/people/%s/favoriteartists.xml' \
         % username
     tree = etree.fromstring(urllib.urlopen(url).read())
