@@ -78,6 +78,9 @@ body#home form input.query {
 body#home form input.query.active {
     color: #313131;
 }
+body#home form input.query:focus {
+    color: #00396b;
+}
 body#home form input#btn_submit {
     float: left;
     width: 94px;
