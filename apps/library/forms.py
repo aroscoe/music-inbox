@@ -6,6 +6,7 @@ from django import forms
 from django.conf import settings
 
 from library.utils.lastfm import lastfm
+from library.utils import pandora
 
 class UploadFileForm(forms.Form):
     name = forms.CharField(required=False, max_length=150)
@@ -42,9 +43,7 @@ class PandoraUsernameForm(forms.Form):
     
     def clean_username(self):
         username = self.cleaned_data['username']
-        url = 'http://feeds.pandora.com/feeds/people/%s/stations.xml' % username
-        request = urllib.urlopen(url)
-        if request.code == 400:
+        if not pandora.is_valid_username(username):
             raise forms.ValidationError("User doesn't exist. Please try again.")
         return username
 

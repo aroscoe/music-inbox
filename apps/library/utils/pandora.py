@@ -1,4 +1,5 @@
 import urllib
+import urllib2
 from lxml import etree
 from sets import Set
 
@@ -37,3 +38,12 @@ def fetch_artists(username):
                                  namespaces=namespaces)
     artists.update([str(element) for element in artist_elements])
     return artists
+
+def is_valid_username(username):
+    '''Tests if username exists.'''
+    url = 'http://feeds.pandora.com/feeds/people/%s/stations.xml' % username
+    try:
+        response = urllib2.urlopen(url)
+        return response.code == 200
+    except:
+        return False

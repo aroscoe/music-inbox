@@ -104,7 +104,7 @@ def pandora_import(request):
         library.save()
         tasks.import_pandora_artists.delay(library.id, username)
         library_id = utils.encrypt_id(library.pk)
-        return redirect('library_success', library_id=library_id)
+        return redirect('library_success', library_id)
     else:
         form = forms.PandoraUsernameForm()
         return direct_to_template(request, 'library/upload.html', locals())
