@@ -10,6 +10,7 @@ env.hosts = FABRIC_HOSTS   # ['11.111.111.111']
 def deploy():
     with cd('/home/musicinbox/music-inbox'):
         sudo('git pull', user='musicinbox')
+        # todo run pip install with possibly updated requirements
         run('/home/musicinbox/.virtualenvs/music-inbox/bin/python manage.py syncdb')
         run('rsync -a --delete assets /home/musicinbox/public/')
         run('chmod -R 755 /home/musicinbox/public')
