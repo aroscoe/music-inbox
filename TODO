@@ -9,6 +9,7 @@ v2:
 * Have own 302 amazon link forwards to track clicked on albums
 * What does feedburner offer?
 * grab log files via other users
+* reuse artist instead of duplicating
 
 future:
 * help area to show how to find your iTunes XML file
