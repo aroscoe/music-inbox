@@ -113,15 +113,10 @@ def diff_albums(library_id, **kwargs):
     
     album_diff(library, logger)
 
-@task(routing_key='musicbrainz.fetch_albums')
-def fetch_albums(mb_artist_id, **kwargs):
-    logger = fetch_albums.get_logger(**kwargs)
-    artist = MBArtist.objects.get(mb_id=mb_artist_id)
-    artist.fetch_albums(logger)
-
-@periodic_task(run_every=timedelta(days=1))
+@periodic_task(run_every=timedelta(days=2))
 def fetch_albums_cron(**kwargs):
     logger = fetch_albums_cron.get_logger(**kwargs)
     logger.info('running fetch albums cron job')
     for artist in MBArtist.objects.all():
-        fetch_albums.delay(artist.mb_id, logger)
+        logger.info('fetching artist %s', artist)
+        artist.fetch_albums(logger)
