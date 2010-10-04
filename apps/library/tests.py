@@ -218,3 +218,23 @@ class PandoraTests(TestCase):
         expected_artists = Set(["Radiohead", "Joshua Radin", "The National", "Yaz", "Prince", "Travis", "Vega4", "Supermen Lovers", "Massive Attack", "Alex Lloyd", "Downtown Singapore", "Kate Nash", "Porcupine Tree", "The Dandy Warhols", "Stars", "Math And Physics Club", "Jem", "The Shins", "Supreme Beings Of Leisure", "Information Society", "Moloko", "Alex Parks", "Frou Frou", "Ray LaMontagne", "Bitter:Sweet", "Duran Duran", "New Order", "Sixth Finger", "John Legend", "Kylie Minogue", "Pernice Brothers", "Andrew Bird", "The Jacksons", "Frou Frou", "Cake", "Jack Penate", "Telepopmusik", "Pelle Carlberg", "Moloko", "Emiliana Torrini", "Arctic Monkeys", "Goldenboy", "The Rosewood Thieves", "Delerium", "Letters To Cleo", "Jessica Simpson", "The Perishers", "Interpol", "Aqualung", "Edel & Weiss", "DNA", "The 1900s", "Tiga", "Robbie Rivera", "The Apples In Stereo", "Train"])
         self.assertTrue(expected_artists.issubset(artists))
     
+class AmazonSearchTests(TestCase):
+    '''Tests for library.models.search_on_amazon.'''
+
+    def setUp(self):
+        pass
+
+    
+    def test_result_for_women_public_strain(self):
+        '''Tests that there is a result for the album 'Public Strain' by
+        'Women'. '''
+        result = search_on_amazon(None, 'Public Strain', 'Women')
+        self.assertTrue(result)
+
+    def test_result_for_different_casing(self):
+        '''Tests that there will still be a result if the case of the artist or 
+        album search term is different than the results.'''
+        result = search_on_amazon(None, 'You Can Play These Songs With Chords',
+                                  'Death Cab for Cutie')
+        self.assertTrue(result)
+
