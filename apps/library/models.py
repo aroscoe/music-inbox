@@ -205,6 +205,11 @@ def search_on_amazon(asin, album, artist):
     
     if not AMAZON_KEY or not AMAZON_SECRET or not AMAZON_ASSOCIATE_TAG:
         return ''
+
+    def match(search_term, result_term):
+        search_term = search_term.lower()
+        result_term = result_term.lower()
+        return result_term.startswith(search_term)
     
     api = API(AMAZON_KEY, AMAZON_SECRET, 'us')
     try:
@@ -219,7 +224,9 @@ def search_on_amazon(asin, album, artist):
         node = api.item_search('MP3Downloads', Keywords=album + ' ' + artist, AssociateTag=AMAZON_ASSOCIATE_TAG)
         for item in node.Items:
             attributes = item.Item.ItemAttributes
-            if attributes.Creator == artist and attributes.Title == album and attributes.ProductGroup == 'Digital Music Album':
+            if match(artist, str(attributes.Creator)) \
+                    and match(album, str(attributes.Title)) \
+                    and attributes.ProductGroup == 'Digital Music Album':
                 url = item.Item.DetailPageURL
                 if url:
                     return url.text

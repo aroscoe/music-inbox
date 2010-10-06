@@ -118,9 +118,19 @@ INSTALLED_APPS = (
 )
 
 UPLOADS_DIR = os.path.join(PROJECT_ROOT, 'uploads/')
+if not os.path.isdir(UPLOADS_DIR):
+    try:
+        os.makedirs(UPLOADS_DIR)
+    except OSError, exc: 
+        print "Error creating uploads dir"
+        raise
 
 LOG_FILE = '/tmp/music-inbox-log'
 LOG_LEVEL = logging.CRITICAL
+
+# Last.fm settings
+LASTFM_API_KEY = ''
+LASTFM_API_SECRET = ''
 
 # musicbrainz rate limiting
 SLEEP_TIME = 2

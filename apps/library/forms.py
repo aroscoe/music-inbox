@@ -1,7 +1,12 @@
 import re
 import zlib
+import urllib
 
 from django import forms
+from django.conf import settings
+
+from library.utils.lastfm import lastfm
+from library.utils import pandora
 
 class UploadFileForm(forms.Form):
     name = forms.CharField(required=False, max_length=150)
@@ -32,3 +37,25 @@ class UploadFileForm(forms.Form):
             if count > 4:
                 break
         return False
+
+class PandoraUsernameForm(forms.Form):
+    username = forms.CharField(max_length=150)
+    
+    def clean_username(self):
+        username = self.cleaned_data['username']
+        if not pandora.is_valid_username(username):
+            raise forms.ValidationError("User doesn't exist. Please try again.")
+        return username
+
+class LastfmUsernameForm(forms.Form):
+    username = forms.CharField(max_length=150)
+    
+    def clean_username(self):
+        username = self.cleaned_data['username']
+        try:
+            user = lastfm.get_user(username)
+            user.get_id()
+        except:
+            raise forms.ValidationError("User doesn't exist. Please try again.")
+        self.user = user
+        return username

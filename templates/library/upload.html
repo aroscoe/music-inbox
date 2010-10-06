@@ -6,7 +6,13 @@
 
 <script type="text/javascript" src="{{MEDIA_URL}}js/jquery.validate.min.js"></script>
 <script type="text/javascript" src="{{MEDIA_URL}}js/swfupload.js"></script>
+<script type="text/javascript"
+src="{{MEDIA_URL}}js/jquery-ui-1.8.2.custom.min.js"></script>
 
+<style type="text/css">
+/* copy from jquery style sheet to ensure tabs are hidden on page load */
+.ui-tabs .ui-tabs-hide { display: none !important; }
+</style>
 <script type="text/javascript">
 
 var swfu;
@@ -90,23 +96,81 @@ window.onload = function() {
     });
 };
 
+$(document).ready(function() {
+    $("#input_tabs").tabs();
+
+    $("label").each(function() {
+	var text = $(this).text();
+	var input = $("#" + $(this).attr("for"));
+	$(input).click(function() {
+	    if ($(this).val() == text) {
+		$(this).val("");
+	    }
+	});
+	input.blur(function() {
+	    if ($(this).val() == "") {
+		$(this).val(text);
+	    }
+	});
+    });
+});
+
 </script>
 <div id="document">
     <div id="topbar"></div>
     
     <h1>Music Inbox <span>Beta</span></h1>
-    <p id="instructions">Upload your artists to learn about their latest releases.</p>
-    <form name="frm_upload" id="frm_upload" method="post" action=".">
-        <div class="input_container">
-            <div class="overlay">
-                <div id="btn_upload"></div>
-            </div>
-            <input type="text" name="query" id="query" value="Click to find your iTunes XML file" />
-        </div>
-        <input type="hidden" name="file_queued" value="false" id="file_queued" />
-        <input type="submit" name="upload" id="btn_submit" value="Upload" />
-    </form>
-    
+    <div id="input_tabs">
+      <ul>
+        <li><a href="#itunes_xml"><span>iTunes</span></a></li>
+        <li><a href="#pandora"><span>Pandora</span></a></li>
+        <li><a href="#lastfm"><span>Last.fm</span></a></li>
+      </ul>
+      <div id="itunes_xml">
+	<p class="instructions">Upload your artists to learn about their latest
+	releases.</p>
+	<form name="frm_upload" id="frm_upload" method="post" action=".">
+          <div class="input_container">
+	    <div class="overlay">
+	      <div id="btn_upload"></div>
+	    </div>
+	    <input type="text" name="query" class="query" id="query" value="Click to find your iTunes XML file" />
+	  </div>
+	  <input type="hidden" name="file_queued" value="false" id="file_queued" />
+	  <input type="submit" name="upload" id="btn_submit" value="Upload" />
+	</form>
+      </div>
+      <div id="pandora" class="ui-tabs-hide">
+	<p class="instructions">Enter your pandora username and learn about new
+	music.</p>
+	<form name="frm_pandora" id="frm_pandora" method="post" action="{% url library_pandora_import %}">
+          <div class="input_container">
+	    <div class="overlay">
+	      <div id="btn_upload"></div>
+	    </div>
+	    <label for="pandora_username">Enter your Pandora user name.</label>
+	    <input type="text" name="username" class="query" id="pandora_username" value="Enter your Pandora user name." />
+	  </div>
+	  <input type="hidden" name="file_queued" value="false" id="file_queued" />
+	  <input type="submit" name="upload" id="btn_submit" value="Submit" />
+	</form>
+      </div>
+      <div id="lastfm" class="ui-tabs-hide">
+	<p class="instructions">Enter your lastfm username and learn about new
+	music.</p>
+	<form name="frm_lastfm" id="frm_lastfm" method="post" action="{% url library_lastfm_import %}">
+          <div class="input_container">
+	    <div class="overlay">
+	      <div id="btn_upload"></div>
+	    </div>
+	    <label for="lastfm_username">Enter your Lastfm user name.</label>
+	    <input type="text" name="username" class="query" id="lastfm_username" value="Enter your Lastfm user name." />
+	  </div>
+	  <input type="hidden" name="file_queued" value="false" id="file_queued" />
+	  <input type="submit" name="upload" id="btn_submit" value="Submit" />
+	</form>
+      </div>
+    </div>
 </div>
 
 {% endblock %}

@@ -26,18 +26,22 @@ body#home h1 {
     text-indent: -1000000px;
     background: url("../img/home_logo.png") no-repeat;
 }
-body#home p#instructions {
+body#home #input_tabs { 
+    margin: 0 auto;
+    width: 640px;
+}
+body#home .instructions {
     margin-bottom: 10px;
     text-align: center;
     color: #00396b;
     font: 20px/27px 'QuicksandBook', Arial, sans-serif;
     text-shadow: 1px 1px 1px #aec7dc;
 }
-body#home #frm_upload {
-    margin: 0 auto;
-    width: 478px;
+body#home form {
+ margin: 0 auto;
+ width: 478px;
 }
-body#home #frm_upload p#message {
+body#home form p#message {
     margin: 6px 0;
     padding: 8px;
     color: #fff;
@@ -46,21 +50,21 @@ body#home #frm_upload p#message {
     border-radius: 6px;
     -moz-border-radius: 6px;
 }
-body#home #frm_upload .input_container {
+body#home form .input_container {
     position: relative;
 }
-body#home #frm_upload .overlay {
+body#home form .overlay {
     position: absolute;
     top: 0;
     z-index: 1000;
 }
-body#home #frm_upload p#message.error {
+body#home form p#message.error {
     background: #c70000;
 }
 body#home #frm_upload label, body#home #frm_upload input {
     display: block;
 }
-body#home #frm_upload input#query {
+body#home form input.query {
     position: relative;
     float: left;
     padding: 0 10px;
@@ -71,10 +75,13 @@ body#home #frm_upload input#query {
     background: url("../img/home_form_bg.png") no-repeat 0 0;
     border: 0;
 }
-body#home #frm_upload input#query.active {
+body#home form input.query.active {
     color: #313131;
 }
-body#home #frm_upload input#btn_submit {
+body#home form input.query:focus {
+    color: #00396b;
+}
+body#home form input#btn_submit {
     float: left;
     width: 94px;
     height: 50px;
@@ -83,6 +90,10 @@ body#home #frm_upload input#btn_submit {
     text-shadow: 1px 1px 1px #fff;
     background: url("../img/home_form_bg.png") no-repeat -384px;
     border: 0;
+}
+
+body#home form label { 
+ display: none;
 }
 
 /* Subpage Header
