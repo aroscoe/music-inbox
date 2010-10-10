@@ -4,6 +4,7 @@ from datetime import timedelta
 
 from django.conf import settings
 from django.utils import simplejson
+from django import db
 
 from celery.decorators import task, periodic_task
 
@@ -113,10 +114,13 @@ def diff_albums(library_id, **kwargs):
     
     album_diff(library, logger)
 
-@periodic_task(run_every=timedelta(days=2))
+@periodic_task(run_every=timedelta(days=7))
 def fetch_albums_cron(**kwargs):
     logger = fetch_albums_cron.get_logger(**kwargs)
     logger.info('running fetch albums cron job')
     for artist in MBArtist.objects.all():
         logger.info('fetching artist %s', artist)
-        artist.fetch_albums(logger)
+        try: 
+            artist.fetch_albums(logger)
+        except db.IntegrityError, e:
+            logger.error('artist %s failed with integrity error', artist)

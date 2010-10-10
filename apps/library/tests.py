@@ -9,11 +9,13 @@ from django.utils import simplejson
 from library.models import *
 from library import utils
 from library.utils import pandora
+from library.utils import matching
 
 class Tests(TestCase):
     
     def setUp(self):
         self.logger = logging.getLogger()
+        self.logger.setLevel(logging.DEBUG)
     
     def test_release_group_no_releases(self):
         '''
@@ -156,6 +158,31 @@ class Tests(TestCase):
         self.assertTrue(panopticon in missing_albums)
         self.assertTrue(celestial in missing_albums)
 
+    def test_match_up_albums(self):
+        '''Tests that even slightly misspelled albums are matched up.'''
+        library = Library.objects.create(name='test')
+        artist = library.artist_set.create(name='4 Non Blondes')
+        album = artist.album_set.create(name='bigger, better, faster, more!')
+        
+        album_diff(library, self.logger)
+
+        # reload from db
+        album = Album.objects.get(id=album.id)
+
+        self.assertEquals('http://musicbrainz.org/release-group/0d26ee11-05f3-3a02-ba40-1414fa325554', album.mb_id)
+
+        # more fuzzy, relies on similarity score
+        album = artist.album_set.create(name='pigger, petter, Faster, more')
+
+        mb_artist = MBArtist.objects.get(name='4 Non Blondes')
+
+        match_up_albums(artist, mb_artist, self.logger)
+
+        album = Album.objects.get(id=album.id)
+
+        self.assertEquals('http://musicbrainz.org/release-group/0d26ee11-05f3-3a02-ba40-1414fa325554', album.mb_id)
+            
+
 class HttpTests(TestCase):
     '''Client tests that make http requests and verify the right responses.''' 
     
@@ -238,3 +265,15 @@ class AmazonSearchTests(TestCase):
                                   'Death Cab for Cutie')
         self.assertTrue(result)
 
+class MatchingTests(TestCase):
+    '''Test library.utils.matching.'''
+    
+    def setUp(self):
+        pass
+    
+    def test_match(self):
+        self.assertTrue(matching.match('ABC', 'abcd'))
+        self.assertFalse(matching.match('abcd', 'ABC'))
+
+    def test_similarity(self):
+        self.assertEquals(0.8, matching.similarity('abcde', 'abcdf'))

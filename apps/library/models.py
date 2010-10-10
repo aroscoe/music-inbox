@@ -3,6 +3,7 @@ import time
 import logging
 import fcntl
 from datetime import date
+import operator
 
 from django.conf import settings
 from django.db import models
@@ -12,6 +13,7 @@ import musicbrainz2.webservice as ws
 import musicbrainz2.model as m
 
 from library import utils
+from library.utils import matching
 
 logging.basicConfig()
 logger = logging.getLogger("models")
@@ -125,7 +127,7 @@ class MBArtist(models.Model):
             for release in mb_artist.getReleaseGroups():
                 mb_album, created_album = MBAlbum.objects.get_or_create(mb_id=release.id, artist = self)
                 if created_album:
-                    logger.debug(release.title + " ...")
+                    logger.info(release.title + " ...")
                     # query
                     date, asin = self.get_release_date(release.id, logger)
                     mb_album.release_date = date
@@ -206,11 +208,6 @@ def search_on_amazon(asin, album, artist):
     if not AMAZON_KEY or not AMAZON_SECRET or not AMAZON_ASSOCIATE_TAG:
         return ''
 
-    def match(search_term, result_term):
-        search_term = search_term.lower()
-        result_term = result_term.lower()
-        return result_term.startswith(search_term)
-    
     api = API(AMAZON_KEY, AMAZON_SECRET, 'us')
     try:
         if asin:
@@ -224,8 +221,8 @@ def search_on_amazon(asin, album, artist):
         node = api.item_search('MP3Downloads', Keywords=album + ' ' + artist, AssociateTag=AMAZON_ASSOCIATE_TAG)
         for item in node.Items:
             attributes = item.Item.ItemAttributes
-            if match(artist, str(attributes.Creator)) \
-                    and match(album, str(attributes.Title)) \
+            if matching.match(artist, str(attributes.Creator)) \
+                    and matching.match(album, str(attributes.Title)) \
                     and attributes.ProductGroup == 'Digital Music Album':
                 url = item.Item.DetailPageURL
                 if url:
@@ -249,17 +246,29 @@ def get_local_mb_artist(artist_name):
 
 def match_up_albums(artist, mb_artist, logger):
     '''Matches up the user albums by artist with the albums from musicbrainz'''
+    mb_albums = MBAlbum.objects.filter(artist=mb_artist)
     for album in artist.album_set.all():
-        mb_albums = MBAlbum.objects.filter(name__iexact=album.name, 
-                                           artist=mb_artist)
-        if mb_albums:
-            logger.debug('matched up album %s to %s'\
-                             % (album.name, mb_albums[0].name))
-            album.mb_id = mb_albums[0].mb_id
-            album.save()
+        if album.mb_id:
+            continue
+        for mb_album in mb_albums:
+            if matching.match(album.name, mb_album.name):
+                logger.debug('direct match album %s to mb album %s', album,
+                             mb_album)
+                album.mb_id = mb_album.mb_id
+                album.save()
+                break
         else:
-            logger.debug('no album match for %s from %s' \
-                             % (album.name, artist.name))
+            by_similarity = [(mba, matching.similarity(album.name, mba.name)) \
+                                 for mba in mb_albums]
+            by_similarity.sort(key=operator.itemgetter(1), reverse=True)
+            if by_similarity:
+                mb_album, similarity = by_similarity[0]
+                if similarity > 0.8:
+                    logger.info('picking similar: album %s, mb_album %s, similarity %s', album, mb_album, similarity)
+                    album.mb_id = mb_album.mb_id
+                    album.save()
+                else:
+                    logger.info('not close enough: album %s, mb_album %s, similarity %s', album, mb_album, similarity)
 
 def lookup_artist(artist, logger):
     '''Looks up Artist locally or in musicbrainz and asssociates Artist object
