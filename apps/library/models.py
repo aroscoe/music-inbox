@@ -295,7 +295,7 @@ def lookup_artist(artist, logger):
                 mb_artist, created = MBArtist.objects.get_or_create(mb_id=mb_artist_id)
                 if created:
                     mb_artist.name = mb_artist_name
-                    mb_artist_name.save()
+                    mb_artist.save()
                     mb_artist.fetch_albums(logger)
         except ws.WebServiceError, e:
             logger.error('error fetching artist %s' % artist.name, exc_info=True)
