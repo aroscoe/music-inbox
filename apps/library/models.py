@@ -12,7 +12,7 @@ from django.contrib.sites.models import Site
 import musicbrainz2.webservice as ws
 import musicbrainz2.model as m
 
-# from library import utils
+from library import utils
 from library.utils import matching
 
 logging.basicConfig()
