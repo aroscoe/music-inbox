@@ -68,7 +68,7 @@ class NewAlbums(Feed):
 
     def item_pubdate(self, item):
         if item.release_date:
-            return datetime(item.release_date.year, item.release_date.month, item.release_date.day)
+            return datetime.datetime(item.release_date.year, item.release_date.month, item.release_date.day)
         else:
             # return datetime.now()
             # return datetime(1970, 1, 1)
