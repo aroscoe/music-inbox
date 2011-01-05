@@ -299,4 +299,4 @@ class MBArtistTests(TestCase):
         
         for album in albums:
             today = date.today()
-            self.assertTrue(album.release_date < today, '%s released in the future, should not have been fetched, release date %s' % (album, album.release_date))
+            self.assertTrue(album.release_date <= today, '%s released in the future, should not have been fetched, release date %s' % (album, album.release_date))
