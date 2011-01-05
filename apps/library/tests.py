@@ -277,3 +277,26 @@ class MatchingTests(TestCase):
 
     def test_similarity(self):
         self.assertEquals(0.8, matching.similarity('abcde', 'abcdf'))
+
+class MBArtistTests(TestCase):
+    '''Test library.models.MBArtist.'''
+
+    def setUp(self):
+        self.logger = logging.getLogger()
+        self.logger.setLevel(logging.DEBUG)
+
+    def test_fetch_albums_ignores_future_albums(self):
+        '''Ensures that future albums are not imported yet.
+
+        Test case will break once the future album has been released.
+
+        '''
+        mb_artist = MBArtist.objects.create(mb_id='http://musicbrainz.org/artist/fa7b9055-3703-473a-8a09-adf2fe031a24',
+                                            name='CAKE')
+        mb_artist.fetch_albums(self.logger)
+        
+        albums = MBAlbum.objects.filter(artist=mb_artist)
+        
+        for album in albums:
+            today = date.today()
+            self.assertTrue(album.release_date < today, '%s released in the future, should not have been fetched, release date %s' % (album, album.release_date))

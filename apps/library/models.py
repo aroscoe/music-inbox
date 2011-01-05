@@ -2,7 +2,7 @@ import sys
 import time
 import logging
 import fcntl
-from datetime import date
+import datetime
 import operator
 
 from django.conf import settings
@@ -125,6 +125,15 @@ class MBArtist(models.Model):
             mb_artist = call_mb_ws(q.getArtistById, logger, self.mb_id,
                                    include)
             for release in mb_artist.getReleaseGroups():
+                if MBAlbum.objects.filter(mb_id=release.id, artist=self):
+                    # skip, nothing to do for locally existing albums
+                    logger.info('skipping locally known release %s', release.title)
+                    continue
+                date, asin = self.get_release_date(release.id, logger)
+                if date and datetime.date.today() < date:
+                    # skip, don't import future albums
+                    logger.info('skipping future release %s', release.title)
+                    continue
                 mb_album, created_album = MBAlbum.objects.get_or_create(mb_id=release.id, artist = self)
                 if created_album:
                     logger.info(release.title + " ...")
@@ -164,7 +173,7 @@ class MBArtist(models.Model):
                         month = int(parsed_release_date[1])
                     if len(parsed_release_date) > 2:
                         day = int(parsed_release_date[2])
-                    return date(year, month, day), release.asin
+                    return datetime.date(year, month, day), release.asin
             return None, None
         except ws.WebServiceError, e:
             return None, None
