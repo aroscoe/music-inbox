@@ -1,4 +1,4 @@
-from datetime import datetime
+import datetime
 
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.syndication.feeds import FeedDoesNotExist
@@ -15,7 +15,7 @@ class FirstItem(object):
     an actual feed item has.
     '''
     amazon_url = "http://%s/" % Site.objects.get_current().domain
-    release_date = datetime.now()
+    release_date = datetime.datetime.now()
     title = 'Music Inbox: No new albums available yet'
     description = '''You successfully installed your personal music inbox feed.
 
