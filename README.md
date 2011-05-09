@@ -27,7 +27,7 @@ Setup
     music-inbox $ pip install -r REQUIREMENTS
     music-inbox $ sudo rabbitmqctl add_user musicinbox musicinbox
     music-inbox $ sudo rabbitmqctl add_vhost musicinbox
-    music-inbox $ sudo rabbitmqctl set_permissions -p musicinbox musicinbox "" ".*" ".*"
+    music-inbox $ sudo rabbitmqctl set_permissions -p musicinbox musicinbox ".*" ".*" ".*"
     mysql> create database musicinbox default character set utf8;
     music-inbox $ ./manage.py syncdb
     music-inbox $ ./manage.py celeryd -B
