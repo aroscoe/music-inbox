@@ -132,6 +132,10 @@ LOG_LEVEL = logging.CRITICAL
 LASTFM_API_KEY = ''
 LASTFM_API_SECRET = ''
 
+# Rdio keys
+RDIO_CONSUMER_KEY = ''
+RDIO_SECRET = ''
+
 # musicbrainz rate limiting
 SLEEP_TIME = 2
 
