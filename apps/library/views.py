@@ -126,3 +126,20 @@ def lastfm_import(request):
     else:
         form = forms.LastfmUsernameForm()
     return direct_to_template(request, 'test_form.html', {'form': form})
+
+def rdio_import(request):
+    '''Handles post request of rdio username for artists import from
+    rdio.
+
+    '''
+    form = forms.RdioUsernameForm(request.POST)
+    if form.is_valid():
+        username = form.cleaned_data.get('username')
+        library = Library(name=username)
+        library.save()
+        tasks.import_rdio_artists.delay(library.id, username)
+        library_id = utils.encrypt_id(library.pk)
+        return redirect('library_success', library_id)
+    else:
+        form = forms.RdioUsernameForm()
+    return direct_to_template(request, 'library/upload.html', locals())
