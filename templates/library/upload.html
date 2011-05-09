@@ -125,6 +125,7 @@ $(document).ready(function() {
         <li><a href="#itunes_xml"><span>iTunes</span></a></li>
         <li><a href="#pandora"><span>Pandora</span></a></li>
         <li><a href="#lastfm"><span>Last.fm</span></a></li>
+	<li><a href="#rdio"><span>Rdio</span></a></li>
       </ul>
       <div id="itunes_xml">
 	<p class="instructions">Upload your artists to learn about their latest
@@ -165,6 +166,21 @@ $(document).ready(function() {
 	    </div>
 	    <label for="lastfm_username">Enter your Lastfm user name.</label>
 	    <input type="text" name="username" class="query" id="lastfm_username" value="Enter your Lastfm user name." />
+	  </div>
+	  <input type="hidden" name="file_queued" value="false" id="file_queued" />
+	  <input type="submit" name="upload" id="btn_submit" value="Submit" />
+	</form>
+      </div>
+      <div id="rdio" class="ui-tabs-hide">
+	<p class="instructions">Enter your rdio username and learn about new
+	music.</p>
+	<form name="frm_rdio" id="frm_rdio" method="post" action="{% url library_rdio_import %}">
+          <div class="input_container">
+	    <div class="overlay">
+	      <div id="btn_upload"></div>
+	    </div>
+	    <label for="rdio_username">Enter your Rdio user name.</label>
+	    <input type="text" name="username" class="query" id="rdio_username" value="Enter your Rdio user name." />
 	  </div>
 	  <input type="hidden" name="file_queued" value="false" id="file_queued" />
 	  <input type="submit" name="upload" id="btn_submit" value="Submit" />

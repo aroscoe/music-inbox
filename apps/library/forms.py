@@ -6,7 +6,7 @@ from django import forms
 from django.conf import settings
 
 from library.utils.lastfm import lastfm
-from library.utils import pandora
+from library.utils import pandora, rdio
 
 class UploadFileForm(forms.Form):
     name = forms.CharField(required=False, max_length=150)
@@ -56,6 +56,17 @@ class LastfmUsernameForm(forms.Form):
             user = lastfm.get_user(username)
             user.get_id()
         except:
+            raise forms.ValidationError("User doesn't exist. Please try again.")
+        self.user = user
+        return username
+
+class RdioUsernameForm(forms.Form):
+    username = forms.CharField(max_length=150)
+    
+    def clean_username(self):
+        username = self.cleaned_data['username']
+        user = rdio.get_user(username)
+        if user is None:
             raise forms.ValidationError("User doesn't exist. Please try again.")
         self.user = user
         return username

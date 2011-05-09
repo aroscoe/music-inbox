@@ -9,7 +9,7 @@ from django import db
 from celery.decorators import task, periodic_task
 
 from library.models import *
-from library.utils import lastfm, pandora
+from library.utils import lastfm, pandora, rdio
 
 @task
 def import_pandora_artists(library_id, username, **kwargs):
@@ -99,6 +99,22 @@ def import_itunes_file(library_id, library_filename, **kwargs):
             if track.get("Play Count"):
                 artist.play_count += track["Play Count"]
                 artist.save()
+    library.processing = False
+    library.save()
+    
+    diff_albums.delay(library_id)
+
+@task
+def import_rdio_artists(library_id, username, **kwargs):
+    '''Imports username's collection artists from rdio.'''
+    logger = import_rdio_artists.get_logger(**kwargs)
+    library = Library.objects.get(pk=library_id)
+    
+    logger.info('importing rdio artists for %s' % username)
+    
+    for artist in rdio.fetch_artists(username):
+        artist, created = library.artist_set.get_or_create(name=artist)
+    
     library.processing = False
     library.save()
     
