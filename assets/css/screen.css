@@ -96,6 +96,19 @@ body#home form label {
  display: none;
 }
 
+body#home #recent_albums { 
+ margin: 120px auto;
+ width: 640px;
+}
+
+body#home #recent_albums p,a,li {
+    margin-bottom: 10px;
+    color: #00396b;
+    font: 20px/27px 'QuicksandBook', Arial, sans-serif;
+    text-shadow: 1px 1px 1px #aec7dc;
+}
+
+
 /* Subpage Header
 ---------------------------------------------------------- */
 body#sub #header {

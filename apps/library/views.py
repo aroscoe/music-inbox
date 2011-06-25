@@ -8,7 +8,7 @@ from django.shortcuts import redirect
 from django.views.generic.simple import direct_to_template
 from django.contrib.sites.models import Site
 
-from library.models import Library, Artist
+from library.models import Library, Artist, MBAlbum
 from library import forms
 from library import utils
 from library import tasks
@@ -74,6 +74,9 @@ def upload(request):
             library_id = utils.encrypt_id(library.pk)
             return redirect('library_success', library_id=library_id)
     else:
+        recent_albums = MBAlbum.objects.order_by('-release_date').select_related()[:10]
+        recent_albums = [album for album in recent_albums if album.amazon_url]
+        recent_albums = recent_albums[:min(len(recent_albums), 5)]
         form = forms.UploadFileForm()
     return direct_to_template(request, 'library/upload.html', locals())
 
