@@ -1,4 +1,4 @@
-from settings import RDIO_CONSUMER_KEY, RDIO_SECRET
+from django.conf.settings import RDIO_CONSUMER_KEY, RDIO_SECRET
 from rdioapi import Rdio
 
 def get_user(username):
