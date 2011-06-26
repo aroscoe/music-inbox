@@ -101,13 +101,16 @@ body#home #recent_albums {
  width: 640px;
 }
 
-body#home #recent_albums p,a,li {
-    margin-bottom: 10px;
-    color: #00396b;
-    font: 20px/27px 'QuicksandBook', Arial, sans-serif;
-    text-shadow: 1px 1px 1px #aec7dc;
+#recent_albums > * {
+ margin-bottom: 10px;
+ color: #00396b;
+ font: 20px/27px 'QuicksandBook', Arial, sans-serif;
+ text-shadow: 1px 1px 1px #aec7dc;
 }
 
+div#recent_albums * td { 
+ padding: 2px;
+}
 
 /* Subpage Header
 ---------------------------------------------------------- */

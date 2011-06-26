@@ -189,11 +189,16 @@ $(document).ready(function() {
     </div>
     <div id="recent_albums">
       <p>Latest album releases from artists our users like:</p>
-      <ul>
-      {% for album in recent_albums %}
-        <li>{{album.release_date}} - <a href="{{album.amazon_url}}">{{album.artist.name}} - {{album.name}}</a></li>
-      {% endfor %}
-      </ul>
+      <table>
+	{% for album in recent_albums %}
+	<tr>
+	  <td>{{album.release_date}}</td>
+	  <td><a href="{{album.amazon_url}}">{{album.artist.name}} -
+	    {{album.name}}</a>
+	  </td>
+	</tr>
+	{% endfor%}
+      </table>
     </div>
 </div>
 
