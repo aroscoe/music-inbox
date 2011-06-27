@@ -9,6 +9,7 @@ sys.stdout = sys.stderr
 
 os.environ['DJANGO_SETTINGS_MODULE'] = 'music-inbox.settings'
 
+sys.path.insert(0, join(settings.PROJECT_ROOT))
 sys.path.insert(0, join(settings.PROJECT_ROOT, "libs"))
 sys.path.insert(0, join(settings.PROJECT_ROOT, "apps"))
 
