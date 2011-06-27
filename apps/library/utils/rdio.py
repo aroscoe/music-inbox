@@ -1,11 +1,15 @@
 from django.conf import settings
 from rdioapi import Rdio
 
-def get_user(username):
+def create_rdio():
     state = {}
-    r = Rdio(settings.RDIO_CONSUMER_KEY, settings.RDIO_SECRET, state)
+    return Rdio(settings.RDIO_CONSUMER_KEY, settings.RDIO_SECRET, state)
+    
+def get_user(username):
+    r = create_rdio();
     return r.findUser(vanityName=username)
 
 def fetch_artists(username):
-    user = get_user(user_name)
+    user = get_user(username)
+    r = create_rdio();
     return [artist['name'] for artist in r.getArtistsInCollection(user=user['key'])]
