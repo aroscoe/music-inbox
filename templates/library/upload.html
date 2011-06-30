@@ -193,7 +193,7 @@ $(document).ready(function() {
 	{% for album in recent_albums %}
 	<tr>
 	  <td>{{album.release_date}}</td>
-	  <td><a href="{{album.amazon_url}}">{{album.artist.name}} -
+	  <td><a href="{{album.amazon_url}}" target="_blank">{{album.artist.name}} -
 	    {{album.name}}</a>
 	  </td>
 	</tr>
